@@ -51,28 +51,29 @@ const MOD_TO_CORNER = {
   Ctrl: 'ctrl', CtrlLeft: 'ctrl', CtrlRight: 'ctrl',
 };
 
-// R stripe covers this fraction of triangle depth, measured from the hypotenuse inward
-const STRIPE_FRAC = 0.28;
+// Width of R stripe in SVG units, perpendicular to the hypotenuse
+const STRIPE_W = 3.5;
+const D = STRIPE_W * 0.7071; // component along each axis (1/√2)
 
 function splitCornerPoints(corner, k) {
   const { x, y, w, h } = k;
-  const s = STRIPE_FRAC * SIZE; // stripe depth from hypotenuse toward corner
-  // L always gets the full triangle; R is a thin trapezoid overlaid along the hypotenuse.
+  // L = full triangle. R = thin parallelogram extending OUTWARD from hypotenuse
+  // (away from the corner, into key interior) — purely additive, no overlap with L.
   if (corner === 'shift') {
-    // Full triangle: (x+w,y) (x+w,y+SIZE) (x+w-SIZE,y)
-    const lPts = `${x + w},${y} ${x + w},${y + SIZE} ${x + w - SIZE},${y}`;
-    const rPts = `${x + w - SIZE},${y} ${x + w},${y + SIZE} ${x + w},${y + SIZE - s} ${x + w - SIZE + s},${y}`;
+    // upper-right corner. Hyp: C=(x+w-SIZE,y) → B=(x+w,y+SIZE). Outward normal: (-D,+D)
+    const lPts = `${x+w},${y} ${x+w},${y+SIZE} ${x+w-SIZE},${y}`;
+    const rPts = `${x+w-SIZE},${y} ${x+w},${y+SIZE} ${x+w-D},${y+SIZE+D} ${x+w-SIZE-D},${y+D}`;
     return [lPts, rPts];
   }
   if (corner === 'alt') {
-    // Full triangle: (x+w,y+h) (x+w,y+h-SIZE) (x+w-SIZE,y+h)
-    const lPts = `${x + w},${y + h} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h}`;
-    const rPts = `${x + w - SIZE},${y + h} ${x + w},${y + h - SIZE} ${x + w},${y + h - SIZE + s} ${x + w - SIZE + s},${y + h}`;
+    // lower-right corner. Hyp: B=(x+w,y+h-SIZE) → C=(x+w-SIZE,y+h). Outward normal: (-D,-D)
+    const lPts = `${x+w},${y+h} ${x+w},${y+h-SIZE} ${x+w-SIZE},${y+h}`;
+    const rPts = `${x+w},${y+h-SIZE} ${x+w-SIZE},${y+h} ${x+w-SIZE-D},${y+h-D} ${x+w-D},${y+h-SIZE-D}`;
     return [lPts, rPts];
   }
-  // ctrl — lower-left. Full triangle: (x,y+h) (x,y+h-SIZE) (x+SIZE,y+h)
-  const lPts = `${x},${y + h} ${x},${y + h - SIZE} ${x + SIZE},${y + h}`;
-  const rPts = `${x},${y + h - SIZE} ${x + SIZE},${y + h} ${x + SIZE - s},${y + h} ${x},${y + h - SIZE + s}`;
+  // ctrl — lower-left corner. Hyp: B=(x,y+h-SIZE) → C=(x+SIZE,y+h). Outward normal: (+D,-D)
+  const lPts = `${x},${y+h} ${x},${y+h-SIZE} ${x+SIZE},${y+h}`;
+  const rPts = `${x},${y+h-SIZE} ${x+SIZE},${y+h} ${x+SIZE+D},${y+h-D} ${x+D},${y+h-SIZE-D}`;
   return [lPts, rPts];
 }
 
