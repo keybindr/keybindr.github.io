@@ -2,22 +2,42 @@ import React, { useState, useEffect, useRef } from 'react';
 import { KEY_MAP } from '../keyboardLayout';
 import { bindingId } from '../useBindings';
 
-const MODIFIERS = ['Ctrl', 'Shift', 'Alt'];
+function buildModDefs(settings) {
+  const { splitModifiers, modColors, splitModColors } = settings;
+  if (splitModifiers) {
+    return [
+      { value: 'ShiftLeft',  label: 'LShift', color: splitModColors.ShiftLeft  },
+      { value: 'ShiftRight', label: 'RShift', color: splitModColors.ShiftRight },
+      { value: 'AltLeft',    label: 'LAlt',   color: splitModColors.AltLeft    },
+      { value: 'AltRight',   label: 'RAlt',   color: splitModColors.AltRight   },
+      { value: 'CtrlLeft',   label: 'LCtrl',  color: splitModColors.CtrlLeft   },
+      { value: 'CtrlRight',  label: 'RCtrl',  color: splitModColors.CtrlRight  },
+    ];
+  }
+  return [
+    { value: 'Ctrl',  label: 'Ctrl',  color: modColors.Ctrl  },
+    { value: 'Shift', label: 'Shift', color: modColors.Shift },
+    { value: 'Alt',   label: 'Alt',   color: modColors.Alt   },
+  ];
+}
 
 export default function BindModal({
   keyId, existingBindings,
   keyColor, recentColors = [],
   onColorChange,
   onSave, onCancel,
+  settings,
 }) {
-  const keyDef = KEY_MAP[keyId];
+  const keyDef  = KEY_MAP[keyId];
+  const modDefs = buildModDefs(settings);
+
   const [modifier, setModifier] = useState('');
-  const [action, setAction] = useState('');
+  const [action, setAction]     = useState('');
   const [conflict, setConflict] = useState(false);
   const [localColor, setLocalColor] = useState(keyColor ?? '');
   const inputRef = useRef(null);
 
-  const mods = modifier ? [modifier] : [];
+  const mods  = modifier ? [modifier] : [];
   const newId = bindingId(keyId, mods);
 
   useEffect(() => {
@@ -43,6 +63,9 @@ export default function BindModal({
     onSave(keyId, mods, action.trim());
   }
 
+  const activeModDef = modDefs.find(m => m.value === modifier);
+  const modLabel     = activeModDef?.label ?? modifier;
+
   return (
     <div className="modal-backdrop" onClick={onCancel}>
       <div className="modal" onClick={e => e.stopPropagation()}>
@@ -56,16 +79,21 @@ export default function BindModal({
             <div className="mod-buttons">
               <button
                 type="button"
-                className={`mod-btn ${modifier === '' ? 'active' : ''}`}
+                className={`mod-btn${modifier === '' ? ' active' : ''}`}
                 onClick={() => setModifier('')}
               >None</button>
-              {MODIFIERS.map(m => (
+              {modDefs.map(m => (
                 <button
-                  key={m}
+                  key={m.value}
                   type="button"
-                  className={`mod-btn mod-${m.toLowerCase()} ${modifier === m ? 'active' : ''}`}
-                  onClick={() => setModifier(m)}
-                >{m}</button>
+                  className={`mod-btn${modifier === m.value ? ' active' : ''}`}
+                  style={modifier === m.value ? {
+                    borderColor: m.color,
+                    color: m.color,
+                    background: m.color + '22',
+                  } : {}}
+                  onClick={() => setModifier(m.value)}
+                >{m.label}</button>
               ))}
             </div>
           </div>
@@ -117,7 +145,7 @@ export default function BindModal({
 
           <div className="modal-combo">
             Binding: <span className="combo-label">
-              {modifier ? `${modifier}+` : ''}{keyDef?.label ?? keyId}
+              {modifier ? `${modLabel}+` : ''}{keyDef?.label ?? keyId}
             </span>
           </div>
 

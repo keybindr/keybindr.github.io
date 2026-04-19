@@ -97,8 +97,6 @@ export default function App() {
             style={{ display: 'none' }}
             onChange={handleImport}
           />
-          <button className="btn-icon" title="Help" onClick={() => setShowHelp(true)}>?</button>
-          <button className="btn-icon" title="Settings" onClick={() => setShowSettings(true)}>⚙</button>
           <div className="dropdown" ref={menuRef}>
             <button className="btn-export" onClick={() => setShowMenu(v => !v)}>
               Import / Export ▾
@@ -121,6 +119,8 @@ export default function App() {
               </div>
             )}
           </div>
+          <button className="btn-icon" title="Help" onClick={() => setShowHelp(true)}>?</button>
+          <button className="btn-icon" title="Settings" onClick={() => setShowSettings(true)}>⚙</button>
         </div>
       </header>
 
@@ -173,6 +173,7 @@ export default function App() {
           onColorChange={color => handleColorChange(modalKey, color)}
           onSave={handleSave}
           onCancel={handleModalCancel}
+          settings={settings}
         />
       )}
 

@@ -47,12 +47,13 @@ function modFill(hex) {
 
 function trianglePoints(mod, k) {
   const { x, y, w, h } = k;
-  switch (mod) {
-    case 'Shift': return `${x + w},${y} ${x + w},${y + SIZE} ${x + w - SIZE},${y}`;           // upper-right
-    case 'Alt':   return `${x + w},${y + h} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h}`; // lower-right
-    case 'Ctrl':  return `${x},${y + h} ${x},${y + h - SIZE} ${x + SIZE},${y + h}`;              // lower-left
-    default:      return `${x},${y} ${x + SIZE},${y} ${x},${y + SIZE}`;
-  }
+  if (mod === 'Shift' || mod === 'ShiftLeft' || mod === 'ShiftRight')
+    return `${x + w},${y} ${x + w},${y + SIZE} ${x + w - SIZE},${y}`;            // upper-right
+  if (mod === 'Alt' || mod === 'AltLeft' || mod === 'AltRight')
+    return `${x + w},${y + h} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h}`; // lower-right
+  if (mod === 'Ctrl' || mod === 'CtrlLeft' || mod === 'CtrlRight')
+    return `${x},${y + h} ${x},${y + h - SIZE} ${x + SIZE},${y + h}`;             // lower-left
+  return `${x},${y} ${x + SIZE},${y} ${x},${y + SIZE}`;
 }
 
 const DEFAULT_SETTINGS = {
@@ -130,7 +131,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
               <polygon
                 key={mod}
                 points={trianglePoints(mod, k)}
-                fill={modColors[mod] || '#888'}
+                fill={modColors[mod] || splitModColors[mod] || '#888'}
                 clipPath={`url(#clip-${k.id})`}
                 style={{ pointerEvents: 'none' }}
               />

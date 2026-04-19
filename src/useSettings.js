@@ -9,12 +9,12 @@ export const DEFAULT_MOD_COLORS = {
 };
 
 export const DEFAULT_SPLIT_MOD_COLORS = {
-  CtrlLeft:   '#e07b39',
-  CtrlRight:  '#e07b39',
-  ShiftLeft:  '#7b9ee0',
-  ShiftRight: '#7b9ee0',
-  AltLeft:    '#7be09a',
-  AltRight:   '#7be09a',
+  ShiftLeft:  '#7b9ee0', // blue
+  ShiftRight: '#c47be0', // purple
+  AltLeft:    '#7be09a', // green
+  AltRight:   '#e0c87b', // amber
+  CtrlLeft:   '#e07b39', // orange
+  CtrlRight:  '#7be0d8', // teal
 };
 
 const DEFAULTS = {
