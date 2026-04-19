@@ -108,6 +108,49 @@ html, body {
   margin: 4px 0;
 }
 
+/* Color picker */
+.color-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.color-picker {
+  width: 36px;
+  height: 28px;
+  padding: 2px 3px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface2);
+  cursor: pointer;
+}
+
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+  transition: transform 0.1s;
+  flex-shrink: 0;
+}
+.color-swatch:hover { transform: scale(1.15); }
+.color-swatch.active { outline: 2px solid #fff; outline-offset: 1px; }
+
+.btn-clear-color {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-clear-color:hover { color: var(--danger); border-color: var(--danger); }
+
 /* Legend */
 .legend {
   display: flex;
@@ -140,9 +183,10 @@ html, body {
   border-style: solid;
   display: inline-block;
 }
-.legend-tri.ctrl  { border-width: 0 10px 10px 0; border-color: transparent var(--ctrl)  transparent transparent; }
-.legend-tri.shift { border-width: 0 10px 10px 0; border-color: transparent var(--shift) transparent transparent; }
-.legend-tri.alt   { border-width: 0 10px 10px 0; border-color: transparent var(--alt)   transparent transparent; }
+/* Triangle corners match their position on the key */
+.legend-tri.shift { border-width: 10px 10px 0 0; border-color: var(--shift) transparent transparent transparent; } /* ↗ upper-right */
+.legend-tri.alt   { border-width: 0 0 10px 10px; border-color: transparent transparent var(--alt)   transparent; } /* ↘ lower-right */
+.legend-tri.ctrl  { border-width: 0 0 10px 10px; border-color: transparent transparent transparent var(--ctrl);  } /* ↙ lower-left  */
 
 /* Keyboard */
 .keyboard-container {

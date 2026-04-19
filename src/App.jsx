@@ -3,12 +3,15 @@ import Keyboard from './components/Keyboard';
 import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
 import { useBindings, bindingId } from './useBindings';
+import { useKeyColors } from './useKeyColors';
 import { exportXML, exportJSON, exportPNG, importFile } from './export';
 
 export default function App() {
   const { bindings, addOrUpdate, remove, updateAction, replaceBindings } = useBindings();
+  const { keyColors, recentColors, setKeyColor, clearKeyColor, restoreKeyColor } = useKeyColors();
   const [selectedId, setSelectedId] = useState(null);
   const [modalKey, setModalKey] = useState(null);
+  const modalOriginalColor = useRef(undefined);
   const fileInputRef = useRef(null);
   const menuRef = useRef(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -37,12 +40,24 @@ export default function App() {
   }
 
   function handleKeyClick(keyId) {
+    modalOriginalColor.current = keyColors[keyId];
     setModalKey(keyId);
   }
 
   function handleSave(key, mods, action) {
     addOrUpdate(key, mods, action);
     setSelectedId(bindingId(key, mods));
+    setModalKey(null);
+  }
+
+  function handleModalCancel() {
+    restoreKeyColor(modalKey, modalOriginalColor.current);
+    setModalKey(null);
+  }
+
+  function handleColorChange(keyId, color) {
+    if (color) setKeyColor(keyId, color);
+    else clearKeyColor(keyId);
   }
 
   function handleSelect(id) {
@@ -68,7 +83,7 @@ export default function App() {
             {showMenu && (
               <div className="dropdown-menu">
                 <button className="dropdown-item" onClick={() => menuAction(() => fileInputRef.current?.click())}>
-                  Import XML / JSON
+                  Import XML/JSON
                 </button>
                 <div className="dropdown-sep" />
                 <button className="dropdown-item" onClick={() => menuAction(() => exportXML(bindings))}>
@@ -88,9 +103,9 @@ export default function App() {
 
       <div className="legend">
         <span className="legend-item"><span className="legend-dot bound" />Bound key</span>
-        <span className="legend-item"><span className="legend-tri ctrl" />Ctrl</span>
-        <span className="legend-item"><span className="legend-tri shift" />Shift</span>
-        <span className="legend-item"><span className="legend-tri alt" />Alt</span>
+        <span className="legend-item"><span className="legend-tri shift" />Shift ↗</span>
+        <span className="legend-item"><span className="legend-tri alt" />Alt ↘</span>
+        <span className="legend-item"><span className="legend-tri ctrl" />Ctrl ↙</span>
       </div>
 
       <div className="keyboard-container">
@@ -98,6 +113,7 @@ export default function App() {
           bindings={bindings}
           selectedId={selectedId}
           onKeyClick={handleKeyClick}
+          keyColors={keyColors}
         />
       </div>
 
@@ -116,8 +132,11 @@ export default function App() {
         <BindModal
           keyId={modalKey}
           existingBindings={bindings}
+          keyColor={keyColors[modalKey]}
+          recentColors={recentColors}
+          onColorChange={color => handleColorChange(modalKey, color)}
           onSave={handleSave}
-          onClose={() => setModalKey(null)}
+          onCancel={handleModalCancel}
         />
       )}
     </div>

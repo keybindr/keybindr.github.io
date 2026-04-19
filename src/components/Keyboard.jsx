@@ -32,12 +32,29 @@ const MOD_KEY_FILL = {
   Alt:   '#0e2e1a',
 };
 
-export default function Keyboard({ bindings, selectedId, onKeyClick }) {
+const SIZE = 10;
+
+// Each modifier gets a fixed corner. Points are ordered so the right angle
+// sits exactly in that corner, letting the clipPath round it.
+function trianglePoints(mod, k) {
+  const { x, y, w, h } = k;
+  switch (mod) {
+    case 'Shift': // upper-right
+      return `${x + w},${y} ${x + w},${y + SIZE} ${x + w - SIZE},${y}`;
+    case 'Alt':   // lower-right
+      return `${x + w},${y + h} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h}`;
+    case 'Ctrl':  // lower-left
+      return `${x},${y + h} ${x},${y + h - SIZE} ${x + SIZE},${y + h}`;
+    default:      // upper-left fallback
+      return `${x},${y} ${x + SIZE},${y} ${x},${y + SIZE}`;
+  }
+}
+
+export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {} }) {
   const boundMap = {};
   for (const b of bindings) {
-    const key = b.key;
-    if (!boundMap[key]) boundMap[key] = [];
-    boundMap[key].push(b);
+    if (!boundMap[b.key]) boundMap[b.key] = [];
+    boundMap[b.key].push(b);
   }
 
   return (
@@ -59,11 +76,13 @@ export default function Keyboard({ bindings, selectedId, onKeyClick }) {
         const keyBindings = boundMap[k.id] || [];
         const isBound = keyBindings.length > 0;
         const isSelected = keyBindings.some(b => bindingId(b.key, b.modifiers) === selectedId);
-
+        const customColor = keyColors[k.id];
         const modRole = KEY_TO_MOD[k.id];
-        const fill   = isSelected ? KEY_SELECTED
-                     : isBound    ? KEY_BOUND
-                     : modRole    ? MOD_KEY_FILL[modRole]
+
+        const fill   = isSelected  ? KEY_SELECTED
+                     : customColor ? customColor
+                     : isBound     ? KEY_BOUND
+                     : modRole     ? MOD_KEY_FILL[modRole]
                      : KEY_DEFAULT;
         const stroke = isSelected ? BORDER_SELECTED
                      : isBound    ? BORDER_BOUND
@@ -71,27 +90,18 @@ export default function Keyboard({ bindings, selectedId, onKeyClick }) {
                      : BORDER_DEFAULT;
         const textColor = isBound ? TEXT_BOUND : TEXT_DEFAULT;
 
-        // Modifier triangles — one per modifier present
         const mods = [...new Set(keyBindings.flatMap(b => b.modifiers))];
 
         return (
           <g key={k.id} onClick={() => onKeyClick(k.id)} style={{ cursor: 'pointer' }}>
             <rect
-              x={k.x}
-              y={k.y}
-              width={k.w}
-              height={k.h}
-              rx={4}
-              fill={fill}
-              stroke={stroke}
+              x={k.x} y={k.y} width={k.w} height={k.h} rx={4}
+              fill={fill} stroke={stroke}
               strokeWidth={isBound || isSelected ? 1.5 : 1}
             />
-            {/* Label */}
             <text
-              x={k.x + k.w / 2}
-              y={k.y + k.h / 2 + 1}
-              textAnchor="middle"
-              dominantBaseline="middle"
+              x={k.x + k.w / 2} y={k.y + k.h / 2 + 1}
+              textAnchor="middle" dominantBaseline="middle"
               fontSize={k.w > 60 ? 11 : 10}
               fontFamily="'Courier New', monospace"
               fill={textColor}
@@ -99,23 +109,15 @@ export default function Keyboard({ bindings, selectedId, onKeyClick }) {
             >
               {k.label}
             </text>
-            {/* Modifier corner triangles */}
-            {mods.map((mod, i) => {
-              const color = MOD_COLORS[mod] || '#888';
-              const size = 8;
-              const offset = i * 10;
-              const tx = k.x + k.w - size - offset;
-              const ty = k.y;
-              return (
-                <polygon
-                  key={mod}
-                  points={`${tx + size},${ty} ${tx + size},${ty + size} ${tx},${ty}`}
-                  fill={color}
-                  clipPath={`url(#clip-${k.id})`}
-                  style={{ pointerEvents: 'none' }}
-                />
-              );
-            })}
+            {mods.map(mod => (
+              <polygon
+                key={mod}
+                points={trianglePoints(mod, k)}
+                fill={MOD_COLORS[mod] || '#888'}
+                clipPath={`url(#clip-${k.id})`}
+                style={{ pointerEvents: 'none' }}
+              />
+            ))}
           </g>
         );
       })}
