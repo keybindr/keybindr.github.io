@@ -50,6 +50,11 @@ export function useBindings() {
     setBindings(newBindings);
   }
 
+  function resetBindings() {
+    localStorage.removeItem(STORAGE_KEY);
+    setBindings(DEFAULT_BINDINGS);
+  }
+
   function hasConflict(key, modifiers, excludeId = null) {
     const id = bindingId(key, modifiers);
     return bindings.some(b => {
@@ -58,5 +63,5 @@ export function useBindings() {
     });
   }
 
-  return { bindings, addOrUpdate, remove, updateAction, hasConflict, replaceBindings };
+  return { bindings, addOrUpdate, remove, updateAction, hasConflict, replaceBindings, resetBindings };
 }

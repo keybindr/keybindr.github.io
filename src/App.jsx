@@ -12,8 +12,7 @@ import { exportXML, exportJSON, exportPNG, importFile } from './export';
 const LAYOUT_NAME_KEY = 'keybindr_layout_name';
 const DEFAULT_LAYOUT_NAME = 'Your Custom Keyboard Layout Name';
 
-function LayoutName() {
-  const [name, setName] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
+function LayoutName({ name, onChange }) {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
 
@@ -23,9 +22,7 @@ function LayoutName() {
 
   function commit(val) {
     const trimmed = val.trim();
-    setName(trimmed);
-    if (trimmed) localStorage.setItem(LAYOUT_NAME_KEY, trimmed);
-    else localStorage.removeItem(LAYOUT_NAME_KEY);
+    onChange(trimmed);
     setEditing(false);
   }
 
@@ -66,9 +63,25 @@ function LegendTri({ color, dir }) {
 }
 
 export default function App() {
-  const { bindings, addOrUpdate, remove, updateAction, replaceBindings } = useBindings();
+  const { bindings, addOrUpdate, remove, updateAction, replaceBindings, resetBindings } = useBindings();
   const { keyColors, recentColors, setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors } = useKeyColors();
   const { settings, setModColor, setSplitModColor, setSplitModifiers, resetSettings } = useSettings();
+
+  const [layoutName, setLayoutName] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
+
+  function handleLayoutNameChange(name) {
+    setLayoutName(name);
+    if (name) localStorage.setItem(LAYOUT_NAME_KEY, name);
+    else localStorage.removeItem(LAYOUT_NAME_KEY);
+  }
+
+  function resetAll() {
+    resetSettings();
+    clearAllKeyColors();
+    resetBindings();
+    localStorage.removeItem(LAYOUT_NAME_KEY);
+    setLayoutName('');
+  }
 
   const [selectedId, setSelectedId] = useState(null);
   const [modalKey, setModalKey] = useState(null);
@@ -167,7 +180,7 @@ export default function App() {
         </div>
       </header>
 
-      <LayoutName />
+      <LayoutName name={layoutName} onChange={handleLayoutNameChange} />
 
       <div className="legend">
         {splitModifiers ? (
@@ -230,7 +243,7 @@ export default function App() {
           onModColor={setModColor}
           onSplitModColor={setSplitModColor}
           onToggleSplit={setSplitModifiers}
-          onClearKeys={clearAllKeyColors}
+          onClearKeys={resetAll}
           onClose={() => setShowSettings(false)}
         />
       )}
