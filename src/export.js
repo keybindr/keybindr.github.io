@@ -12,8 +12,12 @@ export function exportXML(bindings) {
   download(blob, 'keybindings.xml');
 }
 
-export function exportJSON(bindings) {
-  const blob = new Blob([JSON.stringify(bindings, null, 2)], { type: 'application/json' });
+export function exportJSON(formats) {
+  const data = {
+    version: 2,
+    formats: formats.map(f => ({ name: f.name, bindings: f.bindings, keyColors: f.keyColors })),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   download(blob, 'keybindings.json');
 }
 
@@ -25,7 +29,7 @@ export function importFile(file) {
         const text = e.target.result;
         const ext = file.name.split('.').pop().toLowerCase();
         if (ext === 'json') resolve(parseJSON(text));
-        else if (ext === 'xml') resolve(parseXML(text));
+        else if (ext === 'xml') resolve({ type: 'bindings', data: parseXML(text) });
         else reject(new Error('Unsupported file type — use .xml or .json'));
       } catch (err) {
         reject(err);
@@ -36,23 +40,39 @@ export function importFile(file) {
   });
 }
 
+function parseBindingsArray(arr) {
+  return (Array.isArray(arr) ? arr : []).map(b => ({
+    key:       String(b.key ?? ''),
+    modifiers: (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
+    action:    String(b.action ?? ''),
+  }));
+}
+
 function parseJSON(text) {
   const data = JSON.parse(text);
+  // Multi-format (v2)
+  if (data.formats && Array.isArray(data.formats)) {
+    return {
+      type: 'formats',
+      data: data.formats.slice(0, 3).map(f => ({
+        name:      String(f.name ?? ''),
+        bindings:  parseBindingsArray(f.bindings),
+        keyColors: (f.keyColors && typeof f.keyColors === 'object') ? f.keyColors : {},
+      })),
+    };
+  }
+  // Legacy: flat array or { bindings: [...] }
   const arr = Array.isArray(data) ? data : (data.bindings ?? []);
-  return arr.map(b => ({
-    key: String(b.key),
-    modifiers: (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
-    action: String(b.action ?? ''),
-  }));
+  return { type: 'bindings', data: parseBindingsArray(arr) };
 }
 
 function parseXML(text) {
   const doc = new DOMParser().parseFromString(text, 'application/xml');
   if (doc.querySelector('parsererror')) throw new Error('Invalid XML');
   return Array.from(doc.querySelectorAll('binding')).map(node => ({
-    key: node.getAttribute('key') ?? '',
+    key:       node.getAttribute('key') ?? '',
     modifiers: (node.getAttribute('modifiers') ?? '').split(',').filter(Boolean).sort(),
-    action: node.getAttribute('action') ?? '',
+    action:    node.getAttribute('action') ?? '',
   }));
 }
 

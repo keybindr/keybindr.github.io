@@ -4,14 +4,73 @@ import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
 import HelpModal from './components/HelpModal';
 import SettingsModal from './components/SettingsModal';
-import { useBindings, bindingId } from './useBindings';
-import { useKeyColors } from './useKeyColors';
+import { bindingId } from './useBindings';
+import { useFormats, MAX_FORMATS } from './useFormats';
 import { useSettings } from './useSettings';
 import { exportXML, exportJSON, exportPNG, importFile } from './export';
 
 const LAYOUT_NAME_KEY = 'keybindr_layout_name';
 const DEFAULT_LAYOUT_NAME = 'Your Custom Keyboard Layout Name';
 
+// ── Format tabs ───────────────────────────────────────────────────────────────
+function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename }) {
+  const [editingIdx, setEditingIdx] = useState(null);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (editingIdx !== null) inputRef.current?.select();
+  }, [editingIdx]);
+
+  function handleTabClick(i) {
+    if (i === activeIndex) setEditingIdx(i);
+    else onSwitch(i);
+  }
+
+  function commit(val) {
+    onRename(editingIdx, val.trim());
+    setEditingIdx(null);
+  }
+
+  return (
+    <div className="format-tabs">
+      {formats.map((f, i) => {
+        const label = f.name || `Format ${i + 1}`;
+        const isActive = i === activeIndex;
+        if (editingIdx === i) {
+          return (
+            <input
+              key={i}
+              ref={inputRef}
+              className="format-tab format-tab-editing"
+              defaultValue={f.name}
+              maxLength={20}
+              onBlur={e => commit(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') e.target.blur();
+                if (e.key === 'Escape') setEditingIdx(null);
+              }}
+            />
+          );
+        }
+        return (
+          <button
+            key={i}
+            className={`format-tab${isActive ? ' active' : ''}`}
+            onClick={() => handleTabClick(i)}
+            title={isActive ? 'Click to rename' : label}
+          >
+            {label}
+          </button>
+        );
+      })}
+      {formats.length < MAX_FORMATS && (
+        <button className="format-add-btn" onClick={onAdd} title="Add format">+</button>
+      )}
+    </div>
+  );
+}
+
+// ── Layout name ───────────────────────────────────────────────────────────────
 function LayoutName({ name, onChange }) {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
@@ -21,8 +80,7 @@ function LayoutName({ name, onChange }) {
   }, [editing]);
 
   function commit(val) {
-    const trimmed = val.trim();
-    onChange(trimmed);
+    onChange(val.trim());
     setEditing(false);
   }
 
@@ -49,12 +107,12 @@ function LayoutName({ name, onChange }) {
   );
 }
 
-// Small SVG triangle matching the corner used on keys
+// ── Legend triangle SVG ───────────────────────────────────────────────────────
 function LegendTri({ color, dir }) {
   const s = 10;
   const pts = dir === 'shift' ? `${s},0 ${s},${s} 0,0`
             : dir === 'alt'   ? `${s},${s} ${s},0 0,${s}`
-            :                   `0,${s} 0,0 ${s},${s}`; // ctrl
+            :                   `0,${s} 0,0 ${s},${s}`;
   return (
     <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} style={{ display: 'inline-block', flexShrink: 0 }}>
       <polygon points={pts} fill={color} />
@@ -62,35 +120,28 @@ function LegendTri({ color, dir }) {
   );
 }
 
+// ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
-  const { bindings, addOrUpdate, remove, updateAction, replaceBindings, resetBindings } = useBindings();
-  const { keyColors, recentColors, setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors } = useKeyColors();
+  const {
+    formats, activeIndex, switchTo, addFormat, setFormatName,
+    bindings, keyColors, recentColors,
+    addOrUpdate, remove, updateAction,
+    replaceActiveBindings, replaceFormats,
+    setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
+    resetFormats,
+  } = useFormats();
+
   const { settings, setModColor, setSplitModColor, setSplitModifiers, resetSettings } = useSettings();
 
-  const [layoutName, setLayoutName] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
-
-  function handleLayoutNameChange(name) {
-    setLayoutName(name);
-    if (name) localStorage.setItem(LAYOUT_NAME_KEY, name);
-    else localStorage.removeItem(LAYOUT_NAME_KEY);
-  }
-
-  function resetAll() {
-    resetSettings();
-    clearAllKeyColors();
-    resetBindings();
-    localStorage.removeItem(LAYOUT_NAME_KEY);
-    setLayoutName('');
-  }
-
-  const [selectedId, setSelectedId] = useState(null);
-  const [modalKey, setModalKey] = useState(null);
-  const [showHelp, setShowHelp] = useState(false);
+  const [layoutName, setLayoutNameState] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
+  const [selectedId, setSelectedId]     = useState(null);
+  const [modalKey, setModalKey]         = useState(null);
+  const [showHelp, setShowHelp]         = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const modalOriginalColor = useRef(undefined);
 
   const fileInputRef = useRef(null);
-  const menuRef = useRef(null);
+  const menuRef      = useRef(null);
   const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
@@ -102,10 +153,30 @@ export default function App() {
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [showMenu]);
 
+  function handleLayoutNameChange(name) {
+    setLayoutNameState(name);
+    if (name) localStorage.setItem(LAYOUT_NAME_KEY, name);
+    else localStorage.removeItem(LAYOUT_NAME_KEY);
+  }
+
+  function resetAll() {
+    resetSettings();
+    resetFormats();
+    setSelectedId(null);
+    localStorage.removeItem(LAYOUT_NAME_KEY);
+    setLayoutNameState('');
+  }
+
   function handleImport(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    importFile(file).then(replaceBindings).catch(err => alert(err.message));
+    importFile(file)
+      .then(result => {
+        if (result.type === 'formats') replaceFormats(result.data);
+        else replaceActiveBindings(result.data);
+        setSelectedId(null);
+      })
+      .catch(err => alert(err.message));
     e.target.value = '';
   }
 
@@ -139,6 +210,11 @@ export default function App() {
     setSelectedId(prev => prev === id ? null : id);
   }
 
+  function handleSwitchFormat(i) {
+    switchTo(i);
+    setSelectedId(null);
+  }
+
   const { splitModifiers, modColors, splitModColors } = settings;
 
   return (
@@ -166,7 +242,7 @@ export default function App() {
                 <button className="dropdown-item" onClick={() => menuAction(() => exportXML(bindings))}>
                   Export XML
                 </button>
-                <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(bindings))}>
+                <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(formats))}>
                   Export JSON
                 </button>
                 <button className="dropdown-item" onClick={() => menuAction(() => exportPNG('keyboard-svg', bindings))}>
@@ -182,23 +258,32 @@ export default function App() {
 
       <LayoutName name={layoutName} onChange={handleLayoutNameChange} />
 
-      <div className="legend">
-        {splitModifiers ? (
-          <>
-            <span className="legend-item"><LegendTri color={splitModColors.ShiftLeft}  dir="shift" /> LShift</span>
-            <span className="legend-item"><LegendTri color={splitModColors.ShiftRight} dir="shift" /> RShift</span>
-            <span className="legend-item"><LegendTri color={splitModColors.AltLeft}    dir="alt"   /> LAlt</span>
-            <span className="legend-item"><LegendTri color={splitModColors.AltRight}   dir="alt"   /> RAlt</span>
-            <span className="legend-item"><LegendTri color={splitModColors.CtrlLeft}   dir="ctrl"  /> LCtrl</span>
-            <span className="legend-item"><LegendTri color={splitModColors.CtrlRight}  dir="ctrl"  /> RCtrl</span>
-          </>
-        ) : (
-          <>
-            <span className="legend-item"><LegendTri color={modColors.Shift} dir="shift" /> Shift</span>
-            <span className="legend-item"><LegendTri color={modColors.Alt}   dir="alt"   /> Alt</span>
-            <span className="legend-item"><LegendTri color={modColors.Ctrl}  dir="ctrl"  /> Ctrl</span>
-          </>
-        )}
+      <div className="legend-row">
+        <div className="legend">
+          {splitModifiers ? (
+            <>
+              <span className="legend-item"><LegendTri color={splitModColors.ShiftLeft}  dir="shift" /> LShift</span>
+              <span className="legend-item"><LegendTri color={splitModColors.ShiftRight} dir="shift" /> RShift</span>
+              <span className="legend-item"><LegendTri color={splitModColors.AltLeft}    dir="alt"   /> LAlt</span>
+              <span className="legend-item"><LegendTri color={splitModColors.AltRight}   dir="alt"   /> RAlt</span>
+              <span className="legend-item"><LegendTri color={splitModColors.CtrlLeft}   dir="ctrl"  /> LCtrl</span>
+              <span className="legend-item"><LegendTri color={splitModColors.CtrlRight}  dir="ctrl"  /> RCtrl</span>
+            </>
+          ) : (
+            <>
+              <span className="legend-item"><LegendTri color={modColors.Shift} dir="shift" /> Shift</span>
+              <span className="legend-item"><LegendTri color={modColors.Alt}   dir="alt"   /> Alt</span>
+              <span className="legend-item"><LegendTri color={modColors.Ctrl}  dir="ctrl"  /> Ctrl</span>
+            </>
+          )}
+        </div>
+        <FormatTabs
+          formats={formats}
+          activeIndex={activeIndex}
+          onSwitch={handleSwitchFormat}
+          onAdd={addFormat}
+          onRename={setFormatName}
+        />
       </div>
 
       <div className="keyboard-container">
