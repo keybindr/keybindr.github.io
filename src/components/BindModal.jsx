@@ -33,7 +33,6 @@ export default function BindModal({
 
   const [modifier, setModifier] = useState('');
   const [action, setAction]     = useState('');
-  const [conflict, setConflict] = useState(false);
   const [localColor, setLocalColor] = useState(keyColor ?? '');
   const inputRef = useRef(null);
 
@@ -48,7 +47,6 @@ export default function BindModal({
 
   useEffect(() => {
     const existing = existingBindings.find(b => bindingId(b.key, b.modifiers) === newId);
-    setConflict(!!existing);
     if (existing && action === '') setAction(existing.action);
   }, [modifier]);
 
@@ -112,36 +110,37 @@ export default function BindModal({
 
           <div className="modal-row">
             <label>Key Color</label>
-            <div className="color-row">
+            <div className="color-pick-row">
               <input
                 type="color"
                 className="color-picker"
                 value={localColor || '#4a4a4a'}
                 onChange={e => applyColor(e.target.value)}
               />
-              {recentColors.map(c => (
-                <button
-                  key={c}
-                  type="button"
-                  className={`color-swatch${c === localColor ? ' active' : ''}`}
-                  style={{ background: c }}
-                  title={c}
-                  onClick={() => applyColor(c)}
-                />
-              ))}
               {localColor && (
                 <button type="button" className="btn-clear-color" onClick={() => applyColor('')}>
                   Clear
                 </button>
               )}
             </div>
+            {recentColors.length > 0 && (
+              <>
+                <label className="recently-picked-label">Recently Picked</label>
+                <div className="recent-colors-row">
+                  {recentColors.map(c => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`color-swatch${c === localColor ? ' active' : ''}`}
+                      style={{ background: c }}
+                      title={c}
+                      onClick={() => applyColor(c)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
-
-          {conflict && (
-            <p className="conflict-warn">
-              ⚠ This combo already has a binding — saving will overwrite it.
-            </p>
-          )}
 
           <div className="modal-combo">
             Binding: <span className="combo-label">

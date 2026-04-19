@@ -9,8 +9,9 @@ import { useFormats, MAX_FORMATS } from './useFormats';
 import { useSettings } from './useSettings';
 import { exportXML, exportJSON, exportPNG, importFile } from './export';
 
-const LAYOUT_NAME_KEY = 'keybindr_layout_name';
-const DEFAULT_LAYOUT_NAME = 'Your Custom Keyboard Layout Name';
+const LAYOUT_NAME_KEY    = 'keybindr_layout_name';
+const MOBILE_WARNED_KEY  = 'keybindr_mobile_warned';
+const DEFAULT_LAYOUT_NAME = 'Custom Keybind Layout Name';
 
 // ── Format tabs ───────────────────────────────────────────────────────────────
 function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove }) {
@@ -131,6 +132,20 @@ function LegendTri({ color, dir }) {
   );
 }
 
+// ── Mobile warning modal ──────────────────────────────────────────────────────
+function MobileWarningModal({ onClose }) {
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal mobile-warning-modal" onClick={e => e.stopPropagation()}>
+        <button className="mobile-warning-close" onClick={onClose} title="Close">✕</button>
+        <p className="mobile-warning-text">
+          This is a desktop focused application and, given the nature of it, will likely never be totally optimized for mobile. - Mangement
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const {
@@ -151,9 +166,16 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false);
   const modalOriginalColor = useRef(undefined);
 
-  const fileInputRef = useRef(null);
-  const menuRef      = useRef(null);
-  const [showMenu, setShowMenu] = useState(false);
+  const fileInputRef    = useRef(null);
+  const menuRef         = useRef(null);
+  const hamburgerRef    = useRef(null);
+  const [showMenu, setShowMenu]           = useState(false);
+  const [showHamburger, setShowHamburger] = useState(false);
+
+  const [showMobileWarning, setShowMobileWarning] = useState(() => {
+    if (window.innerWidth > 768) return false;
+    return !localStorage.getItem(MOBILE_WARNED_KEY);
+  });
 
   useEffect(() => {
     if (!showMenu) return;
@@ -163,6 +185,15 @@ export default function App() {
     document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [showMenu]);
+
+  useEffect(() => {
+    if (!showHamburger) return;
+    function onMouseDown(e) {
+      if (!hamburgerRef.current?.contains(e.target)) setShowHamburger(false);
+    }
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [showHamburger]);
 
   function handleLayoutNameChange(name) {
     setLayoutNameState(name);
@@ -196,6 +227,11 @@ export default function App() {
     fn();
   }
 
+  function hamburgerAction(fn) {
+    setShowHamburger(false);
+    fn();
+  }
+
   function handleKeyClick(keyId) {
     modalOriginalColor.current = keyColors[keyId];
     setModalKey(keyId);
@@ -226,13 +262,20 @@ export default function App() {
     setSelectedId(null);
   }
 
+  function closeMobileWarning() {
+    localStorage.setItem(MOBILE_WARNED_KEY, '1');
+    setShowMobileWarning(false);
+  }
+
   const { splitModifiers, modColors, splitModColors } = settings;
 
   return (
     <div className="app">
       <header className="app-header">
         <h1 className="app-title">Keybindr</h1>
-        <div className="header-actions">
+
+        {/* Desktop navigation */}
+        <div className="header-actions desktop-nav">
           <input
             ref={fileInputRef}
             type="file"
@@ -264,6 +307,37 @@ export default function App() {
           </div>
           <button className="btn-icon" title="Help" onClick={() => setShowHelp(true)}>?</button>
           <button className="btn-icon" title="Settings" onClick={() => setShowSettings(true)}>⚙</button>
+        </div>
+
+        {/* Mobile hamburger */}
+        <div className="header-mobile" ref={hamburgerRef}>
+          <button className="btn-hamburger" onClick={() => setShowHamburger(v => !v)} title="Menu">
+            ☰
+          </button>
+          {showHamburger && (
+            <div className="hamburger-menu">
+              <button className="hamburger-item" onClick={() => hamburgerAction(() => fileInputRef.current?.click())}>
+                Import XML/JSON
+              </button>
+              <div className="hamburger-sep" />
+              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportXML(bindings))}>
+                Export XML
+              </button>
+              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportJSON(formats))}>
+                Export JSON
+              </button>
+              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportPNG('keyboard-svg', bindings))}>
+                Export PNG
+              </button>
+              <div className="hamburger-sep" />
+              <button className="hamburger-item" onClick={() => hamburgerAction(() => setShowHelp(true))}>
+                Help
+              </button>
+              <button className="hamburger-item" onClick={() => hamburgerAction(() => setShowSettings(true))}>
+                Settings
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
@@ -316,6 +390,7 @@ export default function App() {
           onSelect={handleSelect}
           onUpdateAction={updateAction}
           onRemove={remove}
+          onOpenModal={handleKeyClick}
         />
       </div>
 
@@ -344,6 +419,18 @@ export default function App() {
           onClose={() => setShowSettings(false)}
         />
       )}
+
+      {showMobileWarning && <MobileWarningModal onClose={closeMobileWarning} />}
+
+      <footer className="app-footer">
+        <div className="footer-content">
+          <span>Vibed by <a href="https://andrewsimone.com/" className="footer-link" target="_blank" rel="noreferrer">Andrew Simone</a></span>
+          <span className="footer-sep">|</span>
+          <a href="https://github.com/keybindr/keybindr.github.io" className="footer-link" target="_blank" rel="noreferrer">Source Code</a>
+          <span className="footer-sep">|</span>
+          <a href="https://github.com/keybindr/keybindr.github.io/blob/main/LICENSE" className="footer-link" target="_blank" rel="noreferrer">MIT License</a>
+        </div>
+      </footer>
     </div>
   );
 }

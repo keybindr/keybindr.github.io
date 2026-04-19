@@ -130,10 +130,9 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         const modRole     = keyToMod[k.id];
         const modColor    = modRole ? keyModColors[modRole] : null;
 
-        const fill   = isSelected  ? KEY_SELECTED
-                     : customColor ? customColor
-                     : isBound     ? KEY_BOUND
-                     : modColor    ? modFill(modColor)
+        const fill   = customColor ? customColor
+                     : isBound    ? KEY_BOUND
+                     : modColor   ? modFill(modColor)
                      : KEY_DEFAULT;
         const stroke = isSelected ? BORDER_SELECTED
                      : isBound    ? BORDER_BOUND

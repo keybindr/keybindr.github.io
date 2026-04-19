@@ -8,7 +8,7 @@ const MOD_COLORS = {
   Alt:   '#7be09a',
 };
 
-export default function BindingTable({ bindings, selectedId, onSelect, onUpdateAction, onRemove }) {
+export default function BindingTable({ bindings, selectedId, onSelect, onUpdateAction, onRemove, onOpenModal }) {
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
 
@@ -35,8 +35,8 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
       <table className="binding-table">
         <thead>
           <tr>
-            <th>Key</th>
             <th>Modifier</th>
+            <th>Key</th>
             <th>Action</th>
             <th></th>
           </tr>
@@ -53,8 +53,8 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
                 key={id}
                 className={isSelected ? 'row-selected' : ''}
                 onClick={() => onSelect(id)}
+                onDoubleClick={() => onOpenModal?.(b.key)}
               >
-                <td className="cell-key">{keyLabel}</td>
                 <td className="cell-mod">
                   {b.modifiers.length > 0 ? (
                     b.modifiers.map(m => (
@@ -66,6 +66,7 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
                     <span className="mod-none">—</span>
                   )}
                 </td>
+                <td className="cell-key">{keyLabel}</td>
                 <td className="cell-action" onClick={e => { e.stopPropagation(); startEdit(b); }}>
                   {isEditing ? (
                     <input
