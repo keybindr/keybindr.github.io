@@ -24,7 +24,7 @@ function LegendTri({ color, dir }) {
 
 export default function App() {
   const { bindings, addOrUpdate, remove, updateAction, replaceBindings } = useBindings();
-  const { keyColors, recentColors, setKeyColor, clearKeyColor, restoreKeyColor } = useKeyColors();
+  const { keyColors, recentColors, setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors } = useKeyColors();
   const { settings, setModColor, setSplitModColor, setSplitModifiers, resetSettings } = useSettings();
 
   const [selectedId, setSelectedId] = useState(null);
@@ -185,7 +185,7 @@ export default function App() {
           onModColor={setModColor}
           onSplitModColor={setSplitModColor}
           onToggleSplit={setSplitModifiers}
-          onReset={resetSettings}
+          onClearKeys={clearAllKeyColors}
           onClose={() => setShowSettings(false)}
         />
       )}

@@ -3,12 +3,25 @@ import { useState } from 'react';
 const COLORS_KEY = 'keybindr_key_colors';
 const RECENT_KEY = 'keybindr_recent_colors';
 
+const DEFAULT_KEY_COLORS = {
+  KeyW: '#1a4d2e',
+  KeyA: '#1a4d2e',
+  KeyS: '#1a4d2e',
+  KeyD: '#1a4d2e',
+};
+
 function load(key, fallback) {
   try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
 }
 
+function loadKeyColors() {
+  const saved = load(COLORS_KEY, null);
+  if (!saved) return { ...DEFAULT_KEY_COLORS };
+  return { ...DEFAULT_KEY_COLORS, ...saved };
+}
+
 export function useKeyColors() {
-  const [keyColors, setKeyColorsState] = useState(() => load(COLORS_KEY, {}));
+  const [keyColors, setKeyColorsState] = useState(loadKeyColors);
   const [recentColors, setRecentColorsState] = useState(() => load(RECENT_KEY, []));
 
   function setKeyColor(keyId, color) {
@@ -50,5 +63,12 @@ export function useKeyColors() {
     });
   }
 
-  return { keyColors, recentColors, setKeyColor, clearKeyColor, restoreKeyColor };
+  function clearAllKeyColors() {
+    setKeyColorsState(() => {
+      localStorage.setItem(COLORS_KEY, JSON.stringify(DEFAULT_KEY_COLORS));
+      return { ...DEFAULT_KEY_COLORS };
+    });
+  }
+
+  return { keyColors, recentColors, setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors };
 }
