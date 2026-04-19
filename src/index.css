@@ -47,7 +47,28 @@ html, body {
 
 .header-actions {
   display: flex;
+  align-items: center;
   gap: 10px;
+}
+
+.btn-icon {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.btn-icon:hover {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 .btn-export {
@@ -183,10 +204,7 @@ html, body {
   border-style: solid;
   display: inline-block;
 }
-/* Triangle corners match their position on the key */
-.legend-tri.shift { border-width: 10px 10px 0 0; border-color: var(--shift) transparent transparent transparent; } /* ↗ upper-right */
-.legend-tri.alt   { border-width: 0 0 10px 10px; border-color: transparent transparent var(--alt)   transparent; } /* ↘ lower-right */
-.legend-tri.ctrl  { border-width: 0 0 10px 10px; border-color: transparent transparent transparent var(--ctrl);  } /* ↙ lower-left  */
+/* Legend triangles are now inline SVG — only gap/alignment needed here */
 
 /* Keyboard */
 .keyboard-container {
@@ -321,6 +339,90 @@ html, body {
   padding: 24px;
   font-size: 13px;
 }
+
+/* Help modal */
+.modal-help { width: 520px; }
+
+.help-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.help-body h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-top: 6px;
+}
+.help-body strong { color: var(--accent2); }
+
+/* Settings modal */
+.modal-settings { width: 400px; }
+
+.settings-section {
+  margin-bottom: 20px;
+}
+
+.settings-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.settings-row-split {
+  gap: 8px;
+}
+
+.settings-label {
+  font-size: 13px;
+  color: var(--text);
+  min-width: 52px;
+}
+
+.settings-label-right {
+  margin-left: 6px;
+}
+
+.toggle-group {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.toggle-btn:not(:last-child) { border-right: 1px solid var(--border); }
+.toggle-btn.active {
+  background: var(--surface2);
+  color: var(--accent);
+}
+.toggle-btn:hover:not(.active) { color: var(--text); }
 
 /* Modal */
 .modal-backdrop {

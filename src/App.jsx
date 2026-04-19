@@ -2,16 +2,37 @@ import React, { useState, useRef, useEffect } from 'react';
 import Keyboard from './components/Keyboard';
 import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
+import HelpModal from './components/HelpModal';
+import SettingsModal from './components/SettingsModal';
 import { useBindings, bindingId } from './useBindings';
 import { useKeyColors } from './useKeyColors';
+import { useSettings } from './useSettings';
 import { exportXML, exportJSON, exportPNG, importFile } from './export';
+
+// Small SVG triangle matching the corner used on keys
+function LegendTri({ color, dir }) {
+  const s = 10;
+  const pts = dir === 'shift' ? `${s},0 ${s},${s} 0,0`
+            : dir === 'alt'   ? `${s},${s} ${s},0 0,${s}`
+            :                   `0,${s} 0,0 ${s},${s}`; // ctrl
+  return (
+    <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} style={{ display: 'inline-block', flexShrink: 0 }}>
+      <polygon points={pts} fill={color} />
+    </svg>
+  );
+}
 
 export default function App() {
   const { bindings, addOrUpdate, remove, updateAction, replaceBindings } = useBindings();
   const { keyColors, recentColors, setKeyColor, clearKeyColor, restoreKeyColor } = useKeyColors();
+  const { settings, setModColor, setSplitModColor, setSplitModifiers } = useSettings();
+
   const [selectedId, setSelectedId] = useState(null);
   const [modalKey, setModalKey] = useState(null);
+  const [showHelp, setShowHelp] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const modalOriginalColor = useRef(undefined);
+
   const fileInputRef = useRef(null);
   const menuRef = useRef(null);
   const [showMenu, setShowMenu] = useState(false);
@@ -28,9 +49,7 @@ export default function App() {
   function handleImport(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    importFile(file)
-      .then(replaceBindings)
-      .catch(err => alert(err.message));
+    importFile(file).then(replaceBindings).catch(err => alert(err.message));
     e.target.value = '';
   }
 
@@ -64,6 +83,8 @@ export default function App() {
     setSelectedId(prev => prev === id ? null : id);
   }
 
+  const { splitModifiers, modColors, splitModColors } = settings;
+
   return (
     <div className="app">
       <header className="app-header">
@@ -76,6 +97,8 @@ export default function App() {
             style={{ display: 'none' }}
             onChange={handleImport}
           />
+          <button className="btn-icon" title="Help" onClick={() => setShowHelp(true)}>?</button>
+          <button className="btn-icon" title="Settings" onClick={() => setShowSettings(true)}>⚙</button>
           <div className="dropdown" ref={menuRef}>
             <button className="btn-export" onClick={() => setShowMenu(v => !v)}>
               Import / Export ▾
@@ -102,9 +125,22 @@ export default function App() {
       </header>
 
       <div className="legend">
-        <span className="legend-item"><span className="legend-tri shift" />Shift</span>
-        <span className="legend-item"><span className="legend-tri alt" />Alt</span>
-        <span className="legend-item"><span className="legend-tri ctrl" />Ctrl</span>
+        {splitModifiers ? (
+          <>
+            <span className="legend-item"><LegendTri color={splitModColors.ShiftLeft}  dir="shift" /> LShift</span>
+            <span className="legend-item"><LegendTri color={splitModColors.ShiftRight} dir="shift" /> RShift</span>
+            <span className="legend-item"><LegendTri color={splitModColors.AltLeft}    dir="alt"   /> LAlt</span>
+            <span className="legend-item"><LegendTri color={splitModColors.AltRight}   dir="alt"   /> RAlt</span>
+            <span className="legend-item"><LegendTri color={splitModColors.CtrlLeft}   dir="ctrl"  /> LCtrl</span>
+            <span className="legend-item"><LegendTri color={splitModColors.CtrlRight}  dir="ctrl"  /> RCtrl</span>
+          </>
+        ) : (
+          <>
+            <span className="legend-item"><LegendTri color={modColors.Shift} dir="shift" /> Shift</span>
+            <span className="legend-item"><LegendTri color={modColors.Alt}   dir="alt"   /> Alt</span>
+            <span className="legend-item"><LegendTri color={modColors.Ctrl}  dir="ctrl"  /> Ctrl</span>
+          </>
+        )}
       </div>
 
       <div className="keyboard-container">
@@ -113,6 +149,7 @@ export default function App() {
           selectedId={selectedId}
           onKeyClick={handleKeyClick}
           keyColors={keyColors}
+          settings={settings}
         />
       </div>
 
@@ -136,6 +173,18 @@ export default function App() {
           onColorChange={color => handleColorChange(modalKey, color)}
           onSave={handleSave}
           onCancel={handleModalCancel}
+        />
+      )}
+
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+
+      {showSettings && (
+        <SettingsModal
+          settings={settings}
+          onModColor={setModColor}
+          onSplitModColor={setSplitModColor}
+          onToggleSplit={setSplitModifiers}
+          onClose={() => setShowSettings(false)}
         />
       )}
     </div>
