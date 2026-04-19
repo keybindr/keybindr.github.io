@@ -51,37 +51,29 @@ const MOD_TO_CORNER = {
   Ctrl: 'ctrl', CtrlLeft: 'ctrl', CtrlRight: 'ctrl',
 };
 
-// T = fraction of triangle depth (from corner) given to L; remainder is R stripe
-const SPLIT_T = 0.62;
+// R stripe covers this fraction of triangle depth, measured from the hypotenuse inward
+const STRIPE_FRAC = 0.28;
 
 function splitCornerPoints(corner, k) {
   const { x, y, w, h } = k;
-  const T = SPLIT_T;
+  const s = STRIPE_FRAC * SIZE; // stripe depth from hypotenuse toward corner
+  // L always gets the full triangle; R is a thin trapezoid overlaid along the hypotenuse.
   if (corner === 'shift') {
-    // upper-right: corner=(x+w,y), legs to (x+w,y+SIZE) and (x+w-SIZE,y)
-    const D = `${x + w},${y + T * SIZE}`;
-    const E = `${x + w - T * SIZE},${y}`;
-    return [
-      `${x + w},${y} ${D} ${E}`,
-      `${D} ${x + w},${y + SIZE} ${x + w - SIZE},${y} ${E}`,
-    ];
+    // Full triangle: (x+w,y) (x+w,y+SIZE) (x+w-SIZE,y)
+    const lPts = `${x + w},${y} ${x + w},${y + SIZE} ${x + w - SIZE},${y}`;
+    const rPts = `${x + w - SIZE},${y} ${x + w},${y + SIZE} ${x + w},${y + SIZE - s} ${x + w - SIZE + s},${y}`;
+    return [lPts, rPts];
   }
   if (corner === 'alt') {
-    // lower-right: corner=(x+w,y+h), legs to (x+w,y+h-SIZE) and (x+w-SIZE,y+h)
-    const D = `${x + w},${y + h - T * SIZE}`;
-    const E = `${x + w - T * SIZE},${y + h}`;
-    return [
-      `${x + w},${y + h} ${D} ${E}`,
-      `${D} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h} ${E}`,
-    ];
+    // Full triangle: (x+w,y+h) (x+w,y+h-SIZE) (x+w-SIZE,y+h)
+    const lPts = `${x + w},${y + h} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h}`;
+    const rPts = `${x + w - SIZE},${y + h} ${x + w},${y + h - SIZE} ${x + w},${y + h - SIZE + s} ${x + w - SIZE + s},${y + h}`;
+    return [lPts, rPts];
   }
-  // ctrl — lower-left: corner=(x,y+h), legs to (x,y+h-SIZE) and (x+SIZE,y+h)
-  const D = `${x},${y + h - T * SIZE}`;
-  const E = `${x + T * SIZE},${y + h}`;
-  return [
-    `${x},${y + h} ${D} ${E}`,
-    `${D} ${x},${y + h - SIZE} ${x + SIZE},${y + h} ${E}`,
-  ];
+  // ctrl — lower-left. Full triangle: (x,y+h) (x,y+h-SIZE) (x+SIZE,y+h)
+  const lPts = `${x},${y + h} ${x},${y + h - SIZE} ${x + SIZE},${y + h}`;
+  const rPts = `${x},${y + h - SIZE} ${x + SIZE},${y + h} ${x + SIZE - s},${y + h} ${x},${y + h - SIZE + s}`;
+  return [lPts, rPts];
 }
 
 function trianglePoints(mod, k) {
