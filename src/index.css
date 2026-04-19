@@ -801,6 +801,7 @@ html, body {
   }
 
   .mobile-only { display: block; }
+  .app-subtitle { display: none; }
 
   .btn-hamburger {
     background: var(--surface2);
@@ -888,52 +889,64 @@ html, body {
 
 .footer-sep { color: var(--border); }
 
-/* ── Bind modal two-column layout ───────────────────────────────────────────── */
-.modal-bind {
-  width: 640px;
-}
-
-.bind-body {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-}
-
-.bind-col-left {
-  width: 220px;
+/* ── Color picker floating panel ─────────────────────────────────────────────── */
+.cpk-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  width: 240px;
   flex-shrink: 0;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.7);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
-.bind-col-label {
+.cpk-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.cpk-panel-title {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--text-dim);
 }
 
-.bind-clear {
-  align-self: flex-start;
+.cpk-panel-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  border-radius: 3px;
+  transition: color 0.15s;
 }
+.cpk-panel-close:hover { color: var(--text); }
 
-.bind-col-right {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+/* Swatch trigger button in modal Key Color row */
+.color-swatch-trigger {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.15s;
+  flex-shrink: 0;
 }
-
-.bind-actions {
-  margin-top: auto;
-}
+.color-swatch-trigger:hover { transform: scale(1.1); }
+.color-swatch-trigger.active { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 1px; }
 
 @media (max-width: 680px) {
-  .modal-bind { width: 95vw; }
-  .bind-body { flex-direction: column; }
-  .bind-col-left { width: 100%; }
+  .modal-backdrop { flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 16px; gap: 8px; }
+  .cpk-panel { width: 95vw; order: 2; }
+  .modal-backdrop .modal { order: 1; }
 }
 
 /* ── Settings color swatch / picker ─────────────────────────────────────────── */

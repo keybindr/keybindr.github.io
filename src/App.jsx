@@ -139,7 +139,7 @@ function MobileWarningModal({ onClose }) {
       <div className="modal mobile-warning-modal" onClick={e => e.stopPropagation()}>
         <button className="mobile-warning-close" onClick={onClose} title="Close">✕</button>
         <p className="mobile-warning-text">
-          This is a desktop focused application and, given the nature of it, will likely never be totally optimized for mobile. - Mangement
+          This is a desktop focused application and, given the nature of it, will likely never be totally optimized for mobile. - Management
         </p>
       </div>
     </div>

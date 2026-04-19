@@ -32,9 +32,10 @@ export default function BindModal({
   const keyDef  = KEY_MAP[keyId];
   const modDefs = buildModDefs(settings);
 
-  const [modifier, setModifier] = useState('');
-  const [action, setAction]     = useState('');
+  const [modifier, setModifier]     = useState('');
+  const [action, setAction]         = useState('');
   const [localColor, setLocalColor] = useState(keyColor ?? '');
+  const [showPicker, setShowPicker] = useState(false);
   const inputRef = useRef(null);
 
   const mods  = modifier ? [modifier] : [];
@@ -67,85 +68,104 @@ export default function BindModal({
 
   return (
     <div className="modal-backdrop" onClick={onCancel}>
-      <div className="modal modal-bind" onClick={e => e.stopPropagation()}>
+
+      {/* Color picker panel — floats to the left of the modal */}
+      {showPicker && (
+        <div className="cpk-panel" onClick={e => e.stopPropagation()}>
+          <div className="cpk-panel-header">
+            <span className="cpk-panel-title">Key Color</span>
+            <button className="cpk-panel-close" onClick={() => setShowPicker(false)}>✕</button>
+          </div>
+          <ColorPicker color={localColor || '#4a4a4a'} onChange={applyColor} />
+          {localColor && (
+            <button type="button" className="btn-clear-color" style={{ marginTop: 4 }} onClick={() => applyColor('')}>
+              Clear Color
+            </button>
+          )}
+          {recentColors.length > 0 && (
+            <>
+              <div className="recently-picked-label" style={{ marginTop: 10 }}>Recently Picked</div>
+              <div className="recent-colors-row">
+                {recentColors.map(c => (
+                  <button
+                    key={c}
+                    type="button"
+                    className={`color-swatch${c === localColor ? ' active' : ''}`}
+                    style={{ background: c }}
+                    title={c}
+                    onClick={() => applyColor(c)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* Main modal */}
+      <div className="modal" onClick={e => e.stopPropagation()}>
         <h3 className="modal-title">
           Bind <span className="modal-key">{modifier ? `${modLabel}+` : ''}{keyDef?.label ?? keyId}</span>
         </h3>
 
-        <form onSubmit={handleSubmit} className="bind-body">
-          {/* Left column — color picker */}
-          <div className="bind-col-left">
-            <div className="bind-col-label">Key Color</div>
-            <ColorPicker
-              color={localColor || '#4a4a4a'}
-              onChange={applyColor}
-            />
-            {localColor && (
-              <button type="button" className="btn-clear-color bind-clear" onClick={() => applyColor('')}>
-                Clear Color
-              </button>
-            )}
-            {recentColors.length > 0 && (
-              <>
-                <div className="recently-picked-label">Recently Picked</div>
-                <div className="recent-colors-row">
-                  {recentColors.map(c => (
-                    <button
-                      key={c}
-                      type="button"
-                      className={`color-swatch${c === localColor ? ' active' : ''}`}
-                      style={{ background: c }}
-                      title={c}
-                      onClick={() => applyColor(c)}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
+        <form onSubmit={handleSubmit} className="modal-form">
+          <div className="modal-row">
+            <label>Modifier</label>
+            <div className="mod-buttons">
+              <button
+                type="button"
+                className={`mod-btn${modifier === '' ? ' active' : ''}`}
+                onClick={() => setModifier('')}
+              >None</button>
+              {modDefs.map(m => (
+                <button
+                  key={m.value}
+                  type="button"
+                  className={`mod-btn${modifier === m.value ? ' active' : ''}`}
+                  style={modifier === m.value ? {
+                    borderColor: m.color,
+                    color: m.color,
+                    background: m.color + '22',
+                  } : {}}
+                  onClick={() => setModifier(m.value)}
+                >{m.label}</button>
+              ))}
+            </div>
           </div>
 
-          {/* Right column — modifier, action, buttons */}
-          <div className="bind-col-right">
-            <div className="modal-row">
-              <label>Modifier</label>
-              <div className="mod-buttons">
-                <button
-                  type="button"
-                  className={`mod-btn${modifier === '' ? ' active' : ''}`}
-                  onClick={() => setModifier('')}
-                >None</button>
-                {modDefs.map(m => (
-                  <button
-                    key={m.value}
-                    type="button"
-                    className={`mod-btn${modifier === m.value ? ' active' : ''}`}
-                    style={modifier === m.value ? {
-                      borderColor: m.color,
-                      color: m.color,
-                      background: m.color + '22',
-                    } : {}}
-                    onClick={() => setModifier(m.value)}
-                  >{m.label}</button>
-                ))}
-              </div>
-            </div>
+          <div className="modal-row">
+            <label>Action</label>
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="e.g. Move Forward"
+              value={action}
+              onChange={e => setAction(e.target.value)}
+              className="modal-input"
+            />
+          </div>
 
-            <div className="modal-row">
-              <label>Action</label>
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="e.g. Move Forward"
-                value={action}
-                onChange={e => setAction(e.target.value)}
-                className="modal-input"
+          <div className="modal-row">
+            <label>Key Color</label>
+            <div className="color-pick-row">
+              <button
+                type="button"
+                className={`color-swatch-trigger${showPicker ? ' active' : ''}`}
+                style={{ background: localColor || 'var(--surface2)' }}
+                onClick={() => setShowPicker(v => !v)}
+                title="Pick color"
               />
+              {localColor && (
+                <button type="button" className="btn-clear-color" onClick={() => applyColor('')}>
+                  Clear
+                </button>
+              )}
             </div>
+          </div>
 
-            <div className="modal-actions bind-actions">
-              <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
-              <button type="submit" className="btn-primary" disabled={!action.trim()}>Save</button>
-            </div>
+          <div className="modal-actions">
+            <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
+            <button type="submit" className="btn-primary" disabled={!action.trim()}>Save</button>
           </div>
         </form>
       </div>

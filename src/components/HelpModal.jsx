@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MOBILE_NOTICE = 'This is a desktop focused application and, given the nature of it, will likely never be totally optimized for mobile. - Mangement';
+const MOBILE_NOTICE = 'This is a desktop focused application and, given the nature of it, will likely never be totally optimized for mobile. - Management';
 
 export default function HelpModal({ onClose }) {
   return (
