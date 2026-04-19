@@ -68,7 +68,7 @@ export default function BindModal({
     <div className="modal-backdrop" onClick={onCancel}>
       <div className="modal" onClick={e => e.stopPropagation()}>
         <h3 className="modal-title">
-          Bind <span className="modal-key">{keyDef?.label ?? keyId}</span>
+          Bind <span className="modal-key">{modifier ? `${modLabel}+` : ''}{keyDef?.label ?? keyId}</span>
         </h3>
 
         <form onSubmit={handleSubmit} className="modal-form">
@@ -140,12 +140,6 @@ export default function BindModal({
                 </div>
               </>
             )}
-          </div>
-
-          <div className="modal-combo">
-            Binding: <span className="combo-label">
-              {modifier ? `${modLabel}+` : ''}{keyDef?.label ?? keyId}
-            </span>
           </div>
 
           <div className="modal-actions">
