@@ -12,7 +12,7 @@ const SPLIT_MOD_GROUPS = [
   { leftKey: 'CtrlLeft',   rightKey: 'CtrlRight',  leftLabel: 'LCtrl',  rightLabel: 'RCtrl'  },
 ];
 
-export default function SettingsModal({ settings, onModColor, onSplitModColor, onToggleSplit, onClose }) {
+export default function SettingsModal({ settings, onModColor, onSplitModColor, onToggleSplit, onReset, onClose }) {
   const { splitModifiers, modColors, splitModColors } = settings;
 
   return (
@@ -77,7 +77,10 @@ export default function SettingsModal({ settings, onModColor, onSplitModColor, o
           )}
         </div>
 
-        <div className="modal-actions">
+        <div className="modal-actions" style={{ justifyContent: 'space-between' }}>
+          <button className="btn-secondary" onClick={onReset} style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}>
+            Reset to defaults
+          </button>
           <button className="btn-primary" onClick={onClose}>Done</button>
         </div>
       </div>

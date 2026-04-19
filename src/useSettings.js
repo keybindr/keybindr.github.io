@@ -9,12 +9,12 @@ export const DEFAULT_MOD_COLORS = {
 };
 
 export const DEFAULT_SPLIT_MOD_COLORS = {
-  ShiftLeft:  '#7b9ee0', // blue
-  ShiftRight: '#c47be0', // purple
-  AltLeft:    '#7be09a', // green
-  AltRight:   '#e0c87b', // amber
-  CtrlLeft:   '#e07b39', // orange
-  CtrlRight:  '#7be0d8', // teal
+  ShiftLeft:  '#60a0e0', // sky blue
+  ShiftRight: '#c060d0', // orchid
+  AltLeft:    '#50c878', // emerald
+  AltRight:   '#e0c040', // gold
+  CtrlLeft:   '#e06040', // coral
+  CtrlRight:  '#40c8c0', // teal
 };
 
 const DEFAULTS = {
@@ -69,5 +69,12 @@ export function useSettings() {
     });
   }
 
-  return { settings, setModColor, setSplitModColor, setSplitModifiers };
+  function resetSettings() {
+    setSettings(() => {
+      persist(DEFAULTS);
+      return DEFAULTS;
+    });
+  }
+
+  return { settings, setModColor, setSplitModColor, setSplitModifiers, resetSettings };
 }
