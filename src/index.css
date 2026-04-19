@@ -383,7 +383,7 @@ html, body {
 .settings-danger-label {
   font-size: 12px;
   color: var(--text-dim);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .settings-section {
