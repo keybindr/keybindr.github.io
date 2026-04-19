@@ -13,7 +13,8 @@
   --shift:     #7b9ee0;
   --alt:       #7be09a;
   --danger:    #e05a5a;
-  --font:      'Courier New', 'Consolas', monospace;
+  --font:      'Fira Code', 'Courier New', monospace;
+  --font-ui:   'Inter', system-ui, sans-serif;
 }
 
 html, body {
@@ -288,6 +289,7 @@ html, body {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
+  font-family: var(--font-ui);
 }
 
 .binding-table th {
@@ -383,6 +385,7 @@ html, body {
   flex-direction: column;
   gap: 10px;
   font-size: 13px;
+  font-family: var(--font-ui);
   line-height: 1.6;
   color: var(--text);
   margin-bottom: 20px;
