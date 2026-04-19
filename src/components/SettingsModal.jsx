@@ -18,7 +18,10 @@ export default function SettingsModal({ settings, onModColor, onSplitModColor, o
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal-settings" onClick={e => e.stopPropagation()}>
-        <h3 className="modal-title">Settings</h3>
+        <div className="settings-header">
+          <h3 className="modal-title" style={{ marginBottom: 0 }}>Settings</h3>
+          <button className="btn-icon" onClick={onClose} title="Close">✕</button>
+        </div>
 
         <div className="settings-section">
           <div className="settings-section-title">Modifier key display</div>
@@ -77,11 +80,12 @@ export default function SettingsModal({ settings, onModColor, onSplitModColor, o
           )}
         </div>
 
-        <div className="modal-actions" style={{ justifyContent: 'space-between' }}>
+        <div className="settings-danger-section">
+          <div className="dropdown-sep" style={{ marginBottom: 14 }} />
+          <p className="settings-danger-label">This will clear all your work</p>
           <button className="btn-secondary" onClick={onClearKeys} style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}>
-            Clear Custom Keys
+            Return to Defaults
           </button>
-          <button className="btn-primary" onClick={onClose}>Done</button>
         </div>
       </div>
     </div>
