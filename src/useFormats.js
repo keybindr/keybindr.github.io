@@ -6,7 +6,7 @@ const FORMATS_KEY = 'keybindr_formats';
 const ACTIVE_KEY  = 'keybindr_active_format';
 const RECENT_KEY  = 'keybindr_recent_colors';
 
-export const MAX_FORMATS = 3;
+export const MAX_FORMATS = 5;
 
 const DEFAULT_KEY_COLORS = { KeyW: '#1a4d2e', KeyA: '#1a4d2e', KeyS: '#1a4d2e', KeyD: '#1a4d2e' };
 
