@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import ColorPicker from './ColorPicker';
 
 const UNIFIED_MODS = [
   { key: 'Shift', label: 'Shift' },
@@ -12,8 +13,35 @@ const SPLIT_MOD_GROUPS = [
   { leftKey: 'CtrlLeft',   rightKey: 'CtrlRight',  leftLabel: 'LCtrl',  rightLabel: 'RCtrl'  },
 ];
 
+function ModColorRow({ label, colorKey, color, expanded, onToggle, onChange }) {
+  return (
+    <div className="mod-color-block">
+      <div className="settings-row">
+        <span className="settings-label">{label}</span>
+        <button
+          type="button"
+          className="mod-color-swatch"
+          style={{ background: color }}
+          onClick={onToggle}
+          title={expanded ? 'Close picker' : 'Pick color'}
+        />
+      </div>
+      {expanded && (
+        <div className="mod-color-picker">
+          <ColorPicker color={color} onChange={onChange} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function SettingsModal({ settings, onModColor, onSplitModColor, onToggleSplit, onClearKeys, onClose }) {
   const { splitModifiers, modColors, splitModColors } = settings;
+  const [expanded, setExpanded] = useState(null);
+
+  function toggle(key) {
+    setExpanded(prev => prev === key ? null : key);
+  }
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -48,34 +76,36 @@ export default function SettingsModal({ settings, onModColor, onSplitModColor, o
 
           {!splitModifiers ? (
             UNIFIED_MODS.map(({ key, label }) => (
-              <div key={key} className="settings-row">
-                <span className="settings-label">{label}</span>
-                <input
-                  type="color"
-                  className="color-picker"
-                  value={modColors[key]}
-                  onChange={e => onModColor(key, e.target.value)}
-                />
-              </div>
+              <ModColorRow
+                key={key}
+                label={label}
+                colorKey={key}
+                color={modColors[key]}
+                expanded={expanded === key}
+                onToggle={() => toggle(key)}
+                onChange={color => onModColor(key, color)}
+              />
             ))
           ) : (
             SPLIT_MOD_GROUPS.map(({ leftKey, rightKey, leftLabel, rightLabel }) => (
-              <div key={leftKey} className="settings-row settings-row-split">
-                <span className="settings-label">{leftLabel}</span>
-                <input
-                  type="color"
-                  className="color-picker"
-                  value={splitModColors[leftKey]}
-                  onChange={e => onSplitModColor(leftKey, e.target.value)}
+              <React.Fragment key={leftKey}>
+                <ModColorRow
+                  label={leftLabel}
+                  colorKey={leftKey}
+                  color={splitModColors[leftKey]}
+                  expanded={expanded === leftKey}
+                  onToggle={() => toggle(leftKey)}
+                  onChange={color => onSplitModColor(leftKey, color)}
                 />
-                <span className="settings-label settings-label-right">{rightLabel}</span>
-                <input
-                  type="color"
-                  className="color-picker"
-                  value={splitModColors[rightKey]}
-                  onChange={e => onSplitModColor(rightKey, e.target.value)}
+                <ModColorRow
+                  label={rightLabel}
+                  colorKey={rightKey}
+                  color={splitModColors[rightKey]}
+                  expanded={expanded === rightKey}
+                  onToggle={() => toggle(rightKey)}
+                  onChange={color => onSplitModColor(rightKey, color)}
                 />
-              </div>
+              </React.Fragment>
             ))
           )}
         </div>
