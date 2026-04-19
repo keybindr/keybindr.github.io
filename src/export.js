@@ -56,31 +56,76 @@ function parseXML(text) {
   }));
 }
 
-export function exportPNG(svgId) {
+export function exportPNG(svgId, bindings = []) {
   const svgEl = document.getElementById(svgId);
   if (!svgEl) return;
 
   const serializer = new XMLSerializer();
   const svgStr = serializer.serializeToString(svgEl);
-  const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
-  const url = URL.createObjectURL(svgBlob);
+  const svgUrl = URL.createObjectURL(new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' }));
 
   const vb = svgEl.viewBox.baseVal;
   const scale = 2;
+  const kbW = vb.width * scale;
+  const kbH = vb.height * scale;
+  const pad = 32;
+  const rowH = 28;
+  const headerH = 48;
+  const listH = bindings.length > 0 ? headerH + bindings.length * rowH + pad : 0;
+  const font = "'Courier New', monospace";
+
   const canvas = document.createElement('canvas');
-  canvas.width = vb.width * scale;
-  canvas.height = vb.height * scale;
+  canvas.width = kbW;
+  canvas.height = kbH + listH;
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#1a1a1a';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   const img = new Image();
   img.onload = () => {
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    URL.revokeObjectURL(url);
+    ctx.drawImage(img, 0, 0, kbW, kbH);
+    URL.revokeObjectURL(svgUrl);
+
+    if (bindings.length > 0) {
+      // Separator
+      ctx.strokeStyle = '#3a3a3a';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(pad, kbH + 16);
+      ctx.lineTo(kbW - pad, kbH + 16);
+      ctx.stroke();
+
+      // Column positions
+      const cols = [pad, pad + 300, pad + 520];
+
+      // Header
+      ctx.font = `bold 11px ${font}`;
+      ctx.fillStyle = '#666';
+      ctx.fillText('KEY', cols[0], kbH + 36);
+      ctx.fillText('MODIFIERS', cols[1], kbH + 36);
+      ctx.fillText('ACTION', cols[2], kbH + 36);
+
+      // Rows
+      ctx.font = `13px ${font}`;
+      bindings.forEach((b, i) => {
+        const rowY = kbH + headerH + i * rowH;
+        if (i % 2 === 0) {
+          ctx.fillStyle = '#222';
+          ctx.fillRect(0, rowY, kbW, rowH);
+        }
+        const ty = rowY + rowH * 0.68;
+        ctx.fillStyle = '#f0c060';
+        ctx.fillText(b.key, cols[0], ty);
+        ctx.fillStyle = b.modifiers.length ? '#d0d0d0' : '#555';
+        ctx.fillText(b.modifiers.join('+') || '—', cols[1], ty);
+        ctx.fillStyle = '#d0d0d0';
+        ctx.fillText(b.action, cols[2], ty);
+      });
+    }
+
     canvas.toBlob(blob => download(blob, 'keybindings.png'), 'image/png');
   };
-  img.src = url;
+  img.src = svgUrl;
 }
 
 function download(blob, filename) {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Keyboard from './components/Keyboard';
 import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
@@ -10,6 +10,17 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null);
   const [modalKey, setModalKey] = useState(null);
   const fileInputRef = useRef(null);
+  const menuRef = useRef(null);
+  const [showMenu, setShowMenu] = useState(false);
+
+  useEffect(() => {
+    if (!showMenu) return;
+    function onMouseDown(e) {
+      if (!menuRef.current?.contains(e.target)) setShowMenu(false);
+    }
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [showMenu]);
 
   function handleImport(e) {
     const file = e.target.files?.[0];
@@ -18,6 +29,11 @@ export default function App() {
       .then(replaceBindings)
       .catch(err => alert(err.message));
     e.target.value = '';
+  }
+
+  function menuAction(fn) {
+    setShowMenu(false);
+    fn();
   }
 
   function handleKeyClick(keyId) {
@@ -45,18 +61,28 @@ export default function App() {
             style={{ display: 'none' }}
             onChange={handleImport}
           />
-          <button className="btn-export" onClick={() => fileInputRef.current?.click()}>
-            Import
-          </button>
-          <button className="btn-export" onClick={() => exportXML(bindings)}>
-            Export XML
-          </button>
-          <button className="btn-export" onClick={() => exportJSON(bindings)}>
-            Export JSON
-          </button>
-          <button className="btn-export" onClick={() => exportPNG('keyboard-svg')}>
-            Export PNG
-          </button>
+          <div className="dropdown" ref={menuRef}>
+            <button className="btn-export" onClick={() => setShowMenu(v => !v)}>
+              Import / Export ▾
+            </button>
+            {showMenu && (
+              <div className="dropdown-menu">
+                <button className="dropdown-item" onClick={() => menuAction(() => fileInputRef.current?.click())}>
+                  Import XML / JSON
+                </button>
+                <div className="dropdown-sep" />
+                <button className="dropdown-item" onClick={() => menuAction(() => exportXML(bindings))}>
+                  Export XML
+                </button>
+                <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(bindings))}>
+                  Export JSON
+                </button>
+                <button className="dropdown-item" onClick={() => menuAction(() => exportPNG('keyboard-svg', bindings))}>
+                  Export PNG
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

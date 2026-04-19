@@ -23,20 +23,21 @@ function key(id, label, col, row, w = 1, h = 1, altLabel) {
 
 export const KEYS = [
   // Row 0: Function keys
-  // Groups: Esc | 0.5u gap | F1-F4 | 0.5u gap | F5-F8 | 0.5u gap | F9-F12
+  // Groups: Esc | 1u gap | F1-F4 | 0.5u gap | F5-F8 | 0.5u gap | F9-F12
+  // F12 right-edge aligns with Backspace right-edge at col 15
   key('Escape', 'Esc', 0, 0),
-  key('F1', 'F1', 1.5, 0),
-  key('F2', 'F2', 2.5, 0),
-  key('F3', 'F3', 3.5, 0),
-  key('F4', 'F4', 4.5, 0),
-  key('F5', 'F5', 6, 0),
-  key('F6', 'F6', 7, 0),
-  key('F7', 'F7', 8, 0),
-  key('F8', 'F8', 9, 0),
-  key('F9', 'F9', 10.5, 0),
-  key('F10', 'F10', 11.5, 0),
-  key('F11', 'F11', 12.5, 0),
-  key('F12', 'F12', 13.5, 0),
+  key('F1', 'F1', 2, 0),
+  key('F2', 'F2', 3, 0),
+  key('F3', 'F3', 4, 0),
+  key('F4', 'F4', 5, 0),
+  key('F5', 'F5', 6.5, 0),
+  key('F6', 'F6', 7.5, 0),
+  key('F7', 'F7', 8.5, 0),
+  key('F8', 'F8', 9.5, 0),
+  key('F9', 'F9', 11, 0),
+  key('F10', 'F10', 12, 0),
+  key('F11', 'F11', 13, 0),
+  key('F12', 'F12', 14, 0),
   key('PrintScreen', 'PrtSc', 16, 0),
   key('ScrollLock', 'Scrl', 17, 0),
   key('Pause', 'Pause', 18, 0),

@@ -48,6 +48,13 @@ export default function Keyboard({ bindings, selectedId, onKeyClick }) {
       xmlns="http://www.w3.org/2000/svg"
       id="keyboard-svg"
     >
+      <defs>
+        {KEYS.map(k => (
+          <clipPath key={k.id} id={`clip-${k.id}`}>
+            <rect x={k.x} y={k.y} width={k.w} height={k.h} rx={4} />
+          </clipPath>
+        ))}
+      </defs>
       {KEYS.map(k => {
         const keyBindings = boundMap[k.id] || [];
         const isBound = keyBindings.length > 0;
@@ -104,6 +111,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick }) {
                   key={mod}
                   points={`${tx + size},${ty} ${tx + size},${ty + size} ${tx},${ty}`}
                   fill={color}
+                  clipPath={`url(#clip-${k.id})`}
                   style={{ pointerEvents: 'none' }}
                 />
               );
