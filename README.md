@@ -1,5 +1,5 @@
 # keybindr.github.io
-keybinding planning software
+keybinding planning web app
 
 Vibe-coded something I've been thinking about since my World of Warcraft days over a decade ago.
 
