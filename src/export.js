@@ -12,6 +12,50 @@ export function exportXML(bindings) {
   download(blob, 'keybindings.xml');
 }
 
+export function exportJSON(bindings) {
+  const blob = new Blob([JSON.stringify(bindings, null, 2)], { type: 'application/json' });
+  download(blob, 'keybindings.json');
+}
+
+export function importFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target.result;
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (ext === 'json') resolve(parseJSON(text));
+        else if (ext === 'xml') resolve(parseXML(text));
+        else reject(new Error('Unsupported file type — use .xml or .json'));
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsText(file);
+  });
+}
+
+function parseJSON(text) {
+  const data = JSON.parse(text);
+  const arr = Array.isArray(data) ? data : (data.bindings ?? []);
+  return arr.map(b => ({
+    key: String(b.key),
+    modifiers: (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
+    action: String(b.action ?? ''),
+  }));
+}
+
+function parseXML(text) {
+  const doc = new DOMParser().parseFromString(text, 'application/xml');
+  if (doc.querySelector('parsererror')) throw new Error('Invalid XML');
+  return Array.from(doc.querySelectorAll('binding')).map(node => ({
+    key: node.getAttribute('key') ?? '',
+    modifiers: (node.getAttribute('modifiers') ?? '').split(',').filter(Boolean).sort(),
+    action: node.getAttribute('action') ?? '',
+  }));
+}
+
 export function exportPNG(svgId) {
   const svgEl = document.getElementById(svgId);
   if (!svgEl) return;

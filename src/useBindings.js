@@ -46,6 +46,10 @@ export function useBindings() {
     );
   }
 
+  function replaceBindings(newBindings) {
+    setBindings(newBindings);
+  }
+
   function hasConflict(key, modifiers, excludeId = null) {
     const id = bindingId(key, modifiers);
     return bindings.some(b => {
@@ -54,5 +58,5 @@ export function useBindings() {
     });
   }
 
-  return { bindings, addOrUpdate, remove, updateAction, hasConflict };
+  return { bindings, addOrUpdate, remove, updateAction, hasConflict, replaceBindings };
 }

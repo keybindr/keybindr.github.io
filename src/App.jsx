@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Keyboard from './components/Keyboard';
 import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
 import { useBindings, bindingId } from './useBindings';
-import { exportXML, exportPNG } from './export';
+import { exportXML, exportJSON, exportPNG, importFile } from './export';
 
 export default function App() {
-  const { bindings, addOrUpdate, remove, updateAction } = useBindings();
+  const { bindings, addOrUpdate, remove, updateAction, replaceBindings } = useBindings();
   const [selectedId, setSelectedId] = useState(null);
   const [modalKey, setModalKey] = useState(null);
+  const fileInputRef = useRef(null);
+
+  function handleImport(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    importFile(file)
+      .then(replaceBindings)
+      .catch(err => alert(err.message));
+    e.target.value = '';
+  }
 
   function handleKeyClick(keyId) {
     setModalKey(keyId);
@@ -28,8 +38,21 @@ export default function App() {
       <header className="app-header">
         <h1 className="app-title">Keybindr</h1>
         <div className="header-actions">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xml,.json"
+            style={{ display: 'none' }}
+            onChange={handleImport}
+          />
+          <button className="btn-export" onClick={() => fileInputRef.current?.click()}>
+            Import
+          </button>
           <button className="btn-export" onClick={() => exportXML(bindings)}>
             Export XML
+          </button>
+          <button className="btn-export" onClick={() => exportJSON(bindings)}>
+            Export JSON
           </button>
           <button className="btn-export" onClick={() => exportPNG('keyboard-svg')}>
             Export PNG

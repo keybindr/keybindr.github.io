@@ -23,19 +23,20 @@ function key(id, label, col, row, w = 1, h = 1, altLabel) {
 
 export const KEYS = [
   // Row 0: Function keys
+  // Groups: Esc | 0.5u gap | F1-F4 | 0.5u gap | F5-F8 | 0.5u gap | F9-F12
   key('Escape', 'Esc', 0, 0),
-  key('F1', 'F1', 1.25, 0),
-  key('F2', 'F2', 2.25, 0),
-  key('F3', 'F3', 3.25, 0),
-  key('F4', 'F4', 4.25, 0),
-  key('F5', 'F5', 5.5, 0),
-  key('F6', 'F6', 6.5, 0),
-  key('F7', 'F7', 7.5, 0),
-  key('F8', 'F8', 8.5, 0),
-  key('F9', 'F9', 9.75, 0),
-  key('F10', 'F10', 10.75, 0),
-  key('F11', 'F11', 11.75, 0),
-  key('F12', 'F12', 12.75, 0),
+  key('F1', 'F1', 1.5, 0),
+  key('F2', 'F2', 2.5, 0),
+  key('F3', 'F3', 3.5, 0),
+  key('F4', 'F4', 4.5, 0),
+  key('F5', 'F5', 6, 0),
+  key('F6', 'F6', 7, 0),
+  key('F7', 'F7', 8, 0),
+  key('F8', 'F8', 9, 0),
+  key('F9', 'F9', 10.5, 0),
+  key('F10', 'F10', 11.5, 0),
+  key('F11', 'F11', 12.5, 0),
+  key('F12', 'F12', 13.5, 0),
   key('PrintScreen', 'PrtSc', 16, 0),
   key('ScrollLock', 'Scrl', 17, 0),
   key('Pause', 'Pause', 18, 0),
@@ -101,15 +102,15 @@ export const KEYS = [
   key('Slash', '/', 11.25, 4, 1, 1, '?'),
   key('ShiftRight', 'Shift', 12.25, 4, 2.75),
 
-  // Row 5: Bottom row
-  key('ControlLeft', 'Ctrl', 0, 5, 1.5),
-  key('MetaLeft', '⊞', 1.5, 5, 1.25),
-  key('AltLeft', 'Alt', 2.75, 5, 1.25),
-  key('Space', 'Space', 4, 5, 6.25),
-  key('AltRight', 'Alt', 10.25, 5, 1.25),
-  key('MetaRight', '⊞', 11.5, 5, 1.25),
-  key('ContextMenu', '☰', 12.75, 5, 1.25),
-  key('ControlRight', 'Ctrl', 14, 5, 1.5),
+  // Row 5: Bottom row — all modifier keys 1.25u, total = 15u to match other rows
+  key('ControlLeft', 'Ctrl', 0, 5, 1.25),
+  key('MetaLeft', '⊞', 1.25, 5, 1.25),
+  key('AltLeft', 'Alt', 2.5, 5, 1.25),
+  key('Space', 'Space', 3.75, 5, 6.25),
+  key('AltRight', 'Alt', 10, 5, 1.25),
+  key('MetaRight', '⊞', 11.25, 5, 1.25),
+  key('ContextMenu', '☰', 12.5, 5, 1.25),
+  key('ControlRight', 'Ctrl', 13.75, 5, 1.25),
 
   // Navigation cluster (cols 16-18, gap after main keyboard)
   key('Insert', 'Ins', 16, 1),
