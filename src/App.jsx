@@ -9,6 +9,49 @@ import { useKeyColors } from './useKeyColors';
 import { useSettings } from './useSettings';
 import { exportXML, exportJSON, exportPNG, importFile } from './export';
 
+const LAYOUT_NAME_KEY = 'keybindr_layout_name';
+const DEFAULT_LAYOUT_NAME = 'Your Custom Keyboard Layout Name';
+
+function LayoutName() {
+  const [name, setName] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
+  const [editing, setEditing] = useState(false);
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (editing) inputRef.current?.select();
+  }, [editing]);
+
+  function commit(val) {
+    const trimmed = val.trim();
+    setName(trimmed);
+    if (trimmed) localStorage.setItem(LAYOUT_NAME_KEY, trimmed);
+    else localStorage.removeItem(LAYOUT_NAME_KEY);
+    setEditing(false);
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        className="layout-name-input"
+        defaultValue={name}
+        maxLength={60}
+        onBlur={e => commit(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') commit(e.target.value);
+          if (e.key === 'Escape') setEditing(false);
+        }}
+      />
+    );
+  }
+
+  return (
+    <div className="layout-name" onClick={() => setEditing(true)} title="Click to rename">
+      {name || DEFAULT_LAYOUT_NAME}
+    </div>
+  );
+}
+
 // Small SVG triangle matching the corner used on keys
 function LegendTri({ color, dir }) {
   const s = 10;
@@ -123,6 +166,8 @@ export default function App() {
           <button className="btn-icon" title="Settings" onClick={() => setShowSettings(true)}>⚙</button>
         </div>
       </header>
+
+      <LayoutName />
 
       <div className="legend">
         {splitModifiers ? (

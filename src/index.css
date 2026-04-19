@@ -174,6 +174,38 @@ html, body {
 }
 .btn-clear-color:hover { color: var(--danger); border-color: var(--danger); }
 
+/* Layout name */
+.layout-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  margin-bottom: 12px;
+  cursor: pointer;
+  display: inline-block;
+  border-bottom: 1px dashed transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.layout-name:hover {
+  color: var(--text);
+  border-bottom-color: var(--text-dim);
+}
+
+.layout-name-input {
+  font-family: var(--font);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--accent);
+  color: var(--text);
+  outline: none;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 500px;
+}
+
 /* Legend */
 .legend {
   display: flex;
