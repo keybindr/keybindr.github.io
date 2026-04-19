@@ -49,7 +49,7 @@ html, body {
 }
 
 .app-subtitle {
-  font-size: 13px;
+  font-size: 28px;
   font-weight: 400;
   letter-spacing: 0.02em;
   color: var(--text-dim);
