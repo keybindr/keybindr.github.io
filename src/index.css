@@ -242,18 +242,38 @@ html, body {
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
 }
-.format-tab:hover:not(.format-tab-editing) { border-color: var(--text-dim); color: var(--text); }
+.format-tab:hover { border-color: var(--text-dim); color: var(--text); }
 .format-tab.active { border-color: var(--accent); color: var(--accent); }
 
-.format-tab-editing {
+.format-tab-input {
   background: transparent;
-  color: var(--accent);
-  border-color: var(--accent);
+  border: none;
   outline: none;
-  width: 90px;
-  padding: 3px 8px;
+  color: inherit;
+  font-family: var(--font);
+  font-size: 11px;
+  width: 72px;
+  padding: 0;
 }
+
+.format-tab-sep {
+  color: var(--border);
+  font-size: 10px;
+}
+
+.format-tab-remove {
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: color 0.15s;
+}
+.format-tab-remove:hover { color: var(--danger); }
 
 .format-add-btn {
   background: var(--surface2);

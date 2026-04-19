@@ -13,7 +13,7 @@ const LAYOUT_NAME_KEY = 'keybindr_layout_name';
 const DEFAULT_LAYOUT_NAME = 'Your Custom Keyboard Layout Name';
 
 // ── Format tabs ───────────────────────────────────────────────────────────────
-function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename }) {
+function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove }) {
   const [editingIdx, setEditingIdx] = useState(null);
   const inputRef = useRef(null);
 
@@ -34,33 +34,44 @@ function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename }) {
   return (
     <div className="format-tabs">
       {formats.map((f, i) => {
-        const label = f.name || `Format ${i + 1}`;
+        const label    = f.name || `Format ${i + 1}`;
         const isActive = i === activeIndex;
-        if (editingIdx === i) {
-          return (
-            <input
-              key={i}
-              ref={inputRef}
-              className="format-tab format-tab-editing"
-              defaultValue={f.name}
-              maxLength={20}
-              onBlur={e => commit(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter') e.target.blur();
-                if (e.key === 'Escape') setEditingIdx(null);
-              }}
-            />
-          );
-        }
+        const removable = i > 0;
+
         return (
-          <button
+          <div
             key={i}
             className={`format-tab${isActive ? ' active' : ''}`}
             onClick={() => handleTabClick(i)}
             title={isActive ? 'Click to rename' : label}
           >
-            {label}
-          </button>
+            {editingIdx === i ? (
+              <input
+                ref={inputRef}
+                className="format-tab-input"
+                defaultValue={f.name}
+                maxLength={20}
+                onClick={e => e.stopPropagation()}
+                onBlur={e => commit(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') e.target.blur();
+                  if (e.key === 'Escape') setEditingIdx(null);
+                }}
+              />
+            ) : (
+              <span>{label}</span>
+            )}
+            {removable && (
+              <>
+                <span className="format-tab-sep">|</span>
+                <span
+                  className="format-tab-remove"
+                  onClick={e => { e.stopPropagation(); onRemove(i); }}
+                  title="Remove format"
+                >✕</span>
+              </>
+            )}
+          </div>
         );
       })}
       {formats.length < MAX_FORMATS && (
@@ -123,7 +134,7 @@ function LegendTri({ color, dir }) {
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const {
-    formats, activeIndex, switchTo, addFormat, setFormatName,
+    formats, activeIndex, switchTo, addFormat, setFormatName, removeFormat,
     bindings, keyColors, recentColors,
     addOrUpdate, remove, updateAction,
     replaceActiveBindings, replaceFormats,
@@ -283,6 +294,7 @@ export default function App() {
           onSwitch={handleSwitchFormat}
           onAdd={addFormat}
           onRename={setFormatName}
+          onRemove={i => { removeFormat(i); setSelectedId(null); }}
         />
       </div>
 

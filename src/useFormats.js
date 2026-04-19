@@ -14,7 +14,7 @@ function makeFormat(empty = false) {
   return {
     name:      '',
     bindings:  empty ? [] : [...DEFAULT_BINDINGS],
-    keyColors: { ...DEFAULT_KEY_COLORS },
+    keyColors: empty ? {} : { ...DEFAULT_KEY_COLORS },
   };
 }
 
@@ -79,6 +79,16 @@ export function useFormats() {
 
   function setFormatName(i, name) {
     mutate(s => ({ ...s, formats: s.formats.map((f, idx) => idx === i ? { ...f, name } : f) }));
+  }
+
+  function removeFormat(i) {
+    if (i === 0) return;
+    mutate(s => {
+      if (s.formats.length <= 1) return s;
+      const formats = s.formats.filter((_, idx) => idx !== i);
+      const active  = s.active >= i ? Math.max(0, s.active - 1) : s.active;
+      return { formats, active };
+    });
   }
 
   // ── Bindings ──────────────────────────────────────────────────────────
@@ -162,7 +172,7 @@ export function useFormats() {
 
   return {
     formats, activeIndex,
-    switchTo, addFormat, setFormatName,
+    switchTo, addFormat, setFormatName, removeFormat,
     bindings:  activeFormat?.bindings  ?? [],
     keyColors: activeFormat?.keyColors ?? { ...DEFAULT_KEY_COLORS },
     recentColors,
