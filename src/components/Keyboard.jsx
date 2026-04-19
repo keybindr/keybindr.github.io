@@ -51,29 +51,31 @@ const MOD_TO_CORNER = {
   Ctrl: 'ctrl', CtrlLeft: 'ctrl', CtrlRight: 'ctrl',
 };
 
-// Width of R stripe in SVG units, perpendicular to the hypotenuse
-const STRIPE_W = 3.5;
-const D = STRIPE_W * 0.7071; // component along each axis (1/√2)
+// Perpendicular stripe width; E is the distance along each key edge (= STRIPE_W * √2)
+const STRIPE_W = 4;
+const STRIPE_E = STRIPE_W * 1.4142;
 
 function splitCornerPoints(corner, k) {
   const { x, y, w, h } = k;
-  // L = full triangle. R = thin parallelogram extending OUTWARD from hypotenuse
-  // (away from the corner, into key interior) — purely additive, no overlap with L.
+  const e = STRIPE_E;
+  // L = full triangle (corner to hypotenuse).
+  // R = band that follows both key edges outward from the hypotenuse endpoints,
+  //     so it looks like the triangle continues in a second color.
   if (corner === 'shift') {
-    // upper-right corner. Hyp: C=(x+w-SIZE,y) → B=(x+w,y+SIZE). Outward normal: (-D,+D)
+    // upper-right. Triangle legs: right edge (x+w, y→y+SIZE) and top edge (x+w-SIZE→x+w, y)
     const lPts = `${x+w},${y} ${x+w},${y+SIZE} ${x+w-SIZE},${y}`;
-    const rPts = `${x+w-SIZE},${y} ${x+w},${y+SIZE} ${x+w-D},${y+SIZE+D} ${x+w-SIZE-D},${y+D}`;
+    const rPts = `${x+w},${y+SIZE} ${x+w-SIZE},${y} ${x+w-SIZE-e},${y} ${x+w},${y+SIZE+e}`;
     return [lPts, rPts];
   }
   if (corner === 'alt') {
-    // lower-right corner. Hyp: B=(x+w,y+h-SIZE) → C=(x+w-SIZE,y+h). Outward normal: (-D,-D)
+    // lower-right. Triangle legs: right edge (x+w, y+h-SIZE→y+h) and bottom edge (x+w-SIZE→x+w, y+h)
     const lPts = `${x+w},${y+h} ${x+w},${y+h-SIZE} ${x+w-SIZE},${y+h}`;
-    const rPts = `${x+w},${y+h-SIZE} ${x+w-SIZE},${y+h} ${x+w-SIZE-D},${y+h-D} ${x+w-D},${y+h-SIZE-D}`;
+    const rPts = `${x+w},${y+h-SIZE} ${x+w-SIZE},${y+h} ${x+w-SIZE-e},${y+h} ${x+w},${y+h-SIZE-e}`;
     return [lPts, rPts];
   }
-  // ctrl — lower-left corner. Hyp: B=(x,y+h-SIZE) → C=(x+SIZE,y+h). Outward normal: (+D,-D)
+  // ctrl — lower-left. Triangle legs: left edge (x, y+h-SIZE→y+h) and bottom edge (x→x+SIZE, y+h)
   const lPts = `${x},${y+h} ${x},${y+h-SIZE} ${x+SIZE},${y+h}`;
-  const rPts = `${x},${y+h-SIZE} ${x+SIZE},${y+h} ${x+SIZE+D},${y+h-D} ${x+D},${y+h-SIZE-D}`;
+  const rPts = `${x},${y+h-SIZE} ${x+SIZE},${y+h} ${x+SIZE+e},${y+h} ${x},${y+h-SIZE-e}`;
   return [lPts, rPts];
 }
 
