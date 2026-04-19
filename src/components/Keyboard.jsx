@@ -8,15 +8,29 @@ const MOD_COLORS = {
   Alt:   '#7be09a',
 };
 
-const ACCENT = '#e0a84b';
-const KEY_DEFAULT = '#2a2a2a';
-const KEY_BOUND   = '#3d3420';
+const KEY_DEFAULT  = '#2a2a2a';
+const KEY_BOUND    = '#3d3420';
 const KEY_SELECTED = '#5a4a1a';
 const BORDER_DEFAULT  = '#444';
 const BORDER_BOUND    = '#e0a84b';
 const BORDER_SELECTED = '#f0c060';
-const TEXT_DEFAULT    = '#aaa';
-const TEXT_BOUND      = '#f5e0b0';
+const TEXT_DEFAULT = '#aaa';
+const TEXT_BOUND   = '#f5e0b0';
+
+const KEY_TO_MOD = {
+  ShiftLeft:    'Shift',
+  ShiftRight:   'Shift',
+  ControlLeft:  'Ctrl',
+  ControlRight: 'Ctrl',
+  AltLeft:      'Alt',
+  AltRight:     'Alt',
+};
+
+const MOD_KEY_FILL = {
+  Ctrl:  '#2e1a0e',
+  Shift: '#0e1a2e',
+  Alt:   '#0e2e1a',
+};
 
 export default function Keyboard({ bindings, selectedId, onKeyClick }) {
   const boundMap = {};
@@ -39,8 +53,15 @@ export default function Keyboard({ bindings, selectedId, onKeyClick }) {
         const isBound = keyBindings.length > 0;
         const isSelected = keyBindings.some(b => bindingId(b.key, b.modifiers) === selectedId);
 
-        const fill = isSelected ? KEY_SELECTED : isBound ? KEY_BOUND : KEY_DEFAULT;
-        const stroke = isSelected ? BORDER_SELECTED : isBound ? BORDER_BOUND : BORDER_DEFAULT;
+        const modRole = KEY_TO_MOD[k.id];
+        const fill   = isSelected ? KEY_SELECTED
+                     : isBound    ? KEY_BOUND
+                     : modRole    ? MOD_KEY_FILL[modRole]
+                     : KEY_DEFAULT;
+        const stroke = isSelected ? BORDER_SELECTED
+                     : isBound    ? BORDER_BOUND
+                     : modRole    ? MOD_COLORS[modRole]
+                     : BORDER_DEFAULT;
         const textColor = isBound ? TEXT_BOUND : TEXT_DEFAULT;
 
         // Modifier triangles — one per modifier present

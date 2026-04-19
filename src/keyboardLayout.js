@@ -1,13 +1,12 @@
 // 104-key QWERTY layout
 // Each key: { id, label, x, y, w, h }
 // Coordinates in SVG units (1 unit ≈ 1 key width)
-// Base key size = 40px, gap = 4px → unit = 44px
+// Base unit = 44px (40px key + 4px gap)
 
 const U = 44; // unit
-const H = 40; // key height
 const G = 4;  // gap
 
-export const KEYBOARD_WIDTH = 1570;
+export const KEYBOARD_WIDTH  = 1040;
 export const KEYBOARD_HEIGHT = 280;
 
 function key(id, label, col, row, w = 1, h = 1, altLabel) {
@@ -18,7 +17,7 @@ function key(id, label, col, row, w = 1, h = 1, altLabel) {
     x: col * U + G,
     y: row * U + G,
     w: w * U - G,
-    h: h * H - G,
+    h: h * U - 2 * G, // h=1→36px, h=2→80px (correctly spans rows)
   };
 }
 
@@ -37,9 +36,9 @@ export const KEYS = [
   key('F10', 'F10', 10.75, 0),
   key('F11', 'F11', 11.75, 0),
   key('F12', 'F12', 12.75, 0),
-  key('PrintScreen', 'PrtSc', 14, 0),
-  key('ScrollLock', 'Scrl', 15, 0),
-  key('Pause', 'Pause', 16, 0),
+  key('PrintScreen', 'PrtSc', 16, 0),
+  key('ScrollLock', 'Scrl', 17, 0),
+  key('Pause', 'Pause', 18, 0),
 
   // Row 1: Number row
   key('Backquote', '`', 0, 1, 1, 1, '~'),
@@ -112,19 +111,36 @@ export const KEYS = [
   key('ContextMenu', '☰', 12.75, 5, 1.25),
   key('ControlRight', 'Ctrl', 14, 5, 1.5),
 
-  // Navigation cluster (offset col 14-16)
-  key('Insert', 'Ins', 14, 1),
-  key('Home', 'Home', 15, 1),
-  key('PageUp', 'PgUp', 16, 1),
-  key('Delete', 'Del', 14, 2),
-  key('End', 'End', 15, 2),
-  key('PageDown', 'PgDn', 16, 2),
+  // Navigation cluster (cols 16-18, gap after main keyboard)
+  key('Insert', 'Ins', 16, 1),
+  key('Home', 'Home', 17, 1),
+  key('PageUp', 'PgUp', 18, 1),
+  key('Delete', 'Del', 16, 2),
+  key('End', 'End', 17, 2),
+  key('PageDown', 'PgDn', 18, 2),
+  key('ArrowUp', '↑', 17, 4),
+  key('ArrowLeft', '←', 16, 5),
+  key('ArrowDown', '↓', 17, 5),
+  key('ArrowRight', '→', 18, 5),
 
-  // Arrow keys
-  key('ArrowUp', '↑', 15, 4),
-  key('ArrowLeft', '←', 14, 5),
-  key('ArrowDown', '↓', 15, 5),
-  key('ArrowRight', '→', 16, 5),
+  // Numpad (cols 19.5-22.5)
+  key('NumLock', 'NumLk', 19.5, 1),
+  key('NumpadDivide', '/', 20.5, 1),
+  key('NumpadMultiply', '*', 21.5, 1),
+  key('NumpadSubtract', '-', 22.5, 1),
+  key('Numpad7', '7', 19.5, 2),
+  key('Numpad8', '8', 20.5, 2),
+  key('Numpad9', '9', 21.5, 2),
+  key('NumpadAdd', '+', 22.5, 2, 1, 2),
+  key('Numpad4', '4', 19.5, 3),
+  key('Numpad5', '5', 20.5, 3),
+  key('Numpad6', '6', 21.5, 3),
+  key('Numpad1', '1', 19.5, 4),
+  key('Numpad2', '2', 20.5, 4),
+  key('Numpad3', '3', 21.5, 4),
+  key('NumpadEnter', 'Enter', 22.5, 4, 1, 2),
+  key('Numpad0', '0', 19.5, 5, 2),
+  key('NumpadDecimal', '.', 21.5, 5),
 ];
 
 export const KEY_MAP = Object.fromEntries(KEYS.map(k => [k.id, k]));
