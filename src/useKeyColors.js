@@ -12,9 +12,11 @@ export function useKeyColors() {
   const [recentColors, setRecentColorsState] = useState(() => load(RECENT_KEY, []));
 
   function setKeyColor(keyId, color) {
-    const next = { ...keyColors, [keyId]: color };
-    setKeyColorsState(next);
-    localStorage.setItem(COLORS_KEY, JSON.stringify(next));
+    setKeyColorsState(prev => {
+      const next = { ...prev, [keyId]: color };
+      localStorage.setItem(COLORS_KEY, JSON.stringify(next));
+      return next;
+    });
     setRecentColorsState(prev => {
       const next = [color, ...prev.filter(c => c !== color)].slice(0, 5);
       localStorage.setItem(RECENT_KEY, JSON.stringify(next));
@@ -23,22 +25,29 @@ export function useKeyColors() {
   }
 
   function clearKeyColor(keyId) {
-    if (!(keyId in keyColors)) return;
-    const next = { ...keyColors };
-    delete next[keyId];
-    setKeyColorsState(next);
-    localStorage.setItem(COLORS_KEY, JSON.stringify(next));
+    setKeyColorsState(prev => {
+      if (!(keyId in prev)) return prev;
+      const next = { ...prev };
+      delete next[keyId];
+      localStorage.setItem(COLORS_KEY, JSON.stringify(next));
+      return next;
+    });
   }
 
-  // Restore without touching recentColors (used for cancel revert)
+  // Restore to original color without touching recentColors (cancel revert)
   function restoreKeyColor(keyId, color) {
-    if (color == null) {
-      clearKeyColor(keyId);
-    } else {
-      const next = { ...keyColors, [keyId]: color };
-      setKeyColorsState(next);
+    setKeyColorsState(prev => {
+      let next;
+      if (color == null) {
+        if (!(keyId in prev)) return prev;
+        next = { ...prev };
+        delete next[keyId];
+      } else {
+        next = { ...prev, [keyId]: color };
+      }
       localStorage.setItem(COLORS_KEY, JSON.stringify(next));
-    }
+      return next;
+    });
   }
 
   return { keyColors, recentColors, setKeyColor, clearKeyColor, restoreKeyColor };

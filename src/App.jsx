@@ -102,10 +102,9 @@ export default function App() {
       </header>
 
       <div className="legend">
-        <span className="legend-item"><span className="legend-dot bound" />Bound key</span>
-        <span className="legend-item"><span className="legend-tri shift" />Shift ↗</span>
-        <span className="legend-item"><span className="legend-tri alt" />Alt ↘</span>
-        <span className="legend-item"><span className="legend-tri ctrl" />Ctrl ↙</span>
+        <span className="legend-item"><span className="legend-tri shift" />Shift</span>
+        <span className="legend-item"><span className="legend-tri alt" />Alt</span>
+        <span className="legend-item"><span className="legend-tri ctrl" />Ctrl</span>
       </div>
 
       <div className="keyboard-container">
