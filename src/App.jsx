@@ -173,8 +173,7 @@ export default function App() {
   const [showHamburger, setShowHamburger] = useState(false);
 
   const [showMobileWarning, setShowMobileWarning] = useState(() => {
-    if (window.innerWidth > 768) return false;
-    return !localStorage.getItem(MOBILE_WARNED_KEY);
+    return window.innerWidth <= 768;
   });
 
   useEffect(() => {
@@ -263,7 +262,6 @@ export default function App() {
   }
 
   function closeMobileWarning() {
-    localStorage.setItem(MOBILE_WARNED_KEY, '1');
     setShowMobileWarning(false);
   }
 
@@ -272,7 +270,9 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">Keybindr</h1>
+        <h1 className="app-title">
+          Keybindr <span className="app-subtitle">— A Keybinding Visualizer</span>
+        </h1>
 
         {/* Desktop navigation */}
         <div className="header-actions desktop-nav">

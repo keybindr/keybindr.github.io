@@ -48,6 +48,15 @@ html, body {
   text-transform: uppercase;
 }
 
+.app-subtitle {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--text-dim);
+  text-transform: none;
+  font-family: var(--font-ui);
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -754,10 +763,10 @@ html, body {
 .mobile-warning-close:hover { color: var(--text); }
 
 .mobile-warning-text {
-  font-size: 13px;
+  font-size: 16px;
   font-family: var(--font-ui);
   color: var(--text);
-  line-height: 1.6;
+  line-height: 1.7;
   font-style: italic;
 }
 
