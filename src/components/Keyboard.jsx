@@ -45,6 +45,45 @@ function modFill(hex) {
   return `#${toHex(blend(r))}${toHex(blend(g))}${toHex(blend(b))}`;
 }
 
+const MOD_TO_CORNER = {
+  Shift: 'shift', ShiftLeft: 'shift', ShiftRight: 'shift',
+  Alt: 'alt',   AltLeft: 'alt',   AltRight: 'alt',
+  Ctrl: 'ctrl', CtrlLeft: 'ctrl', CtrlRight: 'ctrl',
+};
+
+// T = fraction of triangle depth (from corner) given to L; remainder is R stripe
+const SPLIT_T = 0.62;
+
+function splitCornerPoints(corner, k) {
+  const { x, y, w, h } = k;
+  const T = SPLIT_T;
+  if (corner === 'shift') {
+    // upper-right: corner=(x+w,y), legs to (x+w,y+SIZE) and (x+w-SIZE,y)
+    const D = `${x + w},${y + T * SIZE}`;
+    const E = `${x + w - T * SIZE},${y}`;
+    return [
+      `${x + w},${y} ${D} ${E}`,
+      `${D} ${x + w},${y + SIZE} ${x + w - SIZE},${y} ${E}`,
+    ];
+  }
+  if (corner === 'alt') {
+    // lower-right: corner=(x+w,y+h), legs to (x+w,y+h-SIZE) and (x+w-SIZE,y+h)
+    const D = `${x + w},${y + h - T * SIZE}`;
+    const E = `${x + w - T * SIZE},${y + h}`;
+    return [
+      `${x + w},${y + h} ${D} ${E}`,
+      `${D} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h} ${E}`,
+    ];
+  }
+  // ctrl — lower-left: corner=(x,y+h), legs to (x,y+h-SIZE) and (x+SIZE,y+h)
+  const D = `${x},${y + h - T * SIZE}`;
+  const E = `${x + T * SIZE},${y + h}`;
+  return [
+    `${x},${y + h} ${D} ${E}`,
+    `${D} ${x},${y + h - SIZE} ${x + SIZE},${y + h} ${E}`,
+  ];
+}
+
 function trianglePoints(mod, k) {
   const { x, y, w, h } = k;
   if (mod === 'Shift' || mod === 'ShiftLeft' || mod === 'ShiftRight')
@@ -127,15 +166,29 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
             >
               {label}
             </text>
-            {mods.map(mod => (
-              <polygon
-                key={mod}
-                points={trianglePoints(mod, k)}
-                fill={modColors[mod] || splitModColors[mod] || '#888'}
-                clipPath={`url(#clip-${k.id})`}
-                style={{ pointerEvents: 'none' }}
-              />
-            ))}
+            {(() => {
+              const corners = {};
+              for (const mod of mods) {
+                const corner = MOD_TO_CORNER[mod];
+                if (!corner) continue;
+                const color = modColors[mod] || splitModColors[mod] || '#888';
+                if (!corners[corner]) corners[corner] = [];
+                corners[corner].push({ mod, color });
+              }
+              return Object.entries(corners).flatMap(([corner, entries]) => {
+                const clip = { clipPath: `url(#clip-${k.id})`, style: { pointerEvents: 'none' } };
+                if (entries.length === 1) {
+                  return [<polygon key={entries[0].mod} points={trianglePoints(entries[0].mod, k)} fill={entries[0].color} {...clip} />];
+                }
+                const lEntry = entries.find(e => e.mod.endsWith('Left')) ?? entries[0];
+                const rEntry = entries.find(e => e !== lEntry) ?? entries[1];
+                const [lPts, rPts] = splitCornerPoints(corner, k);
+                return [
+                  <polygon key={lEntry.mod} points={lPts} fill={lEntry.color} {...clip} />,
+                  <polygon key={rEntry.mod} points={rPts} fill={rEntry.color} {...clip} />,
+                ];
+              });
+            })()}
           </g>
         );
       })}
