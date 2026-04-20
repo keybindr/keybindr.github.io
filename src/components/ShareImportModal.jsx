@@ -1,7 +1,7 @@
 import React from 'react';
 import { useT } from '../useTranslation';
 
-export default function ShareImportModal({ formats, layoutName, onConfirm, onCancel, onDownload }) {
+export default function ShareImportModal({ onConfirm, onCancel, onDownload }) {
   const t = useT();
   return (
     <div className="modal-backdrop" onClick={onCancel}>

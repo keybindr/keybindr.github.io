@@ -3,25 +3,19 @@ import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 import { useT, resolveAction } from '../useTranslation';
+import { KEY_BOUND, MOD_COLORS, MOD_FAMILY } from '../modifierConstants';
 
-const KEY_BOUND_COLOR = '#3d3420';
+const KEY_BOUND_COLOR = KEY_BOUND;
 
-// Maps physical modifier key IDs to their logical family
+// Maps physical modifier key IDs to their logical family (unique to conflict detection)
 const MOD_KEY_FAMILY = {
   ShiftLeft: 'Shift', ShiftRight: 'Shift',
   ControlLeft: 'Ctrl', ControlRight: 'Ctrl',
   AltLeft: 'Alt',   AltRight: 'Alt',
 };
 
-// Maps modifier values (unified or split) to their logical family
-const MOD_VALUE_FAMILY = {
-  Shift: 'Shift', ShiftLeft: 'Shift', ShiftRight: 'Shift',
-  Ctrl:  'Ctrl',  CtrlLeft:  'Ctrl',  CtrlRight:  'Ctrl',
-  Alt:   'Alt',   AltLeft:   'Alt',   AltRight:   'Alt',
-};
-
 function detectModifierConflicts(bindings) {
-  const standalone = new Map(); // family → bindingId
+  const standalone = new Map();
   for (const b of bindings) {
     const family = MOD_KEY_FAMILY[b.key];
     if (family && b.modifiers.length === 0) {
@@ -33,7 +27,7 @@ function detectModifierConflicts(bindings) {
   const conflicts = new Set();
   for (const b of bindings) {
     for (const m of b.modifiers) {
-      const family = MOD_VALUE_FAMILY[m];
+      const family = MOD_FAMILY[m];
       if (family && standalone.has(family)) {
         conflicts.add(standalone.get(family));
         conflicts.add(bindingId(b.key, b.modifiers));
@@ -42,12 +36,6 @@ function detectModifierConflicts(bindings) {
   }
   return conflicts;
 }
-
-const MOD_COLORS = {
-  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
-  Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
-};
 
 export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal, settings = {} }) {
   const t = useT();

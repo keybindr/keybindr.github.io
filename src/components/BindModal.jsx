@@ -2,67 +2,34 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { useT, resolveAction } from '../useTranslation';
-const KEY_MAP = ALL_KEY_MAP;
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_FAMILY, modFill } from '../modifierConstants';
 
 const PICKER_WIDTH = 252;
 const PICKER_GAP   = 12;
-
-// Which family each modifier belongs to — prevents L+R same-family combos
-const MOD_FAMILY = {
-  Shift: 'Shift', ShiftLeft: 'Shift', ShiftRight: 'Shift',
-  Alt:   'Alt',   AltLeft:   'Alt',   AltRight:   'Alt',
-  Ctrl:  'Ctrl',  CtrlLeft:  'Ctrl',  CtrlRight:  'Ctrl',
-};
 
 const MODIFIER_KEY_IDS = new Set([
   'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight',
   'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight', 'ContextMenu',
 ]);
 
-// Effective display color when no custom color is set
-const KEY_ACCENT_COLORS = {
-  ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  AltLeft:   '#7be09a', AltRight:   '#7be09a',
-  ControlLeft: '#e07b39', ControlRight: '#e07b39',
-};
-const KEY_BOUND_DEFAULT   = '#3d3420';
-const KEY_UNBOUND_DEFAULT = '#2a2a2a';
-
-// Mirrors the modFill blend used in Keyboard rendering (25% accent over #1a1a1a)
-function modFill(hex) {
-  const h = n => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0');
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  const bg = 0x1a;
-  const blend = c => Math.round(bg + (c - bg) * 0.25);
-  return `#${h(blend(r))}${h(blend(g))}${h(blend(b))}`;
-}
-
-const MOD_BUTTON_COLORS = {
-  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
-  Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
-};
-
 function buildModDefs(settings) {
   const { splitModifiers } = settings;
   if (splitModifiers) {
     return [
-      { value: 'ShiftLeft',  label: 'LShift', color: MOD_BUTTON_COLORS.ShiftLeft  },
-      { value: 'ShiftRight', label: 'RShift', color: MOD_BUTTON_COLORS.ShiftRight },
-      { value: 'AltLeft',    label: 'LAlt',   color: MOD_BUTTON_COLORS.AltLeft    },
-      { value: 'AltRight',   label: 'RAlt',   color: MOD_BUTTON_COLORS.AltRight   },
-      { value: 'CtrlLeft',   label: 'LCtrl',  color: MOD_BUTTON_COLORS.CtrlLeft   },
-      { value: 'CtrlRight',  label: 'RCtrl',  color: MOD_BUTTON_COLORS.CtrlRight  },
+      { value: 'ShiftLeft',  label: 'LShift', color: MOD_COLORS.ShiftLeft  },
+      { value: 'ShiftRight', label: 'RShift', color: MOD_COLORS.ShiftRight },
+      { value: 'AltLeft',    label: 'LAlt',   color: MOD_COLORS.AltLeft    },
+      { value: 'AltRight',   label: 'RAlt',   color: MOD_COLORS.AltRight   },
+      { value: 'CtrlLeft',   label: 'LCtrl',  color: MOD_COLORS.CtrlLeft   },
+      { value: 'CtrlRight',  label: 'RCtrl',  color: MOD_COLORS.CtrlRight  },
     ];
   }
   return [
-    { value: 'Ctrl',  label: 'Ctrl',  color: MOD_BUTTON_COLORS.Ctrl  },
-    { value: 'Shift', label: 'Shift', color: MOD_BUTTON_COLORS.Shift },
-    { value: 'Alt',   label: 'Alt',   color: MOD_BUTTON_COLORS.Alt   },
+    { value: 'Ctrl',  label: 'Ctrl',  color: MOD_COLORS.Ctrl  },
+    { value: 'Shift', label: 'Shift', color: MOD_COLORS.Shift },
+    { value: 'Alt',   label: 'Alt',   color: MOD_COLORS.Alt   },
   ];
 }
 
@@ -74,16 +41,16 @@ export default function BindModal({
   settings,
 }) {
   const t           = useT();
-  const keyDef      = KEY_MAP[keyId];
+  const keyDef      = ALL_KEY_MAP[keyId];
   const language    = settings?.language ?? 'en-US';
   const modDefs     = buildModDefs(settings);
   const isModifier  = MODIFIER_KEY_IDS.has(keyId);
 
   const isBoundKey = existingBindings.some(b => b.key === keyId);
-  const accentHex = KEY_ACCENT_COLORS[keyId];
+  const accentHex = KEY_ACCENT[keyId];
   const effectiveColor = keyColor
     || (accentHex ? modFill(accentHex) : null)
-    || (isBoundKey ? KEY_BOUND_DEFAULT : KEY_UNBOUND_DEFAULT);
+    || (isBoundKey ? KEY_BOUND : KEY_DEFAULT);
 
   const [modifiers, setModifiers]   = useState([]);
   const [action, setAction]         = useState('');

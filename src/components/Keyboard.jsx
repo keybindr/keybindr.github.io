@@ -2,62 +2,22 @@ import React, { useState } from 'react';
 import { getKeys, getLayout } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from '../modifierConstants';
 
-const KEY_DEFAULT  = '#2a2a2a';
-const KEY_BOUND    = '#3d3420';
-const KEY_SELECTED = '#5a4a1a';
+const KEY_SELECTED    = '#5a4a1a';
 const BORDER_DEFAULT  = '#444';
 const BORDER_BOUND    = '#e0a84b';
 const BORDER_SELECTED = '#f0c060';
-const TEXT_DEFAULT = '#aaa';
-const TEXT_BOUND   = '#f5e0b0';
+const TEXT_DEFAULT    = '#aaa';
+const TEXT_BOUND      = '#f5e0b0';
 
 const SIZE = 10;
 
-const KEY_DEFAULT_ACCENT = {
-  ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  AltLeft:   '#7be09a', AltRight:   '#7be09a',
-  ControlLeft: '#e07b39', ControlRight: '#e07b39',
-};
-
-const MOD_TO_KEY_IDS = {
-  Shift:      ['ShiftLeft', 'ShiftRight'],
-  ShiftLeft:  ['ShiftLeft'],  ShiftRight: ['ShiftRight'],
-  Alt:        ['AltLeft', 'AltRight'],
-  AltLeft:    ['AltLeft'],    AltRight:   ['AltRight'],
-  Ctrl:       ['ControlLeft', 'ControlRight'],
-  CtrlLeft:   ['ControlLeft'], CtrlRight:  ['ControlRight'],
-};
-
-const DEFAULT_TRIANGLE_COLORS = {
-  Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
-  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
-};
-
 function modTriangleColor(mod, keyColors) {
-  for (const kid of (MOD_TO_KEY_IDS[mod] || [])) {
+  for (const kid of (MOD_KEY_IDS[mod] || [])) {
     if (keyColors[kid]) return keyColors[kid];
   }
-  return DEFAULT_TRIANGLE_COLORS[mod] || '#888';
-}
-
-const SPLIT_LABELS = {
-  ShiftLeft: 'LShift', ShiftRight: 'RShift',
-  ControlLeft: 'LCtrl', ControlRight: 'RCtrl',
-  AltLeft: 'LAlt', AltRight: 'RAlt',
-};
-
-function modFill(hex) {
-  if (!hex || hex.length < 7) return KEY_DEFAULT;
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  const bg = 0x1a;
-  const cap = n => Math.max(0, Math.min(255, n));
-  const toHex = n => cap(n).toString(16).padStart(2, '0');
-  const blend = c => Math.round(bg + (c - bg) * 0.25);
-  return `#${toHex(blend(r))}${toHex(blend(g))}${toHex(blend(b))}`;
+  return MOD_COLORS[mod] || '#888';
 }
 
 const TOOLTIP_MOD_LABEL = {
@@ -68,11 +28,6 @@ const TOOLTIP_MOD_LABEL = {
 
 const TOOLTIP_WIDTH = 220;
 
-const MOD_TO_CORNER = {
-  Shift: 'shift', ShiftLeft: 'shift', ShiftRight: 'shift',
-  Alt: 'alt',   AltLeft: 'alt',   AltRight: 'alt',
-  Ctrl: 'ctrl', CtrlLeft: 'ctrl', CtrlRight: 'ctrl',
-};
 
 const STRIPE_W = 4;
 const STRIPE_E = STRIPE_W * 1.4142;
@@ -124,7 +79,7 @@ function splitCornerPoints(corner, k) {
 }
 
 function trianglePoints(mod, k) {
-  const corner = MOD_TO_CORNER[mod];
+  const corner = MOD_CORNER[mod];
   if (!corner) return '';
   const [cx, cy] = triCorner(k, corner);
   if (mod === 'Shift' || mod === 'ShiftLeft' || mod === 'ShiftRight')
@@ -188,7 +143,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         const isBound     = keyBindings.length > 0;
         const isSelected  = keyBindings.some(b => bindingId(b.key, b.modifiers) === selectedId);
         const customColor = keyColors[k.id];
-        const accentColor = KEY_DEFAULT_ACCENT[k.id] || null;
+        const accentColor = KEY_ACCENT[k.id] || null;
 
         const fill   = customColor ? customColor
                      : accentColor ? modFill(accentColor)
@@ -251,7 +206,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
             {(() => {
               const corners = {};
               for (const mod of mods) {
-                const corner = MOD_TO_CORNER[mod];
+                const corner = MOD_CORNER[mod];
                 if (!corner) continue;
                 const color = modTriangleColor(mod, keyColors);
                 if (!corners[corner]) corners[corner] = [];
@@ -296,7 +251,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
               <>
                 {b.modifiers.map(m => (
                   <span key={m} className="tooltip-mod-tag"
-                    style={{ borderColor: DEFAULT_TRIANGLE_COLORS[m] || '#888', color: DEFAULT_TRIANGLE_COLORS[m] || '#888' }}>
+                    style={{ borderColor: MOD_COLORS[m] || '#888', color: MOD_COLORS[m] || '#888' }}>
                     {TOOLTIP_MOD_LABEL[m] || m}
                   </span>
                 ))}

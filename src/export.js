@@ -1,6 +1,7 @@
 import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
 import { resolveLabel } from './keylabels';
 import { makeT, resolveAction } from './useTranslation';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from './modifierConstants';
 
 // Reverse map: US-English label → key ID, built from the union of all layouts.
 // Used for JSON import to map human-readable labels back to key IDs.
@@ -11,65 +12,16 @@ const LABEL_TO_KEY = Object.fromEntries(
 );
 
 // ── Keyboard SVG generation ───────────────────────────────────────────────────
-// Mirrors the rendering logic in Keyboard.jsx so each format can be rendered
-// independently without touching the live DOM.
 
-const KEY_DEFAULT    = '#2a2a2a';
-const KEY_BOUND      = '#3d3420';
 const BORDER_DEFAULT = '#444';
 const BORDER_BOUND   = '#e0a84b';
 const TEXT_DEFAULT   = '#aaa';
 const TEXT_BOUND     = '#f5e0b0';
 const TRI            = 10;
 
-const KEY_ACCENT = {
-  ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  AltLeft:   '#7be09a', AltRight:   '#7be09a',
-  ControlLeft: '#e07b39', ControlRight: '#e07b39',
-};
-
-const TRI_COLORS = {
-  Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
-  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
-};
-
-const MOD_KEY_IDS = {
-  Shift:  ['ShiftLeft','ShiftRight'], ShiftLeft:  ['ShiftLeft'],    ShiftRight:  ['ShiftRight'],
-  Alt:    ['AltLeft','AltRight'],     AltLeft:    ['AltLeft'],      AltRight:    ['AltRight'],
-  Ctrl:   ['ControlLeft','ControlRight'], CtrlLeft: ['ControlLeft'], CtrlRight:  ['ControlRight'],
-};
-
-const MOD_CORNER = {
-  Shift: 'shift', ShiftLeft: 'shift', ShiftRight: 'shift',
-  Alt:   'alt',   AltLeft:   'alt',   AltRight:   'alt',
-  Ctrl:  'ctrl',  CtrlLeft:  'ctrl',  CtrlRight:  'ctrl',
-};
-
-const SPLIT_LABELS = {
-  ShiftLeft: 'LShift', ShiftRight: 'RShift',
-  ControlLeft: 'LCtrl', ControlRight: 'RCtrl',
-  AltLeft: 'LAlt', AltRight: 'RAlt',
-};
-
-const MOD_COLORS = {
-  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
-  Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
-};
-
-function modFill(hex) {
-  if (!hex || hex.length < 7) return KEY_DEFAULT;
-  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-  const bg = 0x1a;
-  const h = n => Math.max(0,Math.min(255,n)).toString(16).padStart(2,'0');
-  const blend = c => Math.round(bg + (c - bg) * 0.25);
-  return `#${h(blend(r))}${h(blend(g))}${h(blend(b))}`;
-}
-
 function triColor(mod, keyColors) {
   for (const id of (MOD_KEY_IDS[mod] || [])) if (keyColors[id]) return keyColors[id];
-  return TRI_COLORS[mod] || '#888';
+  return MOD_COLORS[mod] || '#888';
 }
 
 function triPts(mod, { x, y, w, h }) {
