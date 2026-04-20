@@ -14,6 +14,12 @@ const MODIFIER_KEY_IDS = new Set([
   'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight', 'ContextMenu',
 ]);
 
+const MOD_KEY_FAMILY = {
+  ShiftLeft: 'Shift', ShiftRight: 'Shift',
+  ControlLeft: 'Ctrl', ControlRight: 'Ctrl',
+  AltLeft: 'Alt', AltRight: 'Alt',
+};
+
 function buildModDefs(settings) {
   const { splitModifiers } = settings;
   if (splitModifiers) {
@@ -61,6 +67,21 @@ export default function BindModal({
   const modalRef = useRef(null);
 
   const newId = bindingId(keyId, modifiers);
+
+  const currentFamily = MOD_KEY_FAMILY[keyId];
+  const hasConflict = (() => {
+    if (currentFamily && modifiers.length === 0) {
+      return existingBindings.some(b => b.modifiers.some(m => MOD_FAMILY[m] === currentFamily));
+    }
+    if (modifiers.length > 0) {
+      const usedFamilies = new Set(modifiers.map(m => MOD_FAMILY[m]).filter(Boolean));
+      return existingBindings.some(b => {
+        const fam = MOD_KEY_FAMILY[b.key];
+        return fam && b.modifiers.length === 0 && usedFamilies.has(fam);
+      });
+    }
+    return false;
+  })();
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
@@ -211,6 +232,10 @@ export default function BindModal({
               )}
             </div>
           </div>
+
+          {hasConflict && (
+            <p className="conflict-warn">⚠ {t('modifierConflict')}</p>
+          )}
 
           <div className="modal-actions">
             <button type="button" className="btn-secondary" onClick={onCancel}>{t('cancel')}</button>
