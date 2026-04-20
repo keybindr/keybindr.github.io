@@ -142,7 +142,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                     <span className="mod-none">—</span>
                   )}
                 </td>
-                <td className="cell-key">{keyLabel}</td>
+                <td className="cell-key" style={{ cursor: 'pointer' }} onClick={e => { e.stopPropagation(); onOpenModal?.(b.key); }}>{keyLabel}</td>
                 <td className="cell-color">
                   <button
                     type="button"
