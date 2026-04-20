@@ -1065,7 +1065,9 @@ html, body {
 
   .cell-drag { display: none; }
 
-  .legend-row { justify-content: flex-end; }
+  .legend-row { justify-content: flex-start; }
+
+  .format-add-btn { order: -1; }
 
   .modal {
     max-height: 90vh;
