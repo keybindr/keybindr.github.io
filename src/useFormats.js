@@ -94,13 +94,20 @@ export function useFormats() {
   // ── Bindings ──────────────────────────────────────────────────────────
   function addOrUpdate(key, modifiers, action) {
     const id = bindingId(key, modifiers);
-    mutateActiveFormat(f => ({
-      ...f,
-      bindings: [
-        ...f.bindings.filter(b => bindingId(b.key, b.modifiers) !== id),
-        { key, modifiers: modifiers.slice().sort(), action },
-      ],
-    }));
+    mutateActiveFormat(f => {
+      const exists = f.bindings.some(b => bindingId(b.key, b.modifiers) === id);
+      if (exists) {
+        return {
+          ...f,
+          bindings: f.bindings.map(b =>
+            bindingId(b.key, b.modifiers) === id
+              ? { key, modifiers: modifiers.slice().sort(), action }
+              : b
+          ),
+        };
+      }
+      return { ...f, bindings: [...f.bindings, { key, modifiers: modifiers.slice().sort(), action }] };
+    });
   }
 
   function reorderBindings(fromIndex, toIndex) {
