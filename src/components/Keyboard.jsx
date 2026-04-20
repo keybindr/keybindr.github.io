@@ -13,11 +13,13 @@ const TEXT_BOUND   = '#f5e0b0';
 
 const SIZE = 10;
 
-// Default colors for modifier keys and their triangles when user hasn't set a custom color
-const KEY_DEFAULT_MOD_COLOR = {
+// Default accent colors — modifier keys and WASD cluster
+// Fill uses modFill(accent); stroke uses accent when unbound, amber when bound
+const KEY_DEFAULT_ACCENT = {
   ShiftLeft:    '#7b9ee0', ShiftRight:   '#7b9ee0',
   AltLeft:      '#7be09a', AltRight:     '#7be09a',
   ControlLeft:  '#e07b39', ControlRight: '#e07b39',
+  KeyW: '#7be09a', KeyA: '#7be09a', KeyS: '#7be09a', KeyD: '#7be09a',
 };
 
 // Maps binding modifier names → keyboard key IDs for color lookup
@@ -132,16 +134,16 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         const keyBindings    = boundMap[k.id] || [];
         const isBound        = keyBindings.length > 0;
         const isSelected     = keyBindings.some(b => bindingId(b.key, b.modifiers) === selectedId);
-        const customColor    = keyColors[k.id];
-        const defaultModColor = KEY_DEFAULT_MOD_COLOR[k.id] || null;
+        const customColor  = keyColors[k.id];
+        const accentColor  = KEY_DEFAULT_ACCENT[k.id] || null;
 
-        const fill   = customColor     ? customColor
-                     : isBound         ? KEY_BOUND
-                     : defaultModColor ? modFill(defaultModColor)
+        const fill   = customColor ? customColor
+                     : accentColor ? modFill(accentColor)
+                     : isBound     ? KEY_BOUND
                      : KEY_DEFAULT;
-        const stroke = isSelected      ? BORDER_SELECTED
-                     : isBound         ? BORDER_BOUND
-                     : defaultModColor ? defaultModColor
+        const stroke = isSelected  ? BORDER_SELECTED
+                     : isBound     ? BORDER_BOUND
+                     : accentColor ? accentColor
                      : BORDER_DEFAULT;
         const textColor = isBound ? TEXT_BOUND : TEXT_DEFAULT;
 
