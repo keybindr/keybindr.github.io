@@ -199,7 +199,7 @@ export default function App() {
   const [showHamburger, setShowHamburger] = useState(false);
 
   const [showMobileWarning, setShowMobileWarning] = useState(() => {
-    return window.innerWidth <= 768;
+    return window.innerWidth <= 768 && !localStorage.getItem(MOBILE_WARNED_KEY);
   });
 
   useEffect(() => {
@@ -342,6 +342,7 @@ export default function App() {
   }
 
   function closeMobileWarning() {
+    localStorage.setItem(MOBILE_WARNED_KEY, '1');
     setShowMobileWarning(false);
   }
 
