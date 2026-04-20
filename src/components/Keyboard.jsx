@@ -3,6 +3,7 @@ import { getKeys, getLayout } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from '../modifierConstants';
+import { useT, resolveAction } from '../useTranslation';
 
 const KEY_SELECTED    = '#5a4a1a';
 const BORDER_DEFAULT  = '#444';
@@ -92,6 +93,7 @@ function trianglePoints(mod, k) {
 
 export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = {} }) {
   const { splitModifiers, physicalLayout = 'ansi-104', language = 'en-US' } = settings;
+  const t = useT();
   const [tooltip, setTooltip] = useState(null);
 
   const layout = getLayout(physicalLayout);
@@ -258,7 +260,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
                 <span className="tooltip-arrow">→</span>
               </>
             )}
-            <span className="tooltip-action">{b.action}</span>
+            <span className="tooltip-action">{resolveAction(b.action, t)}</span>
           </div>
         ))}
       </div>
