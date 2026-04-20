@@ -6,6 +6,13 @@ import ColorPicker from './ColorPicker';
 const PICKER_WIDTH = 252;
 const PICKER_GAP   = 12;
 
+// Which family each modifier belongs to — prevents L+R same-family combos
+const MOD_FAMILY = {
+  Shift: 'Shift', ShiftLeft: 'Shift', ShiftRight: 'Shift',
+  Alt:   'Alt',   AltLeft:   'Alt',   AltRight:   'Alt',
+  Ctrl:  'Ctrl',  CtrlLeft:  'Ctrl',  CtrlRight:  'Ctrl',
+};
+
 function buildModDefs(settings) {
   const { splitModifiers, modColors, splitModColors } = settings;
   if (splitModifiers) {
@@ -35,7 +42,7 @@ export default function BindModal({
   const keyDef  = KEY_MAP[keyId];
   const modDefs = buildModDefs(settings);
 
-  const [modifier, setModifier]     = useState('');
+  const [modifiers, setModifiers]   = useState([]);
   const [action, setAction]         = useState('');
   const [localColor, setLocalColor] = useState(keyColor ?? '');
   const [pickerPos, setPickerPos]   = useState(null);
@@ -43,8 +50,7 @@ export default function BindModal({
   const inputRef = useRef(null);
   const modalRef = useRef(null);
 
-  const mods  = modifier ? [modifier] : [];
-  const newId = bindingId(keyId, mods);
+  const newId = bindingId(keyId, modifiers);
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
@@ -52,21 +58,34 @@ export default function BindModal({
     if (existing) setAction(existing.action);
   }, []);
 
+  // When modifier selection changes, auto-fill action if a binding exists for this combo
   useEffect(() => {
     const existing = existingBindings.find(b => bindingId(b.key, b.modifiers) === newId);
     if (existing && action === '') setAction(existing.action);
-  }, [modifier]);
+  }, [modifiers.join(',')]);
 
-  // Position picker flush to the left of the modal, matching its height
   useEffect(() => {
     if (!modalRef.current) return;
     const rect = modalRef.current.getBoundingClientRect();
     setPickerPos({
-      top:    rect.top,
-      left:   Math.max(8, rect.left - PICKER_WIDTH - PICKER_GAP),
+      top:  rect.top,
+      left: Math.max(8, rect.left - PICKER_WIDTH - PICKER_GAP),
       height: rect.height,
     });
   }, []);
+
+  function toggleModifier(value) {
+    setModifiers(prev => {
+      if (prev.includes(value)) {
+        // Deselect if already active
+        return prev.filter(m => m !== value);
+      }
+      const family = MOD_FAMILY[value];
+      // Replace any existing mod from the same family, then add new one
+      const filtered = family ? prev.filter(m => MOD_FAMILY[m] !== family) : prev;
+      return [...filtered, value].sort();
+    });
+  }
 
   function applyColor(color) {
     setLocalColor(color);
@@ -76,16 +95,16 @@ export default function BindModal({
   function handleSubmit(e) {
     e.preventDefault();
     if (!action.trim()) return;
-    onSave(keyId, mods, action.trim());
+    onSave(keyId, modifiers, action.trim());
   }
 
-  const activeModDef = modDefs.find(m => m.value === modifier);
-  const modLabel     = activeModDef?.label ?? modifier;
+  // Build title: e.g. "Ctrl+Shift+A"
+  const modLabels = modifiers.map(m => modDefs.find(d => d.value === m)?.label ?? m);
+  const titleCombo = [...modLabels, keyDef?.label ?? keyId].join('+');
 
   return (
     <div className="modal-backdrop" onClick={onCancel}>
 
-      {/* Color picker — always visible, fixed to the left of the modal */}
       {pickerPos && (
         <div
           className="cpk-panel"
@@ -121,10 +140,9 @@ export default function BindModal({
         </div>
       )}
 
-      {/* Main modal */}
       <div className="modal" ref={modalRef} onClick={e => e.stopPropagation()}>
         <h3 className="modal-title">
-          Bind <span className="modal-key">{modifier ? `${modLabel}+` : ''}{keyDef?.label ?? keyId}</span>
+          Bind <span className="modal-key">{titleCombo}</span>
         </h3>
 
         <form onSubmit={handleSubmit} className="modal-form">
@@ -133,20 +151,20 @@ export default function BindModal({
             <div className="mod-buttons">
               <button
                 type="button"
-                className={`mod-btn${modifier === '' ? ' active' : ''}`}
-                onClick={() => setModifier('')}
+                className={`mod-btn${modifiers.length === 0 ? ' active' : ''}`}
+                onClick={() => setModifiers([])}
               >None</button>
               {modDefs.map(m => (
                 <button
                   key={m.value}
                   type="button"
-                  className={`mod-btn${modifier === m.value ? ' active' : ''}`}
-                  style={modifier === m.value ? {
+                  className={`mod-btn${modifiers.includes(m.value) ? ' active' : ''}`}
+                  style={modifiers.includes(m.value) ? {
                     borderColor: m.color,
                     color: m.color,
                     background: m.color + '22',
                   } : {}}
-                  onClick={() => setModifier(m.value)}
+                  onClick={() => toggleModifier(m.value)}
                 >{m.label}</button>
               ))}
             </div>
