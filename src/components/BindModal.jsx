@@ -13,6 +13,15 @@ const MOD_FAMILY = {
   Ctrl:  'Ctrl',  CtrlLeft:  'Ctrl',  CtrlRight:  'Ctrl',
 };
 
+// Effective display color when no custom color is set
+const KEY_ACCENT_COLORS = {
+  ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
+  AltLeft:   '#7be09a', AltRight:   '#7be09a',
+  ControlLeft: '#e07b39', ControlRight: '#e07b39',
+};
+const KEY_BOUND_DEFAULT   = '#3d3420';
+const KEY_UNBOUND_DEFAULT = '#2a2a2a';
+
 const MOD_BUTTON_COLORS = {
   Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
   Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
@@ -47,6 +56,11 @@ export default function BindModal({
 }) {
   const keyDef  = KEY_MAP[keyId];
   const modDefs = buildModDefs(settings);
+
+  const isBoundKey = existingBindings.some(b => b.key === keyId);
+  const effectiveColor = keyColor
+    || KEY_ACCENT_COLORS[keyId]
+    || (isBoundKey ? KEY_BOUND_DEFAULT : KEY_UNBOUND_DEFAULT);
 
   const [modifiers, setModifiers]   = useState([]);
   const [action, setAction]         = useState('');
@@ -124,7 +138,7 @@ export default function BindModal({
           onClick={e => e.stopPropagation()}
         >
           <div className="cpk-panel-body">
-            <ColorPicker color={localColor || '#4a4a4a'} onChange={applyColor} />
+            <ColorPicker color={localColor || effectiveColor} onChange={applyColor} />
             {recentColors.length > 0 && (
               <>
                 <div className="recently-picked-label">Recently Picked</div>
