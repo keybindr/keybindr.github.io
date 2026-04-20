@@ -1061,6 +1061,8 @@ html, body {
     padding-bottom: 2px;
   }
 
+  .legend-row { display: none; }
+
   .modal {
     max-height: 90vh;
     overflow-y: auto;
