@@ -1,8 +1,12 @@
-import { KEYS, KEY_MAP, KEYBOARD_WIDTH, KEYBOARD_HEIGHT } from './keyboardLayout';
+import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
+import { resolveLabel } from './keylabels';
 
-// Reverse map: human label → internal key ID (for JSON import)
+// Reverse map: US-English label → key ID, built from the union of all layouts.
+// Used for JSON import to map human-readable labels back to key IDs.
 const LABEL_TO_KEY = Object.fromEntries(
-  Object.entries(KEY_MAP).filter(([, v]) => v.label).map(([id, v]) => [v.label, id])
+  Object.entries(ALL_KEY_MAP)
+    .filter(([, v]) => v.label)
+    .map(([id, v]) => [v.label, id])
 );
 
 // ── Keyboard SVG generation ───────────────────────────────────────────────────
@@ -93,16 +97,22 @@ function splitTriPts(corner, { x, y, w, h }) {
 }
 
 function buildKeyboardSVG(bindings, keyColors, settings) {
-  const { splitModifiers } = settings;
+  const { splitModifiers, physicalLayout = 'ansi-104', language = 'en-US' } = settings;
+  const layout = getLayout(physicalLayout);
+  const KEYS   = layout.keys;
+  const { width: KW, height: KH, showLeds } = layout;
+
   const bmap = {};
   for (const b of bindings) {
     if (!bmap[b.key]) bmap[b.key] = [];
     bmap[b.key].push(b);
   }
 
-  const clips = KEYS.map(k =>
-    `<clipPath id="kc-${k.id}"><rect x="${k.x}" y="${k.y}" width="${k.w}" height="${k.h}" rx="4"/></clipPath>`
-  ).join('');
+  const clips = KEYS.map(k => {
+    if (k.path)
+      return `<clipPath id="kc-${k.id}"><path d="${k.path}"/></clipPath>`;
+    return `<clipPath id="kc-${k.id}"><rect x="${k.x}" y="${k.y}" width="${k.w}" height="${k.h}" rx="4"/></clipPath>`;
+  }).join('');
 
   const keyEls = KEYS.map(k => {
     const bs     = bmap[k.id] || [];
@@ -112,9 +122,12 @@ function buildKeyboardSVG(bindings, keyColors, settings) {
     const fill   = custom ? custom : accent ? modFill(accent) : bound ? KEY_BOUND : KEY_DEFAULT;
     const stroke = bound ? BORDER_BOUND : accent ? accent : BORDER_DEFAULT;
     const tcol   = bound ? TEXT_BOUND : TEXT_DEFAULT;
-    const label  = escapeXml((splitModifiers && SPLIT_LABELS[k.id]) ? SPLIT_LABELS[k.id] : k.label);
+    const rawLabel = (splitModifiers && SPLIT_LABELS[k.id]) ? SPLIT_LABELS[k.id] : resolveLabel(k.id, k, language);
+    const label  = escapeXml(rawLabel);
     const fs     = k.w > 60 ? 11 : 10;
     const sw     = bound ? 1.5 : 1;
+    const tx     = k.textX ?? (k.x + k.w / 2);
+    const ty     = k.textY ?? (k.y + k.h / 2 + 1);
 
     const mods = [...new Set(bs.flatMap(b => b.modifiers))];
     const corners = {};
@@ -137,16 +150,20 @@ function buildKeyboardSVG(bindings, keyColors, settings) {
       ];
     }).join('');
 
-    return `<g><rect x="${k.x}" y="${k.y}" width="${k.w}" height="${k.h}" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/><text x="${k.x+k.w/2}" y="${k.y+k.h/2+1}" text-anchor="middle" dominant-baseline="middle" font-size="${fs}" font-family="'Courier New',monospace" fill="${tcol}">${label}</text>${polys}</g>`;
+    const shape = k.path
+      ? `<path d="${k.path}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`
+      : `<rect x="${k.x}" y="${k.y}" width="${k.w}" height="${k.h}" rx="4" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+
+    return `<g>${shape}<text x="${tx}" y="${ty}" text-anchor="middle" dominant-baseline="middle" font-size="${fs}" font-family="'Courier New',monospace" fill="${tcol}">${label}</text>${polys}</g>`;
   }).join('');
 
-  const leds = [
+  const leds = showLeds ? [
     { label: 'NUM', cx: 882 }, { label: 'CAPS', cx: 948 }, { label: 'SCRL', cx: 1014 },
   ].map(({ label, cx }) =>
     `<g><rect x="${cx-14}" y="6" width="28" height="32" rx="4" fill="#1a1a1a" stroke="#333" stroke-width="1"/><circle cx="${cx}" cy="18" r="4" fill="#1c3320" stroke="#2d4d33" stroke-width="1"/><text x="${cx}" y="31" text-anchor="middle" font-size="7" font-family="'Courier New',monospace" fill="#444" letter-spacing="0.5">${label}</text></g>`
-  ).join('');
+  ).join('') : '';
 
-  return `<svg viewBox="0 0 ${KEYBOARD_WIDTH} ${KEYBOARD_HEIGHT}" xmlns="http://www.w3.org/2000/svg"><rect width="${KEYBOARD_WIDTH}" height="${KEYBOARD_HEIGHT}" fill="#1a1a1a"/><defs>${clips}</defs>${keyEls}${leds}</svg>`;
+  return `<svg viewBox="0 0 ${KW} ${KH}" xmlns="http://www.w3.org/2000/svg"><rect width="${KW}" height="${KH}" fill="#1a1a1a"/><defs>${clips}</defs>${keyEls}${leds}</svg>`;
 }
 
 // ── Canvas helpers ────────────────────────────────────────────────────────────
@@ -232,7 +249,7 @@ function clampText(ctx, text, maxW) {
   return text + '…';
 }
 
-function drawBindingTable(ctx, bindings, x, y, availW, S) {
+function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
   const FONT    = `'Courier New', monospace`;
   const rowH    = 26 * S;
   const headerH = 32 * S;
@@ -286,7 +303,7 @@ function drawBindingTable(ctx, bindings, x, y, availW, S) {
 
     ctx.font      = `bold ${12 * S}px ${FONT}`;
     ctx.fillStyle = '#f0c060';
-    ctx.fillText(KEY_MAP[b.key]?.label ?? b.key, colKey, ty);
+    ctx.fillText(resolveLabel(b.key, ALL_KEY_MAP[b.key], language), colKey, ty);
 
     ctx.font      = `${12 * S}px ${FONT}`;
     ctx.fillStyle = '#ccc';
@@ -302,14 +319,16 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   const bindings = format.bindings || [];
   const kc       = format.keyColors || {};
 
+  const { width: KB_W, height: KB_H } = getLayout(settings.physicalLayout ?? 'ansi-104');
+
   // Content width — matches separator line, same on both sides of keyboard/table
-  const totalW   = KEYBOARD_WIDTH * S;
+  const totalW   = KB_W * S;
   const contentW = totalW - 2 * pad;
 
   // Keyboard container: keyboard SVG inset with padding inside a rounded box
   const kbInset      = 16 * S;
   const kbDrawW      = contentW - 2 * kbInset;
-  const kbDrawH      = Math.round(kbDrawW * KEYBOARD_HEIGHT / KEYBOARD_WIDTH);
+  const kbDrawH      = Math.round(kbDrawW * KB_H / KB_W);
   const kbBoxH       = kbDrawH + 2 * kbInset;
 
   // Binding table container
@@ -390,7 +409,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   if (bindings.length > 0) {
     fillRoundRect  (ctx, pad, y, contentW, tblBoxH, 8 * S, '#1a1a1a');
     strokeRoundRect(ctx, pad, y, contentW, tblBoxH, 8 * S, '#3a3a3a', S);
-    drawBindingTable(ctx, bindings, pad + tblInset, y + tblInset, tblInnerW, S);
+    drawBindingTable(ctx, bindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.language ?? 'en-US');
     y += sTblBox + sGap6;
   }
 
@@ -404,14 +423,16 @@ async function renderFormatToCanvas(format, layoutName, settings) {
 
 // ── Public exports ────────────────────────────────────────────────────────────
 
-export function exportJSON(formats, layoutName) {
+export function exportJSON(formats, layoutName, settings = {}) {
   const data = {
-    version: 3,
-    layoutName: layoutName || '',
+    version: 4,
+    layoutName:      layoutName || '',
+    physicalLayout:  settings.physicalLayout ?? 'ansi-104',
+    language:        settings.language       ?? 'en-US',
     formats: formats.map(f => ({
       name: f.name,
       bindings: f.bindings.map(b => ({
-        key:       KEY_MAP[b.key]?.label ?? b.key,
+        key:       ALL_KEY_MAP[b.key]?.label ?? b.key,
         modifiers: b.modifiers,
         action:    b.action,
       })),
@@ -481,7 +502,15 @@ function parseJSON(text) {
       keyColors: (f.keyColors && typeof f.keyColors === 'object') ? f.keyColors : {},
     }));
     if (data.version >= 3 && data.layoutName !== undefined) {
-      return { type: 'full', data: { layoutName: String(data.layoutName), formats } };
+      return {
+        type: 'full',
+        data: {
+          layoutName:     String(data.layoutName),
+          physicalLayout: data.physicalLayout ?? null,
+          language:       data.language       ?? null,
+          formats,
+        },
+      };
     }
     return { type: 'formats', data: formats };
   }

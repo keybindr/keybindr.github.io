@@ -181,6 +181,16 @@ export function useFormats() {
     mutate(() => ({ formats: newFormats.slice(0, MAX_FORMATS), active: 0 }));
   }
 
+  function removeOrphanBindings(validKeySet) {
+    mutate(s => ({
+      ...s,
+      formats: s.formats.map(f => ({
+        ...f,
+        bindings: f.bindings.filter(b => validKeySet.has(b.key)),
+      })),
+    }));
+  }
+
   // ── Key colors ────────────────────────────────────────────────────────
   function setKeyColor(keyId, color) {
     mutateActiveFormat(f => ({ ...f, keyColors: { ...f.keyColors, [keyId]: color } }));
@@ -234,7 +244,7 @@ export function useFormats() {
     keyColors: activeFormat?.keyColors ?? {},
     recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
-    replaceActiveBindings, replaceFormats,
+    replaceActiveBindings, replaceFormats, removeOrphanBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
     resetFormats,
     undo, redo,

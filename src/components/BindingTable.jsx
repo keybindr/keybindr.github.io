@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { KEY_MAP } from '../keyboardLayout';
+import { ALL_KEY_MAP } from '../keyboardLayouts';
+import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 
 const KEY_BOUND_COLOR = '#3d3420';
@@ -10,7 +11,8 @@ const MOD_COLORS = {
   Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
 };
 
-export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal }) {
+export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal, settings = {} }) {
+  const language = settings.language ?? 'en-US';
   const [editingId, setEditingId]         = useState(null);
   const [editValue, setEditValue]         = useState('');
   const [dragOverIndex, setDragOverIndex] = useState(null);
@@ -70,7 +72,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
           {bindings.map((b, index) => {
             const id         = bindingId(b.key, b.modifiers);
             const isSelected = id === selectedId;
-            const keyLabel   = KEY_MAP[b.key]?.label ?? b.key;
+            const keyLabel   = resolveLabel(b.key, ALL_KEY_MAP[b.key], language);
             const isEditing  = editingId === id;
             const isDragOver = dragOverIndex === index;
             const keyColor   = keyColors[b.key];

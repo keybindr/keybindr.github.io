@@ -10,8 +10,10 @@ import { bindingId } from './useBindings';
 import { useFormats, MAX_FORMATS } from './useFormats';
 import { useSettings } from './useSettings';
 import { exportJSON, exportPNG, importFile } from './export';
+import OrphanWarningModal from './components/OrphanWarningModal';
 import { encodeShareUrl, decodeShareHash } from './share';
 import { DEFAULT_BINDINGS, DEFAULT_VEHICLE_BINDINGS } from './defaultBindings';
+import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 
 const DEFAULT_FORMAT_NAMES = ['On Foot', 'In Vehicle'];
 const DEFAULT_BINDING_COUNTS = [DEFAULT_BINDINGS.length, DEFAULT_VEHICLE_BINDINGS.length];
@@ -168,13 +170,13 @@ export default function App() {
     formats, activeIndex, switchTo, addFormat, setFormatName, removeFormat,
     bindings, keyColors, recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
-    replaceActiveBindings, replaceFormats,
+    replaceActiveBindings, replaceFormats, removeOrphanBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
     resetFormats,
     undo, redo,
   } = useFormats();
 
-  const { settings, setSplitModifiers, resetSettings } = useSettings();
+  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, resetSettings } = useSettings();
 
   const [layoutName, setLayoutNameState] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
   const [selectedId, setSelectedId]     = useState(null);
@@ -184,6 +186,7 @@ export default function App() {
   const [showShare, setShowShare]             = useState(false);
   const [shareUrl, setShareUrl]               = useState('');
   const [pendingImport, setPendingImport]     = useState(null);
+  const [pendingLayout, setPendingLayout]     = useState(null); // { id, name, orphans }
   const modalOriginalColor = useRef(undefined);
 
   const fileInputRef    = useRef(null);
@@ -254,6 +257,8 @@ export default function App() {
   function applySharedImport(result) {
     if (result.formats) replaceFormats(result.formats);
     if (result.layoutName !== undefined) handleLayoutNameChange(result.layoutName);
+    if (result.physicalLayout) setPhysicalLayout(result.physicalLayout);
+    if (result.language)       setLanguage(result.language);
     setSelectedId(null);
     setPendingImport(null);
   }
@@ -274,6 +279,8 @@ export default function App() {
         if (result.type === 'full') {
           replaceFormats(result.data.formats);
           handleLayoutNameChange(result.data.layoutName || '');
+          if (result.data.physicalLayout) setPhysicalLayout(result.data.physicalLayout);
+          if (result.data.language)       setLanguage(result.data.language);
         } else if (result.type === 'formats') {
           replaceFormats(result.data);
         } else {
@@ -332,10 +339,33 @@ export default function App() {
   }
 
   function handleShare() {
-    encodeShareUrl(formats, layoutName).then(url => {
+    encodeShareUrl(formats, layoutName, settings).then(url => {
       setShareUrl(url);
       setShowShare(true);
     });
+  }
+
+  function handleLayoutChange(newId) {
+    const newKeySet = new Set(getKeys(newId).map(k => k.id));
+    const orphans = formats.flatMap(f =>
+      f.bindings
+        .filter(b => !newKeySet.has(b.key))
+        .map(b => ({ ...b, _format: f.name }))
+    );
+    if (orphans.length > 0) {
+      setPendingLayout({ id: newId, name: getKbLayout(newId).name, orphans });
+    } else {
+      setPhysicalLayout(newId);
+    }
+  }
+
+  function confirmLayoutChange() {
+    if (!pendingLayout) return;
+    const newKeySet = new Set(getKeys(pendingLayout.id).map(k => k.id));
+    removeOrphanBindings(newKeySet);
+    setPhysicalLayout(pendingLayout.id);
+    setSelectedId(null);
+    setPendingLayout(null);
   }
 
   const { splitModifiers } = settings;
@@ -378,7 +408,7 @@ export default function App() {
                   Import JSON
                 </button>
                 <div className="dropdown-sep" />
-                <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(formats, layoutName))}>
+                <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(formats, layoutName, settings))}>
                   Export JSON
                 </button>
                 <button className="dropdown-item" onClick={() => menuAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
@@ -411,7 +441,7 @@ export default function App() {
                 Import JSON
               </button>
               <div className="hamburger-sep" />
-              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportJSON(formats, layoutName))}>
+              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportJSON(formats, layoutName, settings))}>
                 Export JSON
               </button>
               <button className="hamburger-item" onClick={() => hamburgerAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
@@ -484,6 +514,7 @@ export default function App() {
           onRemove={remove}
           onReorder={reorderBindings}
           onOpenModal={handleKeyClick}
+          settings={settings}
         />
       </div>
 
@@ -506,7 +537,7 @@ export default function App() {
 
       {pendingImport && (
         <ShareImportModal
-          onDownload={() => exportJSON(formats, layoutName)}
+          onDownload={() => exportJSON(formats, layoutName, settings)}
           onConfirm={() => applySharedImport(pendingImport)}
           onCancel={() => setPendingImport(null)}
         />
@@ -516,8 +547,19 @@ export default function App() {
         <SettingsModal
           settings={settings}
           onToggleSplit={setSplitModifiers}
+          onChangeLayout={handleLayoutChange}
+          onChangeLocale={setLanguage}
           onClearKeys={resetAll}
           onClose={() => setShowSettings(false)}
+        />
+      )}
+
+      {pendingLayout && (
+        <OrphanWarningModal
+          orphans={pendingLayout.orphans}
+          newLayoutName={pendingLayout.name}
+          onConfirm={confirmLayoutChange}
+          onCancel={() => setPendingLayout(null)}
         />
       )}
 

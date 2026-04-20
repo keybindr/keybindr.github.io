@@ -35,8 +35,13 @@ async function gunzipB64(str) {
   return new TextDecoder().decode(buf);
 }
 
-export async function encodeShareUrl(formats, layoutName) {
-  const payload = JSON.stringify({ layoutName, formats });
+export async function encodeShareUrl(formats, layoutName, settings = {}) {
+  const payload = JSON.stringify({
+    layoutName,
+    physicalLayout: settings.physicalLayout ?? 'ansi-104',
+    language:       settings.language       ?? 'en-US',
+    formats,
+  });
   let hash;
   if (payload.length > THRESHOLD && typeof CompressionStream !== 'undefined') {
     const encoded = await gzipB64(payload);

@@ -1,7 +1,9 @@
 import React from 'react';
+import { LAYOUTS } from '../keyboardLayouts';
+import { LOCALES } from '../keylabels';
 
-export default function SettingsModal({ settings, onToggleSplit, onClearKeys, onClose }) {
-  const { splitModifiers } = settings;
+export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onClearKeys, onClose }) {
+  const { splitModifiers, physicalLayout, language } = settings;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -9,6 +11,34 @@ export default function SettingsModal({ settings, onToggleSplit, onClearKeys, on
         <div className="settings-header">
           <h3 className="modal-title" style={{ marginBottom: 0 }}>Settings</h3>
           <button className="btn-icon" onClick={onClose} title="Close">✕</button>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-section-title">Keyboard</div>
+          <div className="settings-row settings-row-labeled">
+            <label className="settings-label">Physical Layout</label>
+            <select
+              className="settings-select"
+              value={physicalLayout}
+              onChange={e => onChangeLayout(e.target.value)}
+            >
+              {Object.entries(LAYOUTS).map(([id, layout]) => (
+                <option key={id} value={id}>{layout.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="settings-row settings-row-labeled">
+            <label className="settings-label">Language / Region</label>
+            <select
+              className="settings-select"
+              value={language}
+              onChange={e => onChangeLocale(e.target.value)}
+            >
+              {Object.entries(LOCALES).map(([id, locale]) => (
+                <option key={id} value={id}>{locale.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="settings-section">

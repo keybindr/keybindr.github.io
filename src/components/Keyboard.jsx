@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { KEYS, KEYBOARD_WIDTH, KEYBOARD_HEIGHT } from '../keyboardLayout';
+import { getKeys, getLayout } from '../keyboardLayouts';
+import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 
 const KEY_DEFAULT  = '#2a2a2a';
@@ -13,25 +14,19 @@ const TEXT_BOUND   = '#f5e0b0';
 
 const SIZE = 10;
 
-// Default accent colors — modifier keys and WASD cluster
-// Fill uses modFill(accent); stroke uses accent when unbound, amber when bound
 const KEY_DEFAULT_ACCENT = {
-  ShiftLeft:    '#7b9ee0', ShiftRight:   '#7b9ee0',
-  AltLeft:      '#7be09a', AltRight:     '#7be09a',
-  ControlLeft:  '#e07b39', ControlRight: '#e07b39',
+  ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
+  AltLeft:   '#7be09a', AltRight:   '#7be09a',
+  ControlLeft: '#e07b39', ControlRight: '#e07b39',
 };
 
-// Maps binding modifier names → keyboard key IDs for color lookup
 const MOD_TO_KEY_IDS = {
   Shift:      ['ShiftLeft', 'ShiftRight'],
-  ShiftLeft:  ['ShiftLeft'],
-  ShiftRight: ['ShiftRight'],
+  ShiftLeft:  ['ShiftLeft'],  ShiftRight: ['ShiftRight'],
   Alt:        ['AltLeft', 'AltRight'],
-  AltLeft:    ['AltLeft'],
-  AltRight:   ['AltRight'],
+  AltLeft:    ['AltLeft'],    AltRight:   ['AltRight'],
   Ctrl:       ['ControlLeft', 'ControlRight'],
-  CtrlLeft:   ['ControlLeft'],
-  CtrlRight:  ['ControlRight'],
+  CtrlLeft:   ['ControlLeft'], CtrlRight:  ['ControlRight'],
 };
 
 const DEFAULT_TRIANGLE_COLORS = {
@@ -53,7 +48,6 @@ const SPLIT_LABELS = {
   AltLeft: 'LAlt', AltRight: 'RAlt',
 };
 
-// Blend hex color with the dark keyboard background at 25% for the key fill tint
 function modFill(hex) {
   if (!hex || hex.length < 7) return KEY_DEFAULT;
   const r = parseInt(hex.slice(1, 3), 16);
@@ -80,42 +74,73 @@ const MOD_TO_CORNER = {
   Ctrl: 'ctrl', CtrlLeft: 'ctrl', CtrlRight: 'ctrl',
 };
 
-// Perpendicular stripe width; E is the distance along each key edge (= STRIPE_W * √2)
 const STRIPE_W = 4;
 const STRIPE_E = STRIPE_W * 1.4142;
 
-function splitCornerPoints(corner, k) {
+// Returns effective rect for a key (bounding box for path-based keys)
+function keyRect(k) {
+  return { x: k.x, y: k.y, w: k.w, h: k.h };
+}
+
+// For keys with a `corners` property (ISO Enter), use those for triangle anchor points
+function triCorner(k, corner) {
+  if (k.corners) {
+    if (corner === 'shift') return k.corners.tr;
+    if (corner === 'alt')   return k.corners.br;
+    if (corner === 'ctrl')  return k.corners.bl;
+  }
   const { x, y, w, h } = k;
+  if (corner === 'shift') return [x + w, y];
+  if (corner === 'alt')   return [x + w, y + h];
+  return [x, y + h];
+}
+
+function splitCornerPoints(corner, k) {
+  const { x, y, w, h } = keyRect(k);
+  // Use actual corner points if available
+  const tl = k.corners ? [k.x, k.y] : [x, y];
+  const tr = k.corners ? k.corners.tr : [x + w, y];
+  const br = k.corners ? k.corners.br : [x + w, y + h];
+  const bl = k.corners ? k.corners.bl : [x, y + h];
+
   const e = STRIPE_E;
   if (corner === 'shift') {
-    const lPts = `${x+w},${y} ${x+w},${y+SIZE} ${x+w-SIZE},${y}`;
-    const rPts = `${x+w},${y+SIZE} ${x+w-SIZE},${y} ${x+w-SIZE-e},${y} ${x+w},${y+SIZE+e}`;
+    const [tx, ty] = tr;
+    const lPts = `${tx},${ty} ${tx},${ty+SIZE} ${tx-SIZE},${ty}`;
+    const rPts = `${tx},${ty+SIZE} ${tx-SIZE},${ty} ${tx-SIZE-e},${ty} ${tx},${ty+SIZE+e}`;
     return [lPts, rPts];
   }
   if (corner === 'alt') {
-    const lPts = `${x+w},${y+h} ${x+w},${y+h-SIZE} ${x+w-SIZE},${y+h}`;
-    const rPts = `${x+w},${y+h-SIZE} ${x+w-SIZE},${y+h} ${x+w-SIZE-e},${y+h} ${x+w},${y+h-SIZE-e}`;
+    const [bx, by] = br;
+    const lPts = `${bx},${by} ${bx},${by-SIZE} ${bx-SIZE},${by}`;
+    const rPts = `${bx},${by-SIZE} ${bx-SIZE},${by} ${bx-SIZE-e},${by} ${bx},${by-SIZE-e}`;
     return [lPts, rPts];
   }
-  const lPts = `${x},${y+h} ${x},${y+h-SIZE} ${x+SIZE},${y+h}`;
-  const rPts = `${x},${y+h-SIZE} ${x+SIZE},${y+h} ${x+SIZE+e},${y+h} ${x},${y+h-SIZE-e}`;
+  // ctrl
+  const [blx, bly] = bl;
+  const lPts = `${blx},${bly} ${blx},${bly-SIZE} ${blx+SIZE},${bly}`;
+  const rPts = `${blx},${bly-SIZE} ${blx+SIZE},${bly} ${blx+SIZE+e},${bly} ${blx},${bly-SIZE-e}`;
   return [lPts, rPts];
 }
 
 function trianglePoints(mod, k) {
-  const { x, y, w, h } = k;
+  const corner = MOD_TO_CORNER[mod];
+  if (!corner) return '';
+  const [cx, cy] = triCorner(k, corner);
   if (mod === 'Shift' || mod === 'ShiftLeft' || mod === 'ShiftRight')
-    return `${x + w},${y} ${x + w},${y + SIZE} ${x + w - SIZE},${y}`;
+    return `${cx},${cy} ${cx},${cy+SIZE} ${cx-SIZE},${cy}`;
   if (mod === 'Alt' || mod === 'AltLeft' || mod === 'AltRight')
-    return `${x + w},${y + h} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h}`;
-  if (mod === 'Ctrl' || mod === 'CtrlLeft' || mod === 'CtrlRight')
-    return `${x},${y + h} ${x},${y + h - SIZE} ${x + SIZE},${y + h}`;
-  return `${x},${y} ${x + SIZE},${y} ${x},${y + SIZE}`;
+    return `${cx},${cy} ${cx},${cy-SIZE} ${cx-SIZE},${cy}`;
+  // Ctrl
+  return `${cx},${cy} ${cx},${cy-SIZE} ${cx+SIZE},${cy}`;
 }
 
-export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = { splitModifiers: false } }) {
-  const { splitModifiers } = settings;
-  const [tooltip, setTooltip] = useState(null); // { keyId, x, y }
+export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = {} }) {
+  const { splitModifiers, physicalLayout = 'ansi-104', language = 'en-US' } = settings;
+  const [tooltip, setTooltip] = useState(null);
+
+  const layout = getLayout(physicalLayout);
+  const KEYS   = layout.keys;
 
   const boundMap = {};
   for (const b of bindings) {
@@ -127,7 +152,6 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
     if ((boundMap[keyId] || []).length === 0) return;
     setTooltip({ keyId, x: e.clientX, y: e.clientY });
   }
-
   function handleMouseMove(e, keyId) {
     if ((boundMap[keyId] || []).length === 0) return;
     setTooltip({ keyId, x: e.clientX, y: e.clientY });
@@ -142,7 +166,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
   return (
     <>
     <svg
-      viewBox={`0 0 ${KEYBOARD_WIDTH} ${KEYBOARD_HEIGHT}`}
+      viewBox={`0 0 ${layout.width} ${layout.height}`}
       width="100%"
       style={{ display: 'block', userSelect: 'none' }}
       xmlns="http://www.w3.org/2000/svg"
@@ -151,16 +175,20 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
       <defs>
         {KEYS.map(k => (
           <clipPath key={k.id} id={`clip-${k.id}`}>
-            <rect x={k.x} y={k.y} width={k.w} height={k.h} rx={4} />
+            {k.path
+              ? <path d={k.path} />
+              : <rect x={k.x} y={k.y} width={k.w} height={k.h} rx={4} />
+            }
           </clipPath>
         ))}
       </defs>
+
       {KEYS.map(k => {
-        const keyBindings    = boundMap[k.id] || [];
-        const isBound        = keyBindings.length > 0;
-        const isSelected     = keyBindings.some(b => bindingId(b.key, b.modifiers) === selectedId);
-        const customColor  = keyColors[k.id];
-        const accentColor  = KEY_DEFAULT_ACCENT[k.id] || null;
+        const keyBindings = boundMap[k.id] || [];
+        const isBound     = keyBindings.length > 0;
+        const isSelected  = keyBindings.some(b => bindingId(b.key, b.modifiers) === selectedId);
+        const customColor = keyColors[k.id];
+        const accentColor = KEY_DEFAULT_ACCENT[k.id] || null;
 
         const fill   = customColor ? customColor
                      : accentColor ? modFill(accentColor)
@@ -172,8 +200,19 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
                      : BORDER_DEFAULT;
         const textColor = isBound ? TEXT_BOUND : TEXT_DEFAULT;
 
-        const mods  = [...new Set(keyBindings.flatMap(b => b.modifiers))];
-        const label = (splitModifiers && SPLIT_LABELS[k.id]) ? SPLIT_LABELS[k.id] : k.label;
+        const mods = [...new Set(keyBindings.flatMap(b => b.modifiers))];
+
+        // Label: split modifier display → locale override → layout default
+        let label;
+        if (splitModifiers && SPLIT_LABELS[k.id]) {
+          label = SPLIT_LABELS[k.id];
+        } else {
+          label = resolveLabel(k.id, k, language);
+        }
+
+        // Text position: path-based keys (ISO Enter) use explicit textX/textY
+        const textX = k.textX ?? (k.x + k.w / 2);
+        const textY = k.textY ?? (k.y + k.h / 2 + 1);
 
         return (
           <g
@@ -184,13 +223,22 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
             onMouseLeave={() => setTooltip(null)}
             style={{ cursor: 'pointer' }}
           >
-            <rect
-              x={k.x} y={k.y} width={k.w} height={k.h} rx={4}
-              fill={fill} stroke={stroke}
-              strokeWidth={isBound || isSelected ? 1.5 : 1}
-            />
+            {k.path ? (
+              <path
+                d={k.path}
+                fill={fill} stroke={stroke}
+                strokeWidth={isBound || isSelected ? 1.5 : 1}
+                rx={4}
+              />
+            ) : (
+              <rect
+                x={k.x} y={k.y} width={k.w} height={k.h} rx={4}
+                fill={fill} stroke={stroke}
+                strokeWidth={isBound || isSelected ? 1.5 : 1}
+              />
+            )}
             <text
-              x={k.x + k.w / 2} y={k.y + k.h / 2 + 1}
+              x={textX} y={textY}
               textAnchor="middle" dominantBaseline="middle"
               fontSize={k.w > 60 ? 11 : 10}
               fontFamily="'Courier New', monospace"
@@ -199,6 +247,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
             >
               {label}
             </text>
+
             {(() => {
               const corners = {};
               for (const mod of mods) {
@@ -226,25 +275,15 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         );
       })}
 
-      {/* LED indicators above numpad — NUM on NumLock, evenly spaced across numpad width */}
-      {[
-        { label: 'NUM',  cx: 882  },
-        { label: 'CAPS', cx: 948  },
-        { label: 'SCRL', cx: 1014 },
+      {layout.showLeds && [
+        { label: 'NUM', cx: 882 }, { label: 'CAPS', cx: 948 }, { label: 'SCRL', cx: 1014 },
       ].map(({ label, cx }) => (
         <g key={label} style={{ pointerEvents: 'none' }}>
           <rect x={cx - 14} y={6} width={28} height={32} rx={4}
             fill="#1a1a1a" stroke="#333" strokeWidth={1} />
-          <circle cx={cx} cy={18} r={4}
-            fill="#1c3320" stroke="#2d4d33" strokeWidth={1} />
-          <text
-            x={cx} y={31}
-            textAnchor="middle"
-            fontSize={7}
-            fontFamily="'Courier New', monospace"
-            fill="#444"
-            letterSpacing="0.5"
-          >{label}</text>
+          <circle cx={cx} cy={18} r={4} fill="#1c3320" stroke="#2d4d33" strokeWidth={1} />
+          <text x={cx} y={31} textAnchor="middle" fontSize={7}
+            fontFamily="'Courier New', monospace" fill="#444" letterSpacing="0.5">{label}</text>
         </g>
       ))}
     </svg>
@@ -256,11 +295,8 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
             {b.modifiers.length > 0 && (
               <>
                 {b.modifiers.map(m => (
-                  <span
-                    key={m}
-                    className="tooltip-mod-tag"
-                    style={{ borderColor: DEFAULT_TRIANGLE_COLORS[m] || '#888', color: DEFAULT_TRIANGLE_COLORS[m] || '#888' }}
-                  >
+                  <span key={m} className="tooltip-mod-tag"
+                    style={{ borderColor: DEFAULT_TRIANGLE_COLORS[m] || '#888', color: DEFAULT_TRIANGLE_COLORS[m] || '#888' }}>
                     {TOOLTIP_MOD_LABEL[m] || m}
                   </span>
                 ))}
