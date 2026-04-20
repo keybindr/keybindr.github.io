@@ -11,22 +11,18 @@ export default function HelpModal({ onClose }) {
           <p className="mobile-only mobile-notice">{MOBILE_NOTICE}</p>
 
           <p>
-            <strong>Keybindr</strong> is a visual keyboard binding planner. Map actions to
-            key combinations, customize colors, name your layout, and export it for reference.
-          </p>
+            <strong>Keybindr</strong> is a visual keyboard binding planner. </p>
+			
+			<p> Map actions to key combinations, customize colors, name your layout, and export it for reference. All data is stored on your computer and there is no user tracking.</p>
 
           <h4>Binding a key</h4>
           <p>
-            Click any key on the keyboard to open the bind dialog. Choose an optional
-            modifier (Ctrl, Shift, Alt, or left/right variants), type an action label,
-            pick an optional highlight color, then click Save.
+            Click any key on the keyboard to open the bind dialog. Choose an optional modifier (Ctrl, Shift, Alt, or left/right variants), type an action label, pick an optional highlight color, then click Save.
           </p>
 
           <h4>Editing &amp; removing</h4>
           <p>
-            Bound keys appear in the Bindings table below the keyboard. Click a row to
-            highlight the key on the keyboard. Double-click a row to reopen that key's
-            bind dialog. Edit action labels inline by clicking the action text, or click × to remove.
+            Bound keys appear in the Bindings table below the keyboard. Click a row to highlight the key on the keyboard. Edit action labels inline by clicking the action text, or click × to remove.
           </p>
 
           <h4>Key colors</h4>
@@ -44,9 +40,7 @@ export default function HelpModal({ onClose }) {
 
           <h4>Multiple formats</h4>
           <p>
-            Use the format tabs (top-right of the keyboard) to manage multiple binding
-            sets — e.g. Default, Combat, Menu. Click the active tab to rename it.
-            Up to 5 formats can be open at once.
+            Use the format tabs (top-right of the keyboard) to manage multiple binding sets — e.g. On foot, In Vehicle, etc. Click the active tab to rename it. Up to 5 formats can be open at once.
           </p>
 
           <h4>Corner indicators</h4>
@@ -60,14 +54,14 @@ export default function HelpModal({ onClose }) {
           <p>
             Use the Import / Export menu to load or save bindings as XML or JSON.
             Export PNG produces an image of the keyboard with the full binding list
-            appended — useful for sharing or printing.
+            appended — better PNG exports coming soon.
           </p>
 
           <h4>Settings</h4>
           <p>
             The Settings menu lets you customize modifier key colors and toggle between
             unified modifier keys (Shift) or separate left/right keys (LShift / RShift).
-            Reset All clears all bindings, colors, and layout name.
+            Reset All clears all bindings, colors, and layout name. I’ll provide more keyboard sizes and layout options soon.
           </p>
         </div>
         <div className="modal-actions">
