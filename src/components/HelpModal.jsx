@@ -28,6 +28,7 @@ export default function HelpModal({ onClose }) {
           <p>
             <strong>{t('helpResetLabel')}</strong> {t('helpResetBody')}
           </p>
+          {t('helpOutro') && <p>{t('helpOutro')}</p>}
         </div>
         <div className="modal-actions">
           <button className="btn-primary" onClick={onClose}>{t('gotIt')}</button>
