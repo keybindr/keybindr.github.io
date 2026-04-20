@@ -100,6 +100,23 @@ export default function BindModal({
         >
           <div className="cpk-panel-body">
             <ColorPicker color={localColor || '#4a4a4a'} onChange={applyColor} />
+            {recentColors.length > 0 && (
+              <>
+                <div className="recently-picked-label">Recently Picked</div>
+                <div className="recent-colors-row">
+                  {recentColors.map(c => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`color-swatch${c === localColor ? ' active' : ''}`}
+                      style={{ background: c }}
+                      title={c}
+                      onClick={() => applyColor(c)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -150,16 +167,6 @@ export default function BindModal({
           <div className="modal-row">
             <label>Key Color</label>
             <div className="color-pick-row">
-              {recentColors.map(c => (
-                <button
-                  key={c}
-                  type="button"
-                  className={`color-swatch${c === localColor ? ' active' : ''}`}
-                  style={{ background: c }}
-                  title={c}
-                  onClick={() => applyColor(c)}
-                />
-              ))}
               <div
                 className="color-current-swatch"
                 style={{ background: localColor || 'var(--surface2)' }}

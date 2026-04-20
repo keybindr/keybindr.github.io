@@ -48,12 +48,18 @@ html, body {
   text-transform: uppercase;
 }
 
-.app-subtitle {
-  font-size: 28px;
+.app-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.app-tagline {
+  font-size: 11px;
   font-weight: 400;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--text-dim);
-  text-transform: none;
   font-family: var(--font-ui);
 }
 
@@ -814,7 +820,7 @@ html, body {
   }
 
   .mobile-only { display: block; }
-  .app-subtitle { display: none; }
+  .app-tagline { display: none; }
 
   .btn-hamburger {
     background: var(--surface2);

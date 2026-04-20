@@ -270,9 +270,10 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">
-          Keybindr <span className="app-subtitle">— A Keybinding Visualizer</span>
-        </h1>
+        <div className="app-title-group">
+          <h1 className="app-title">Keybindr</h1>
+          <div className="app-tagline">A Keybinding Visualizer</div>
+        </div>
 
         {/* Desktop navigation */}
         <div className="header-actions desktop-nav">
