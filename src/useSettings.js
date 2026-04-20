@@ -16,9 +16,11 @@ function detectLocale() {
 
 const detectedLocale = detectLocale();
 
+const isTouchDevice = 'ontouchstart' in window;
+
 const DEFAULTS = {
   splitModifiers: false,
-  physicalLayout: localeUsesISO(detectedLocale) ? 'iso-105' : 'ansi-104',
+  physicalLayout: isTouchDevice ? 'layout-60' : localeUsesISO(detectedLocale) ? 'iso-105' : 'ansi-104',
   language: detectedLocale,
 };
 
