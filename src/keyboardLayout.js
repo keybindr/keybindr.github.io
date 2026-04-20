@@ -5,9 +5,10 @@
 
 const U = 44; // unit
 const G = 4;  // gap
+const FROW_GAP = 20; // extra space between function row and number row
 
 export const KEYBOARD_WIDTH  = 1040;
-export const KEYBOARD_HEIGHT = 268;
+export const KEYBOARD_HEIGHT = 288;
 
 function key(id, label, col, row, w = 1, h = 1, altLabel) {
   return {
@@ -15,7 +16,7 @@ function key(id, label, col, row, w = 1, h = 1, altLabel) {
     label,
     altLabel,
     x: col * U + G,
-    y: row * U + G,
+    y: row * U + G + (row >= 1 ? FROW_GAP : 0),
     w: w * U - G,
     h: h * U - G,
   };
