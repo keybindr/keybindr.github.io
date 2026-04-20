@@ -7,7 +7,7 @@ import SettingsModal from './components/SettingsModal';
 import { bindingId } from './useBindings';
 import { useFormats, MAX_FORMATS } from './useFormats';
 import { useSettings } from './useSettings';
-import { exportXML, exportJSON, exportPNG, importFile } from './export';
+import { exportJSON, exportPNG, importFile } from './export';
 
 const LAYOUT_NAME_KEY    = 'keybindr_layout_name';
 const MOBILE_WARNED_KEY  = 'keybindr_mobile_warned';
@@ -213,8 +213,14 @@ export default function App() {
     if (!file) return;
     importFile(file)
       .then(result => {
-        if (result.type === 'formats') replaceFormats(result.data);
-        else replaceActiveBindings(result.data);
+        if (result.type === 'full') {
+          replaceFormats(result.data.formats);
+          handleLayoutNameChange(result.data.layoutName || '');
+        } else if (result.type === 'formats') {
+          replaceFormats(result.data);
+        } else {
+          replaceActiveBindings(result.data);
+        }
         setSelectedId(null);
       })
       .catch(err => alert(err.message));
@@ -293,7 +299,7 @@ export default function App() {
           <input
             ref={fileInputRef}
             type="file"
-            accept=".xml,.json"
+            accept=".json"
             style={{ display: 'none' }}
             onChange={handleImport}
           />
@@ -304,16 +310,13 @@ export default function App() {
             {showMenu && (
               <div className="dropdown-menu">
                 <button className="dropdown-item" onClick={() => menuAction(() => fileInputRef.current?.click())}>
-                  Import XML/JSON
+                  Import JSON
                 </button>
                 <div className="dropdown-sep" />
-                <button className="dropdown-item" onClick={() => menuAction(() => exportXML(bindings))}>
-                  Export XML
-                </button>
-                <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(formats))}>
+                <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(formats, layoutName))}>
                   Export JSON
                 </button>
-                <button className="dropdown-item" onClick={() => menuAction(() => exportPNG('keyboard-svg', bindings))}>
+                <button className="dropdown-item" onClick={() => menuAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
                   Export PNG
                 </button>
               </div>
@@ -331,16 +334,13 @@ export default function App() {
           {showHamburger && (
             <div className="hamburger-menu">
               <button className="hamburger-item" onClick={() => hamburgerAction(() => fileInputRef.current?.click())}>
-                Import XML/JSON
+                Import JSON
               </button>
               <div className="hamburger-sep" />
-              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportXML(bindings))}>
-                Export XML
-              </button>
-              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportJSON(formats))}>
+              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportJSON(formats, layoutName))}>
                 Export JSON
               </button>
-              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportPNG('keyboard-svg', bindings))}>
+              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
                 Export PNG
               </button>
               <div className="hamburger-sep" />
