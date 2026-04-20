@@ -434,6 +434,72 @@ export const LOCALES = {
       IntlBackslash: '<',
     },
   },
+
+  'ru-RU': {
+    name: 'Русский',
+    overrides: {
+      Backquote:    'ё',
+      KeyQ: 'й', KeyW: 'ц', KeyE: 'у', KeyR: 'к', KeyT: 'е',
+      KeyY: 'н', KeyU: 'г', KeyI: 'ш', KeyO: 'щ', KeyP: 'з',
+      BracketLeft: 'х', BracketRight: 'ъ',
+      KeyA: 'ф', KeyS: 'ы', KeyD: 'в', KeyF: 'а', KeyG: 'п',
+      KeyH: 'р', KeyJ: 'о', KeyK: 'л', KeyL: 'д',
+      Semicolon: 'ж', Quote: 'э',
+      KeyZ: 'я', KeyX: 'ч', KeyC: 'с', KeyV: 'м',
+      KeyB: 'и', KeyN: 'т', KeyM: 'ь',
+      Comma: 'б', Period: 'ю', Slash: '.',
+    },
+  },
+
+  'uk-UA': {
+    name: 'Українська',
+    overrides: {
+      Backquote:    'ґ',
+      KeyQ: 'й', KeyW: 'ц', KeyE: 'у', KeyR: 'к', KeyT: 'е',
+      KeyY: 'н', KeyU: 'г', KeyI: 'ш', KeyO: 'щ', KeyP: 'з',
+      BracketLeft: 'х', BracketRight: 'ї',
+      KeyA: 'ф', KeyS: 'і', KeyD: 'в', KeyF: 'а', KeyG: 'п',
+      KeyH: 'р', KeyJ: 'о', KeyK: 'л', KeyL: 'д',
+      Semicolon: 'ж', Quote: 'є',
+      KeyZ: 'я', KeyX: 'ч', KeyC: 'с', KeyV: 'м',
+      KeyB: 'и', KeyN: 'т', KeyM: 'ь',
+      Comma: 'б', Period: 'ю', Slash: '.',
+    },
+  },
+
+  'ko-KR': {
+    name: '한국어',
+    overrides: {
+      KeyQ: 'ㅂ', KeyW: 'ㅈ', KeyE: 'ㄷ', KeyR: 'ㄱ', KeyT: 'ㅅ',
+      KeyY: 'ㅛ', KeyU: 'ㅕ', KeyI: 'ㅑ', KeyO: 'ㅐ', KeyP: 'ㅔ',
+      KeyA: 'ㅁ', KeyS: 'ㄴ', KeyD: 'ㅇ', KeyF: 'ㄹ', KeyG: 'ㅎ',
+      KeyH: 'ㅗ', KeyJ: 'ㅓ', KeyK: 'ㅏ', KeyL: 'ㅣ',
+      KeyZ: 'ㅋ', KeyX: 'ㅌ', KeyC: 'ㅊ', KeyV: 'ㅍ',
+      KeyB: 'ㅠ', KeyN: 'ㅜ', KeyM: 'ㅡ',
+    },
+  },
+
+  'zh-CN': {
+    name: '简体中文',
+    overrides: {},
+  },
+
+  'ja-JP': {
+    name: '日本語',
+    overrides: {
+      Equal:        '^',
+      BracketLeft:  '@',
+      BracketRight: '[',
+      Backslash:    '¥',
+      IntlHash:     ']',
+      Quote:        ':',
+    },
+  },
+
+  'id-ID': {
+    name: 'Bahasa Indonesia',
+    overrides: {},
+  },
 };
 
 export const LOCALE_IDS = Object.keys(LOCALES);
@@ -446,6 +512,7 @@ const ISO_LOCALE_SET = new Set([
   'el-GR', 'es-ES',
   'fi-FI', 'fr-FR', 'fr-BE',
   'hu-HU', 'it-IT',
+  'ja-JP',
   'nb-NO', 'nl-NL',
   'pl-PL', 'pt-PT', 'ro-RO',
   'sk-SK', 'sv-SE',
