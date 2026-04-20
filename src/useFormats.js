@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { DEFAULT_BINDINGS, DEFAULT_VEHICLE_BINDINGS } from './defaultBindings';
 import { bindingId } from './useBindings';
 
@@ -54,13 +54,48 @@ function persist(formats, active) {
   localStorage.setItem(ACTIVE_KEY,  String(active));
 }
 
+const HISTORY_LIMIT = 3;
+
 export function useFormats() {
   const [{ formats, active: activeIndex }, setState] = useState(loadInitial);
   const [recentColors, setRecent] = useState(loadRecent);
+  const historyRef = useRef({ past: [], future: [] });
 
   function mutate(fn) {
     setState(prev => {
       const next = fn(prev);
+      historyRef.current = {
+        past: [...historyRef.current.past.slice(-(HISTORY_LIMIT - 1)), prev],
+        future: [],
+      };
+      persist(next.formats, next.active);
+      return next;
+    });
+  }
+
+  function undo() {
+    setState(current => {
+      const { past, future } = historyRef.current;
+      if (past.length === 0) return current;
+      const prev = past[past.length - 1];
+      historyRef.current = {
+        past: past.slice(0, -1),
+        future: [current, ...future].slice(0, HISTORY_LIMIT),
+      };
+      persist(prev.formats, prev.active);
+      return prev;
+    });
+  }
+
+  function redo() {
+    setState(current => {
+      const { past, future } = historyRef.current;
+      if (future.length === 0) return current;
+      const next = future[0];
+      historyRef.current = {
+        past: [...past.slice(-(HISTORY_LIMIT - 1)), current],
+        future: future.slice(1),
+      };
       persist(next.formats, next.active);
       return next;
     });
@@ -202,5 +237,6 @@ export function useFormats() {
     replaceActiveBindings, replaceFormats,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
     resetFormats,
+    undo, redo,
   };
 }

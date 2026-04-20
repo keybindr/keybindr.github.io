@@ -171,6 +171,7 @@ export default function App() {
     replaceActiveBindings, replaceFormats,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
     resetFormats,
+    undo, redo,
   } = useFormats();
 
   const { settings, setSplitModifiers, resetSettings } = useSettings();
@@ -194,6 +195,23 @@ export default function App() {
   const [showMobileWarning, setShowMobileWarning] = useState(() => {
     return window.innerWidth <= 768;
   });
+
+  useEffect(() => {
+    function onKeyDown(e) {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
+        e.preventDefault();
+        undo();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
+        e.preventDefault();
+        redo();
+      }
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [undo, redo]);
 
   useEffect(() => {
     if (!showMenu) return;
