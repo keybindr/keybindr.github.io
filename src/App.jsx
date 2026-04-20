@@ -173,7 +173,7 @@ export default function App() {
     bindings, keyColors, recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats, removeOrphanBindings,
-    setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
+    setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors, addRecentColor,
     resetFormats,
     undo, redo,
   } = useFormats();
@@ -313,6 +313,10 @@ export default function App() {
     if (action) {
       addOrUpdate(key, mods, action);
       setSelectedId(bindingId(key, mods));
+    }
+    const newColor = keyColors[key];
+    if (newColor && newColor !== modalOriginalColor.current) {
+      addRecentColor(newColor);
     }
     setModalKey(null);
   }

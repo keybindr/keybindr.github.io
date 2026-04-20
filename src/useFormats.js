@@ -194,6 +194,9 @@ export function useFormats() {
   // ── Key colors ────────────────────────────────────────────────────────
   function setKeyColor(keyId, color) {
     mutateActiveFormat(f => ({ ...f, keyColors: { ...f.keyColors, [keyId]: color } }));
+  }
+
+  function addRecentColor(color) {
     setRecent(prev => {
       const next = [color, ...prev.filter(c => c !== color)].slice(0, 5);
       localStorage.setItem(RECENT_KEY, JSON.stringify(next));
@@ -245,7 +248,7 @@ export function useFormats() {
     recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats, removeOrphanBindings,
-    setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
+    setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors, addRecentColor,
     resetFormats,
     undo, redo,
   };
