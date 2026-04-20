@@ -500,6 +500,56 @@ export const LOCALES = {
     name: 'Bahasa Indonesia',
     overrides: {},
   },
+
+  'vi-VN': {
+    name: 'Tiếng Việt',
+    overrides: {},
+  },
+
+  'bg-BG': {
+    name: 'Български',
+    overrides: {
+      Backquote:    'ч',
+      KeyQ: 'я', KeyW: 'в', KeyE: 'е', KeyR: 'р', KeyT: 'т',
+      KeyY: 'ъ', KeyU: 'у', KeyI: 'и', KeyO: 'о', KeyP: 'п',
+      BracketLeft: 'ш', BracketRight: 'щ', Backslash: 'ю',
+      KeyA: 'а', KeyS: 'с', KeyD: 'д', KeyF: 'ф', KeyG: 'г',
+      KeyH: 'х', KeyJ: 'й', KeyK: 'к', KeyL: 'л',
+      KeyZ: 'з', KeyX: 'ь', KeyC: 'ц', KeyV: 'ж',
+      KeyB: 'б', KeyN: 'н', KeyM: 'м',
+      IntlHash: 'ю', IntlBackslash: '<',
+    },
+  },
+
+  'sr-RS': {
+    name: 'Српски',
+    overrides: {
+      KeyQ: 'љ', KeyW: 'њ', KeyE: 'е', KeyR: 'р', KeyT: 'т',
+      KeyY: 'з', KeyU: 'у', KeyI: 'и', KeyO: 'о', KeyP: 'п',
+      BracketLeft: 'ш', BracketRight: 'ђ',
+      KeyA: 'а', KeyS: 'с', KeyD: 'д', KeyF: 'ф', KeyG: 'г',
+      KeyH: 'х', KeyJ: 'ј', KeyK: 'к', KeyL: 'л',
+      Semicolon: 'ч', Quote: 'ћ',
+      KeyZ: 'ж', KeyX: 'џ', KeyC: 'ц', KeyV: 'в',
+      KeyB: 'б', KeyN: 'н', KeyM: 'м',
+      IntlBackslash: '<',
+    },
+  },
+
+  'hr-HR': {
+    name: 'Hrvatski (QWERTZ)',
+    overrides: {
+      KeyY:          'Z',
+      KeyZ:          'Y',
+      BracketLeft:   'Š',
+      BracketRight:  'Đ',
+      Backslash:     'Ž',
+      Semicolon:     'Č',
+      Quote:         'Ć',
+      IntlHash:      'Ž',
+      IntlBackslash: '<',
+    },
+  },
 };
 
 export const LOCALE_IDS = Object.keys(LOCALES);
@@ -507,16 +557,17 @@ export const LOCALE_IDS = Object.keys(LOCALES);
 // Locales whose physical keyboards use the ISO 105-key standard (extra IntlHash
 // and IntlBackslash keys, L-shaped Enter). Everything else defaults to ANSI 104.
 const ISO_LOCALE_SET = new Set([
-  'en-GB',
+  'bg-BG',
   'cs-CZ', 'da-DK', 'de-DE', 'de-CH',
   'el-GR', 'es-ES',
   'fi-FI', 'fr-FR', 'fr-BE',
-  'hu-HU', 'it-IT',
+  'hr-HR', 'hu-HU', 'it-IT',
   'ja-JP',
   'nb-NO', 'nl-NL',
   'pl-PL', 'pt-PT', 'ro-RO',
-  'sk-SK', 'sv-SE',
+  'sk-SK', 'sr-RS', 'sv-SE',
   'tr-TR',
+  'en-GB',
 ]);
 
 export function localeUsesISO(localeId) {
