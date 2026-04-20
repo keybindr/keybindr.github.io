@@ -259,11 +259,12 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
   const colAct  = x + 260 * S;
   const maxActW = availW - (colAct - x) - 16 * S;
 
+  const modPad  = 10 * S;
   ctx.font      = `bold ${10 * S}px ${FONT}`;
   ctx.fillStyle = '#555';
-  ctx.fillText('MODIFIER', x,      y + headerH * 0.7);
-  ctx.fillText('KEY',      colKey, y + headerH * 0.7);
-  ctx.fillText('ACTION',   colAct, y + headerH * 0.7);
+  ctx.fillText('MODIFIER', x + modPad, y + headerH * 0.7);
+  ctx.fillText('KEY',      colKey,     y + headerH * 0.7);
+  ctx.fillText('ACTION',   colAct,     y + headerH * 0.7);
 
   ctx.strokeStyle = '#2a2a2a';
   ctx.lineWidth   = S;
@@ -283,7 +284,7 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
     }
 
     if (b.modifiers.length > 0) {
-      let mx = x;
+      let mx = x + modPad;
       ctx.font = `${9 * S}px ${FONT}`;
       for (const m of b.modifiers) {
         const color = MOD_COLORS[m] || '#888';
@@ -300,7 +301,7 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
     } else {
       ctx.font      = `${12 * S}px ${FONT}`;
       ctx.fillStyle = '#444';
-      ctx.fillText('—', x, ty);
+      ctx.fillText('—', x + modPad, ty);
     }
 
     ctx.font      = `bold ${12 * S}px ${FONT}`;
