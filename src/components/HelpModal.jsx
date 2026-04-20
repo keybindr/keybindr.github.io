@@ -11,9 +11,8 @@ export default function HelpModal({ onClose }) {
           <p className="mobile-only mobile-notice">{MOBILE_NOTICE}</p>
 
           <p>
-            <strong>Keybindr</strong> is a visual keyboard binding planner. </p>
-			
-			<p> Map actions to key combinations, customize colors, name your layout, and export it for reference. All data is stored on your computer and there is no user tracking.</p>
+            <strong>Keybindr</strong> is a visual keyboard binding planner. Map actions to key combinations, customize colors, name your layout, and export it for reference. All data is stored on your computer and there is zero user tracking.
+          </p>
 
           <h4>Binding a key</h4>
           <p>
@@ -52,7 +51,7 @@ export default function HelpModal({ onClose }) {
 
           <h4>Settings</h4>
           <p>
-            Toggle between unified modifier keys (Shift) or separate left/right keys (LShift / RShift). Reset All clears all bindings, colors, and the layout name.
+            Toggle between unified modifier keys (Shift) or separate left/right keys (LShift / RShift). Reset All clears all bindings, colors, and the layout name. More keyboard layouts coming soon!
           </p>
         </div>
         <div className="modal-actions">
