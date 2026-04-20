@@ -409,6 +409,15 @@ html, body {
 .binding-table tr.row-selected td { border-bottom-color: #4a4010; }
 .binding-table tr.row-dragging { opacity: 0.4; }
 .binding-table tr.row-drag-over td { border-top: 2px solid var(--accent); }
+.binding-table tr.row-conflict td { border-bottom-color: #5a3a00; }
+
+.conflict-icon {
+  margin-left: 6px;
+  color: #e0a030;
+  font-size: 12px;
+  cursor: default;
+  flex-shrink: 0;
+}
 
 .cell-drag { width: 20px; padding-left: 0 !important; padding-right: 0 !important; }
 .drag-handle {
