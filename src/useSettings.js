@@ -4,18 +4,13 @@ const SETTINGS_KEY = 'keybindr_settings';
 
 const DEFAULTS = {
   splitModifiers: false,
-  showActions: false,
 };
 
 function load() {
   try {
     const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY));
     if (!saved) return DEFAULTS;
-    return {
-      ...DEFAULTS,
-      splitModifiers: !!saved.splitModifiers,
-      showActions:    !!saved.showActions,
-    };
+    return { ...DEFAULTS, splitModifiers: !!saved.splitModifiers };
   } catch {
     return DEFAULTS;
   }
@@ -36,14 +31,6 @@ export function useSettings() {
     });
   }
 
-  function setShowActions(val) {
-    setSettings(prev => {
-      const next = { ...prev, showActions: val };
-      persist(next);
-      return next;
-    });
-  }
-
   function resetSettings() {
     setSettings(() => {
       persist(DEFAULTS);
@@ -51,5 +38,5 @@ export function useSettings() {
     });
   }
 
-  return { settings, setSplitModifiers, setShowActions, resetSettings };
+  return { settings, setSplitModifiers, resetSettings };
 }

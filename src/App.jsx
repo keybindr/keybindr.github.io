@@ -157,7 +157,7 @@ export default function App() {
     resetFormats,
   } = useFormats();
 
-  const { settings, setSplitModifiers, setShowActions, resetSettings } = useSettings();
+  const { settings, setSplitModifiers, resetSettings } = useSettings();
 
   const [layoutName, setLayoutNameState] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
   const [selectedId, setSelectedId]     = useState(null);
@@ -429,7 +429,6 @@ export default function App() {
         <SettingsModal
           settings={settings}
           onToggleSplit={setSplitModifiers}
-          onToggleActions={setShowActions}
           onClearKeys={resetAll}
           onClose={() => setShowSettings(false)}
         />

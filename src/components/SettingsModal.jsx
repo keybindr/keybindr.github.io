@@ -1,7 +1,7 @@
 import React from 'react';
 
-export default function SettingsModal({ settings, onToggleSplit, onToggleActions, onClearKeys, onClose }) {
-  const { splitModifiers, showActions } = settings;
+export default function SettingsModal({ settings, onToggleSplit, onClearKeys, onClose }) {
+  const { splitModifiers } = settings;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -26,26 +26,6 @@ export default function SettingsModal({ settings, onToggleSplit, onToggleActions
                 onClick={() => onToggleSplit(true)}
               >
                 Left / Right
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="settings-section">
-          <div className="settings-section-title">Key display</div>
-          <div className="settings-row">
-            <div className="toggle-group">
-              <button
-                className={`toggle-btn${!showActions ? ' active' : ''}`}
-                onClick={() => onToggleActions(false)}
-              >
-                Key Labels
-              </button>
-              <button
-                className={`toggle-btn${showActions ? ' active' : ''}`}
-                onClick={() => onToggleActions(true)}
-              >
-                Show Actions
               </button>
             </div>
           </div>
