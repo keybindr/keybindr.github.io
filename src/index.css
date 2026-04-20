@@ -1095,6 +1095,23 @@ html, body {
 
 .footer-sep { color: var(--border); }
 
+.kofi-btn {
+  background: var(--surface2);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.kofi-btn:hover {
+  background: var(--accent);
+  color: #1a1a1a;
+}
+
 /* ── Key hover tooltip ───────────────────────────────────────────────────────── */
 .key-tooltip {
   position: fixed;

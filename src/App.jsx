@@ -17,6 +17,7 @@ import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 import { localeUsesISO } from './keylabels';
 import { TranslationContext, makeT, resolveAction } from './useTranslation';
 
+
 const DEFAULT_FORMAT_NAMES = ['__t:formatOnFoot', '__t:formatInVehicle'];
 const LEGACY_FORMAT_NAMES  = ['On Foot', 'In Vehicle'];
 const DEFAULT_BINDING_COUNTS = [DEFAULT_BINDINGS.length, DEFAULT_VEHICLE_BINDINGS.length];
@@ -593,7 +594,7 @@ export default function App() {
 
       <footer className="app-footer">
         <div className="footer-content">
-          <span>{t('vibedBy')} <a href="https://andrewsimone.com/" className="footer-link" target="_blank" rel="noreferrer">Andrew Simone</a></span>
+          <a href="https://ko-fi.com/B0B717I6U" className="kofi-btn" target="_blank" rel="noreferrer">☕ Support on Ko-fi</a>
           <span className="footer-sep">|</span>
           <a href="https://github.com/keybindr/keybindr.github.io" className="footer-link" target="_blank" rel="noreferrer">{t('sourceCode')}</a>
           <span className="footer-sep">|</span>
