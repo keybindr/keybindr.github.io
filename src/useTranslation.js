@@ -7,6 +7,11 @@ export function useT() {
   return useContext(TranslationContext);
 }
 
+export function resolveAction(action, t) {
+  if (typeof action === 'string' && action.startsWith('__t:')) return t(action.slice(4));
+  return action ?? '';
+}
+
 export function makeT(language) {
   const primary  = TRANSLATIONS[language]                    || {};
   const fallback = TRANSLATIONS[LANG_FALLBACK[language]]     || {};

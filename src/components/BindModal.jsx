@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
-import { useT } from '../useTranslation';
+import { useT, resolveAction } from '../useTranslation';
 const KEY_MAP = ALL_KEY_MAP;
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
@@ -98,13 +98,13 @@ export default function BindModal({
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
     const existing = existingBindings.find(b => bindingId(b.key, b.modifiers) === newId);
-    if (existing) setAction(existing.action);
+    if (existing) setAction(resolveAction(existing.action, t));
   }, []);
 
   // When modifier selection changes, auto-fill action if a binding exists for this combo
   useEffect(() => {
     const existing = existingBindings.find(b => bindingId(b.key, b.modifiers) === newId);
-    if (existing && action === '') setAction(existing.action);
+    if (existing && action === '') setAction(resolveAction(existing.action, t));
   }, [modifiers.join(',')]);
 
   useEffect(() => {

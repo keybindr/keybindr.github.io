@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
-import { useT } from '../useTranslation';
+import { useT, resolveAction } from '../useTranslation';
 
 const KEY_BOUND_COLOR = '#3d3420';
 
@@ -22,7 +22,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
 
   function startEdit(b) {
     setEditingId(bindingId(b.key, b.modifiers));
-    setEditValue(b.action);
+    setEditValue(resolveAction(b.action, t));
   }
 
   function commitEdit(b) {
@@ -139,7 +139,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                       onClick={e => e.stopPropagation()}
                     />
                   ) : (
-                    <span className="action-text" title={t('clickToEdit')}>{b.action}</span>
+                    <span className="action-text" title={t('clickToEdit')}>{resolveAction(b.action, t)}</span>
                   )}
                 </td>
                 <td className="cell-del">

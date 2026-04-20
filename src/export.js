@@ -1,5 +1,6 @@
 import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
 import { resolveLabel } from './keylabels';
+import { makeT, resolveAction } from './useTranslation';
 
 // Reverse map: US-English label → key ID, built from the union of all layouts.
 // Used for JSON import to map human-readable labels back to key IDs.
@@ -250,6 +251,7 @@ function clampText(ctx, text, maxW) {
 }
 
 function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
+  const t = makeT(language);
   const FONT    = `'Courier New', monospace`;
   const rowH    = 26 * S;
   const headerH = 32 * S;
@@ -307,7 +309,7 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
 
     ctx.font      = `${12 * S}px ${FONT}`;
     ctx.fillStyle = '#ccc';
-    ctx.fillText(clampText(ctx, b.action || '', maxActW), colAct, ty);
+    ctx.fillText(clampText(ctx, resolveAction(b.action, t) || '', maxActW), colAct, ty);
   }
 }
 
@@ -424,6 +426,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
 // ── Public exports ────────────────────────────────────────────────────────────
 
 export function exportJSON(formats, layoutName, settings = {}) {
+  const t = makeT(settings.language ?? 'en-US');
   const data = {
     version: 4,
     layoutName:      layoutName || '',
@@ -434,7 +437,7 @@ export function exportJSON(formats, layoutName, settings = {}) {
       bindings: f.bindings.map(b => ({
         key:       ALL_KEY_MAP[b.key]?.label ?? b.key,
         modifiers: b.modifiers,
-        action:    b.action,
+        action:    resolveAction(b.action, t),
       })),
       keyColors: f.keyColors,
     })),
