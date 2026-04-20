@@ -529,6 +529,8 @@ export default function App() {
           <span className="footer-sep">|</span>
           <a href="https://github.com/keybindr/keybindr.github.io" className="footer-link" target="_blank" rel="noreferrer">Source Code</a>
           <span className="footer-sep">|</span>
+          <a href="https://github.com/keybindr/keybindr.github.io/issues" className="footer-link" target="_blank" rel="noreferrer">File a Bug</a>
+          <span className="footer-sep">|</span>
           <a href="https://github.com/keybindr/keybindr.github.io/blob/main/LICENSE" className="footer-link" target="_blank" rel="noreferrer">MIT License</a>
         </div>
       </footer>
