@@ -1,22 +1,24 @@
 import React from 'react';
 import { LAYOUTS } from '../keyboardLayouts';
 import { LOCALES } from '../keylabels';
+import { useT } from '../useTranslation';
 
 export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onClearKeys, onClose }) {
+  const t = useT();
   const { splitModifiers, physicalLayout, language } = settings;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal-settings" onClick={e => e.stopPropagation()}>
         <div className="settings-header">
-          <h3 className="modal-title" style={{ marginBottom: 0 }}>Settings</h3>
-          <button className="btn-icon" onClick={onClose} title="Close">✕</button>
+          <h3 className="modal-title" style={{ marginBottom: 0 }}>{t('settingsTitle')}</h3>
+          <button className="btn-icon" onClick={onClose} title={t('close')}>✕</button>
         </div>
 
         <div className="settings-section">
-          <div className="settings-section-title">Keyboard</div>
+          <div className="settings-section-title">{t('keyboardSection')}</div>
           <div className="settings-row settings-row-labeled">
-            <label className="settings-label">Physical Layout</label>
+            <label className="settings-label">{t('physicalLayout')}</label>
             <select
               className="settings-select"
               value={physicalLayout}
@@ -28,7 +30,7 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
             </select>
           </div>
           <div className="settings-row settings-row-labeled">
-            <label className="settings-label">Language / Region</label>
+            <label className="settings-label">{t('languageRegion')}</label>
             <select
               className="settings-select"
               value={language}
@@ -42,20 +44,20 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
         </div>
 
         <div className="settings-section">
-          <div className="settings-section-title">Modifier key display</div>
+          <div className="settings-section-title">{t('modifierDisplay')}</div>
           <div className="settings-row">
             <div className="toggle-group">
               <button
                 className={`toggle-btn${!splitModifiers ? ' active' : ''}`}
                 onClick={() => onToggleSplit(false)}
               >
-                Unified
+                {t('unified')}
               </button>
               <button
                 className={`toggle-btn${splitModifiers ? ' active' : ''}`}
                 onClick={() => onToggleSplit(true)}
               >
-                Left / Right
+                {t('leftRight')}
               </button>
             </div>
           </div>
@@ -63,9 +65,9 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
 
         <div className="settings-danger-section">
           <div className="dropdown-sep" style={{ marginBottom: 14 }} />
-          <p className="settings-danger-label">This will clear all your work</p>
+          <p className="settings-danger-label">{t('clearWarning')}</p>
           <button className="btn-secondary" onClick={onClearKeys} style={{ color: 'var(--danger)', borderColor: 'var(--danger)' }}>
-            Return to Defaults
+            {t('returnToDefaults')}
           </button>
         </div>
       </div>

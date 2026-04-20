@@ -15,6 +15,7 @@ import { encodeShareUrl, decodeShareHash } from './share';
 import { DEFAULT_BINDINGS, DEFAULT_VEHICLE_BINDINGS } from './defaultBindings';
 import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 import { localeUsesISO } from './keylabels';
+import { TranslationContext, makeT } from './useTranslation';
 
 const DEFAULT_FORMAT_NAMES = ['On Foot', 'In Vehicle'];
 const DEFAULT_BINDING_COUNTS = [DEFAULT_BINDINGS.length, DEFAULT_VEHICLE_BINDINGS.length];
@@ -30,10 +31,10 @@ function hasCustomSession(formats, layoutName) {
 
 const LAYOUT_NAME_KEY    = 'keybindr_layout_name';
 const MOBILE_WARNED_KEY  = 'keybindr_mobile_warned';
-const DEFAULT_LAYOUT_NAME = 'Custom Keybind Layout Name';
+const DEFAULT_LAYOUT_NAME = null; // displayed via translation key 'layoutNameDefault'
 
 // ── Format tabs ───────────────────────────────────────────────────────────────
-function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove }) {
+function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove, t }) {
   const [editingIdx, setEditingIdx] = useState(null);
   const inputRef = useRef(null);
 
@@ -63,7 +64,7 @@ function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove 
             key={i}
             className={`format-tab${isActive ? ' active' : ''}`}
             onClick={() => handleTabClick(i)}
-            title={isActive ? 'Click to rename' : label}
+            title={isActive ? (t ? t('tabClickRename') : 'Click to rename') : label}
           >
             {editingIdx === i ? (
               <input
@@ -87,7 +88,7 @@ function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove 
                 <span
                   className="format-tab-remove"
                   onClick={e => { e.stopPropagation(); onRemove(i); }}
-                  title="Remove format"
+                  title={t ? t('tabRemove') : 'Remove format'}
                 >✕</span>
               </>
             )}
@@ -95,14 +96,14 @@ function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove 
         );
       })}
       {formats.length < MAX_FORMATS && (
-        <button className="format-add-btn" onClick={onAdd} title="Add format">+</button>
+        <button className="format-add-btn" onClick={onAdd} title={t ? t('tabAdd') : 'Add format'}>+</button>
       )}
     </div>
   );
 }
 
 // ── Layout name ───────────────────────────────────────────────────────────────
-function LayoutName({ name, onChange }) {
+function LayoutName({ name, onChange, t }) {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
 
@@ -132,8 +133,8 @@ function LayoutName({ name, onChange }) {
   }
 
   return (
-    <div className="layout-name" onClick={() => setEditing(true)} title="Click to rename">
-      {name || DEFAULT_LAYOUT_NAME}
+    <div className="layout-name" onClick={() => setEditing(true)} title={t ? t('tabClickRename') : 'Click to rename'}>
+      {name || (t ? t('layoutNameDefault') : 'Custom Keybind Layout Name')}
     </div>
   );
 }
@@ -153,13 +154,12 @@ function LegendTri({ color, dir }) {
 
 // ── Mobile warning modal ──────────────────────────────────────────────────────
 function MobileWarningModal({ onClose }) {
+  const t = React.useContext(TranslationContext);
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal mobile-warning-modal" onClick={e => e.stopPropagation()}>
-        <button className="mobile-warning-close" onClick={onClose} title="Close">✕</button>
-        <p className="mobile-warning-text">
-          This is a desktop focused application and, given the nature of it, will likely never be totally optimized for mobile. - Management
-        </p>
+        <button className="mobile-warning-close" onClick={onClose} title={t('close')}>✕</button>
+        <p className="mobile-warning-text">{t('mobileWarning')}</p>
       </div>
     </div>
   );
@@ -387,6 +387,7 @@ export default function App() {
   }
 
   const { splitModifiers } = settings;
+  const t = makeT(settings.language);
 
   // Legend colors follow modifier key custom colors, falling back to defaults
   const legShift  = keyColors['ShiftLeft']   || keyColors['ShiftRight']   || '#7b9ee0';
@@ -400,11 +401,12 @@ export default function App() {
   const legCtrlR  = keyColors['ControlRight']|| '#e07b39';
 
   return (
+    <TranslationContext.Provider value={t}>
     <div className="app">
       <header className="app-header">
         <div className="app-title-group">
           <h1 className="app-title">Keybindr</h1>
-          <div className="app-tagline">A Keybinding Visualizer</div>
+          <div className="app-tagline">{t('tagline')}</div>
         </div>
 
         {/* Desktop navigation */}
@@ -418,24 +420,24 @@ export default function App() {
           />
           <div className="dropdown" ref={menuRef}>
             <button className="btn-export" onClick={() => setShowMenu(v => !v)}>
-              Import / Export ▾
+              {t('importExport')}
             </button>
             {showMenu && (
               <div className="dropdown-menu">
                 <button className="dropdown-item" onClick={() => menuAction(() => fileInputRef.current?.click())}>
-                  Import JSON
+                  {t('importJson')}
                 </button>
                 <div className="dropdown-sep" />
                 <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(formats, layoutName, settings))}>
-                  Export JSON
+                  {t('exportJson')}
                 </button>
                 <button className="dropdown-item" onClick={() => menuAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
-                  Export PNG
+                  {t('exportPng')}
                 </button>
               </div>
             )}
           </div>
-          <button className="btn-icon" title="Share layout" onClick={handleShare}>
+          <button className="btn-icon" title={t('shareLayout')} onClick={handleShare}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="13" cy="3" r="1.5"/>
               <circle cx="3" cy="8" r="1.5"/>
@@ -444,8 +446,8 @@ export default function App() {
               <line x1="4.5" y1="9" x2="11.5" y2="12"/>
             </svg>
           </button>
-          <button className="btn-icon" title="Help" onClick={() => setShowHelp(true)}>?</button>
-          <button className="btn-icon" title="Settings" onClick={() => setShowSettings(true)}>⚙</button>
+          <button className="btn-icon" title={t('help')} onClick={() => setShowHelp(true)}>?</button>
+          <button className="btn-icon" title={t('settings')} onClick={() => setShowSettings(true)}>⚙</button>
         </div>
 
         {/* Mobile hamburger */}
@@ -456,31 +458,31 @@ export default function App() {
           {showHamburger && (
             <div className="hamburger-menu">
               <button className="hamburger-item" onClick={() => hamburgerAction(() => fileInputRef.current?.click())}>
-                Import JSON
+                {t('importJson')}
               </button>
               <div className="hamburger-sep" />
               <button className="hamburger-item" onClick={() => hamburgerAction(() => exportJSON(formats, layoutName, settings))}>
-                Export JSON
+                {t('exportJson')}
               </button>
               <button className="hamburger-item" onClick={() => hamburgerAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
-                Export PNG
+                {t('exportPng')}
               </button>
               <div className="hamburger-sep" />
               <button className="hamburger-item" onClick={() => hamburgerAction(handleShare)}>
-                Share Layout
+                {t('shareLayout')}
               </button>
               <button className="hamburger-item" onClick={() => hamburgerAction(() => setShowHelp(true))}>
-                Help
+                {t('help')}
               </button>
               <button className="hamburger-item" onClick={() => hamburgerAction(() => setShowSettings(true))}>
-                Settings
+                {t('settings')}
               </button>
             </div>
           )}
         </div>
       </header>
 
-      <LayoutName name={layoutName} onChange={handleLayoutNameChange} />
+      <LayoutName name={layoutName} onChange={handleLayoutNameChange} t={t} />
 
       <div className="legend-row">
         <div className="legend">
@@ -508,6 +510,7 @@ export default function App() {
           onAdd={addFormat}
           onRename={setFormatName}
           onRemove={i => { removeFormat(i); setSelectedId(null); }}
+          t={t}
         />
       </div>
 
@@ -522,7 +525,7 @@ export default function App() {
       </div>
 
       <div className="panel">
-        <h2 className="panel-title">Bindings <span className="count-badge">{bindings.length}</span></h2>
+        <h2 className="panel-title">{t('bindingsTitle')} <span className="count-badge">{bindings.length}</span></h2>
         <BindingTable
           bindings={bindings}
           keyColors={keyColors}
@@ -585,15 +588,16 @@ export default function App() {
 
       <footer className="app-footer">
         <div className="footer-content">
-          <span>Vibed by <a href="https://andrewsimone.com/" className="footer-link" target="_blank" rel="noreferrer">Andrew Simone</a></span>
+          <span>{t('vibedBy')} <a href="https://andrewsimone.com/" className="footer-link" target="_blank" rel="noreferrer">Andrew Simone</a></span>
           <span className="footer-sep">|</span>
-          <a href="https://github.com/keybindr/keybindr.github.io" className="footer-link" target="_blank" rel="noreferrer">Source Code</a>
+          <a href="https://github.com/keybindr/keybindr.github.io" className="footer-link" target="_blank" rel="noreferrer">{t('sourceCode')}</a>
           <span className="footer-sep">|</span>
-          <a href="https://github.com/keybindr/keybindr.github.io/issues" className="footer-link" target="_blank" rel="noreferrer">File a Bug</a>
+          <a href="https://github.com/keybindr/keybindr.github.io/issues" className="footer-link" target="_blank" rel="noreferrer">{t('fileABug')}</a>
           <span className="footer-sep">|</span>
-          <a href="https://github.com/keybindr/keybindr.github.io/blob/main/LICENSE" className="footer-link" target="_blank" rel="noreferrer">MIT License</a>
+          <a href="https://github.com/keybindr/keybindr.github.io/blob/main/LICENSE" className="footer-link" target="_blank" rel="noreferrer">{t('mitLicense')}</a>
         </div>
       </footer>
     </div>
+    </TranslationContext.Provider>
   );
 }

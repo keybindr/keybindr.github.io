@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useT } from '../useTranslation';
 
 export default function ShareModal({ url, onClose }) {
+  const t = useT();
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
@@ -13,9 +15,9 @@ export default function ShareModal({ url, onClose }) {
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal modal-share" onClick={e => e.stopPropagation()}>
-        <h3 className="modal-title">Share Layout</h3>
+        <h3 className="modal-title">{t('shareTitle')}</h3>
         <div className="share-body">
-          <p>This link, which is going to look <em>bonkers</em>, encodes your entire layout — all formats, bindings, colors, and name — directly in the URL. Anyone with the link can open it and see your layout instantly. There's no user tracking data encoded.</p>
+          <p>{t('shareBody')}</p>
           <div className="share-url-row">
             <input
               className="share-url-input"
@@ -27,9 +29,9 @@ export default function ShareModal({ url, onClose }) {
           </div>
         </div>
         <div className="modal-actions">
-          <button className="btn-secondary" onClick={onClose}>Close</button>
+          <button className="btn-secondary" onClick={onClose}>{t('close')}</button>
           <button className="btn-primary" onClick={handleCopy}>
-            {copied ? 'Copied!' : 'Copy Link'}
+            {copied ? t('copied') : t('copyLink')}
           </button>
         </div>
       </div>

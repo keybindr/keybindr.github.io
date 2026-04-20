@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
+import { useT } from '../useTranslation';
 
 const KEY_BOUND_COLOR = '#3d3420';
 
@@ -12,6 +13,7 @@ const MOD_COLORS = {
 };
 
 export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal, settings = {} }) {
+  const t = useT();
   const language = settings.language ?? 'en-US';
   const [editingId, setEditingId]         = useState(null);
   const [editValue, setEditValue]         = useState('');
@@ -61,10 +63,10 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
         <thead>
           <tr>
             <th className="cell-drag" />
-            <th>Modifier</th>
-            <th>Key</th>
-            <th className="cell-color-head">Color</th>
-            <th>Action</th>
+            <th>{t('colModifier')}</th>
+            <th>{t('colKey')}</th>
+            <th className="cell-color-head">{t('colColor')}</th>
+            <th>{t('colAction')}</th>
             <th></th>
           </tr>
         </thead>
@@ -96,7 +98,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                     onDragStart={e => handleDragStart(e, index)}
                     onDragEnd={handleDragEnd}
                     onClick={e => e.stopPropagation()}
-                    title="Drag to reorder"
+                    title={t('dragToReorder')}
                   >⠿</span>
                 </td>
                 <td className="cell-mod">
@@ -118,7 +120,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                     type="button"
                     className="binding-color-swatch"
                     style={{ background: keyColor || KEY_BOUND_COLOR }}
-                    title="Edit key color"
+                    title={t('editKeyColor')}
                     onClick={e => { e.stopPropagation(); onOpenModal?.(b.key); }}
                   />
                 </td>
@@ -137,13 +139,13 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                       onClick={e => e.stopPropagation()}
                     />
                   ) : (
-                    <span className="action-text" title="Click to edit">{b.action}</span>
+                    <span className="action-text" title={t('clickToEdit')}>{b.action}</span>
                   )}
                 </td>
                 <td className="cell-del">
                   <button
                     className="btn-del"
-                    title="Remove binding"
+                    title={t('removeBinding')}
                     onClick={e => { e.stopPropagation(); onRemove(b.key, b.modifiers); }}
                   >✕</button>
                 </td>
@@ -153,7 +155,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
         </tbody>
       </table>
       {bindings.length === 0 && (
-        <p className="table-empty">No bindings yet. Click a key to add one.</p>
+        <p className="table-empty">{t('noBindings')}</p>
       )}
     </div>
   );

@@ -1,16 +1,16 @@
 import React from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
+import { useT } from '../useTranslation';
 
 export default function OrphanWarningModal({ orphans, newLayoutName, onConfirm, onCancel }) {
+  const t = useT();
+  const bodyKey = orphans.length === 1 ? 'orphanBodySingular' : 'orphanBodyPlural';
   return (
     <div className="modal-backdrop" onClick={onCancel}>
       <div className="modal modal-orphan" onClick={e => e.stopPropagation()}>
-        <h3 className="modal-title">Switch to {newLayoutName}?</h3>
+        <h3 className="modal-title">{t('orphanTitle', { layout: newLayoutName })}</h3>
         <div className="orphan-body">
-          <p>
-            The following {orphans.length === 1 ? 'binding' : 'bindings'} use{orphans.length === 1 ? 's' : ''} keys
-            that don't exist in this layout and will be deleted:
-          </p>
+          <p>{t(bodyKey, { count: orphans.length })}</p>
           <div className="orphan-list">
             {orphans.map((b, i) => {
               const keyLabel = ALL_KEY_MAP[b.key]?.label ?? b.key;
@@ -29,8 +29,8 @@ export default function OrphanWarningModal({ orphans, newLayoutName, onConfirm, 
           </div>
         </div>
         <div className="modal-actions">
-          <button className="btn-secondary" onClick={onCancel}>Cancel</button>
-          <button className="btn-primary btn-danger" onClick={onConfirm}>Switch &amp; Delete</button>
+          <button className="btn-secondary" onClick={onCancel}>{t('cancel')}</button>
+          <button className="btn-primary btn-danger" onClick={onConfirm}>{t('switchDelete')}</button>
         </div>
       </div>
     </div>
