@@ -426,19 +426,40 @@ html, body {
   color: var(--accent2);
   width: 80px;
 }
-.cell-mod { width: 100px; }
+.cell-mod { width: 110px; }
+.cell-color { width: 44px; text-align: center; }
+.cell-color-head { width: 44px; text-align: center; }
 .cell-action { color: var(--text); }
 .cell-del { width: 40px; text-align: center; }
 
+.mod-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
 .mod-tag {
   display: inline-block;
   border: 1px solid;
   border-radius: 3px;
-  padding: 1px 6px;
-  font-size: 11px;
-  margin-right: 4px;
+  padding: 1px 5px;
+  font-size: 10px;
+  white-space: nowrap;
 }
 .mod-none { color: var(--text-dim); }
+
+.binding-color-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  cursor: pointer;
+  vertical-align: middle;
+  transition: transform 0.1s, border-color 0.15s;
+  padding: 0;
+}
+.binding-color-swatch:hover { transform: scale(1.15); border-color: var(--accent); }
 
 .action-text {
   cursor: text;
@@ -547,19 +568,7 @@ html, body {
   margin-bottom: 8px;
 }
 
-.settings-row-split {
-  gap: 8px;
-}
 
-.settings-label {
-  font-size: 13px;
-  color: var(--text);
-  min-width: 52px;
-}
-
-.settings-label-right {
-  margin-left: 6px;
-}
 
 .toggle-group {
   display: flex;
@@ -928,33 +937,6 @@ html, body {
   padding-right: 2px;
 }
 
-/* Color picker panel header (settings) */
-.cpk-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.cpk-panel-title {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-dim);
-}
-
-.cpk-panel-close {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  font-size: 13px;
-  cursor: pointer;
-  padding: 2px 4px;
-  line-height: 1;
-  border-radius: 3px;
-  transition: color 0.15s;
-}
-.cpk-panel-close:hover { color: var(--text); }
 
 /* Static current-color indicator in the Key Color row */
 .color-current-swatch {
@@ -969,18 +951,6 @@ html, body {
   .cpk-panel { width: calc(100vw - 16px); left: 8px !important; top: auto !important; bottom: 8px; height: auto !important; max-height: 60vh; }
 }
 
-/* ── Settings color swatch ───────────────────────────────────────────────────── */
-.mod-color-swatch {
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.2);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: transform 0.1s, border-color 0.15s;
-}
-.mod-color-swatch:hover { transform: scale(1.1); }
-.mod-color-swatch.active { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 1px; }
 
 /* ── Custom color picker (cpk) ───────────────────────────────────────────────── */
 .cpk {

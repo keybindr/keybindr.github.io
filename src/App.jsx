@@ -157,7 +157,7 @@ export default function App() {
     resetFormats,
   } = useFormats();
 
-  const { settings, setModColor, setSplitModColor, setSplitModifiers, resetSettings } = useSettings();
+  const { settings, setSplitModifiers, resetSettings } = useSettings();
 
   const [layoutName, setLayoutNameState] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
   const [selectedId, setSelectedId]     = useState(null);
@@ -265,7 +265,18 @@ export default function App() {
     setShowMobileWarning(false);
   }
 
-  const { splitModifiers, modColors, splitModColors } = settings;
+  const { splitModifiers } = settings;
+
+  // Legend colors follow modifier key custom colors, falling back to defaults
+  const legShift = keyColors['ShiftLeft'] || keyColors['ShiftRight'] || '#7b9ee0';
+  const legAlt   = keyColors['AltLeft']   || keyColors['AltRight']   || '#7be09a';
+  const legCtrl  = keyColors['ControlLeft'] || keyColors['ControlRight'] || '#e07b39';
+  const legShiftL = keyColors['ShiftLeft']    || '#7b9ee0';
+  const legShiftR = keyColors['ShiftRight']   || '#7b9ee0';
+  const legAltL   = keyColors['AltLeft']      || '#7be09a';
+  const legAltR   = keyColors['AltRight']     || '#7be09a';
+  const legCtrlL  = keyColors['ControlLeft']  || '#e07b39';
+  const legCtrlR  = keyColors['ControlRight'] || '#e07b39';
 
   return (
     <div className="app">
@@ -348,18 +359,18 @@ export default function App() {
         <div className="legend">
           {splitModifiers ? (
             <>
-              <span className="legend-item"><LegendTri color={splitModColors.ShiftLeft}  dir="shift" /> LShift</span>
-              <span className="legend-item"><LegendTri color={splitModColors.ShiftRight} dir="shift" /> RShift</span>
-              <span className="legend-item"><LegendTri color={splitModColors.AltLeft}    dir="alt"   /> LAlt</span>
-              <span className="legend-item"><LegendTri color={splitModColors.AltRight}   dir="alt"   /> RAlt</span>
-              <span className="legend-item"><LegendTri color={splitModColors.CtrlLeft}   dir="ctrl"  /> LCtrl</span>
-              <span className="legend-item"><LegendTri color={splitModColors.CtrlRight}  dir="ctrl"  /> RCtrl</span>
+              <span className="legend-item"><LegendTri color={legShiftL} dir="shift" /> LShift</span>
+              <span className="legend-item"><LegendTri color={legShiftR} dir="shift" /> RShift</span>
+              <span className="legend-item"><LegendTri color={legAltL}   dir="alt"   /> LAlt</span>
+              <span className="legend-item"><LegendTri color={legAltR}   dir="alt"   /> RAlt</span>
+              <span className="legend-item"><LegendTri color={legCtrlL}  dir="ctrl"  /> LCtrl</span>
+              <span className="legend-item"><LegendTri color={legCtrlR}  dir="ctrl"  /> RCtrl</span>
             </>
           ) : (
             <>
-              <span className="legend-item"><LegendTri color={modColors.Shift} dir="shift" /> Shift</span>
-              <span className="legend-item"><LegendTri color={modColors.Alt}   dir="alt"   /> Alt</span>
-              <span className="legend-item"><LegendTri color={modColors.Ctrl}  dir="ctrl"  /> Ctrl</span>
+              <span className="legend-item"><LegendTri color={legShift} dir="shift" /> Shift</span>
+              <span className="legend-item"><LegendTri color={legAlt}   dir="alt"   /> Alt</span>
+              <span className="legend-item"><LegendTri color={legCtrl}  dir="ctrl"  /> Ctrl</span>
             </>
           )}
         </div>
@@ -387,6 +398,7 @@ export default function App() {
         <h2 className="panel-title">Bindings <span className="count-badge">{bindings.length}</span></h2>
         <BindingTable
           bindings={bindings}
+          keyColors={keyColors}
           selectedId={selectedId}
           onSelect={handleSelect}
           onUpdateAction={updateAction}
@@ -414,8 +426,6 @@ export default function App() {
       {showSettings && (
         <SettingsModal
           settings={settings}
-          onModColor={setModColor}
-          onSplitModColor={setSplitModColor}
           onToggleSplit={setSplitModifiers}
           onClearKeys={resetAll}
           onClose={() => setShowSettings(false)}

@@ -3,14 +3,14 @@ import { KEY_MAP } from '../keyboardLayout';
 import { bindingId } from '../useBindings';
 
 const MOD_COLORS = {
-  Ctrl:  '#e07b39',
-  Shift: '#7b9ee0',
-  Alt:   '#7be09a',
+  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
+  Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
+  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
 };
 
-export default function BindingTable({ bindings, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal }) {
-  const [editingId, setEditingId]     = useState(null);
-  const [editValue, setEditValue]     = useState('');
+export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal }) {
+  const [editingId, setEditingId]         = useState(null);
+  const [editValue, setEditValue]         = useState('');
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const dragIndex = useRef(null);
 
@@ -27,7 +27,6 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
   function handleDragStart(e, index) {
     dragIndex.current = index;
     e.dataTransfer.effectAllowed = 'move';
-    // minimal ghost image — let browser default but mark the row
     e.currentTarget.closest('tr').classList.add('row-dragging');
   }
 
@@ -60,6 +59,7 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
             <th className="cell-drag" />
             <th>Modifier</th>
             <th>Key</th>
+            <th className="cell-color-head">Color</th>
             <th>Action</th>
             <th></th>
           </tr>
@@ -71,6 +71,7 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
             const keyLabel   = KEY_MAP[b.key]?.label ?? b.key;
             const isEditing  = editingId === id;
             const isDragOver = dragOverIndex === index;
+            const keyColor   = keyColors[b.key];
 
             return (
               <tr
@@ -80,7 +81,6 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
                   isDragOver  ? 'row-drag-over' : '',
                 ].filter(Boolean).join(' ')}
                 onClick={() => onSelect(id)}
-                onDoubleClick={() => onOpenModal?.(b.key)}
                 onDragOver={e => handleDragOver(e, index)}
                 onDrop={e => handleDrop(e, index)}
                 onDragLeave={() => setDragOverIndex(null)}
@@ -97,16 +97,27 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
                 </td>
                 <td className="cell-mod">
                   {b.modifiers.length > 0 ? (
-                    b.modifiers.map(m => (
-                      <span key={m} className="mod-tag" style={{ borderColor: MOD_COLORS[m] ?? '#888', color: MOD_COLORS[m] ?? '#888' }}>
-                        {m}
-                      </span>
-                    ))
+                    <div className="mod-tags">
+                      {b.modifiers.map(m => (
+                        <span key={m} className="mod-tag" style={{ borderColor: MOD_COLORS[m] ?? '#888', color: MOD_COLORS[m] ?? '#888' }}>
+                          {m}
+                        </span>
+                      ))}
+                    </div>
                   ) : (
                     <span className="mod-none">—</span>
                   )}
                 </td>
                 <td className="cell-key">{keyLabel}</td>
+                <td className="cell-color">
+                  <button
+                    type="button"
+                    className="binding-color-swatch"
+                    style={keyColor ? { background: keyColor } : {}}
+                    title="Edit key color"
+                    onClick={e => { e.stopPropagation(); onOpenModal?.(b.key); }}
+                  />
+                </td>
                 <td className="cell-action" onClick={e => { e.stopPropagation(); startEdit(b); }}>
                   {isEditing ? (
                     <input

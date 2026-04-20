@@ -1,7 +1,6 @@
 import React from 'react';
 import { KEYS, KEYBOARD_WIDTH, KEYBOARD_HEIGHT } from '../keyboardLayout';
 import { bindingId } from '../useBindings';
-import { DEFAULT_MOD_COLORS, DEFAULT_SPLIT_MOD_COLORS } from '../useSettings';
 
 const KEY_DEFAULT  = '#2a2a2a';
 const KEY_BOUND    = '#3d3420';
@@ -14,17 +13,38 @@ const TEXT_BOUND   = '#f5e0b0';
 
 const SIZE = 10;
 
-const KEY_TO_MOD_UNIFIED = {
-  ShiftLeft: 'Shift', ShiftRight: 'Shift',
-  ControlLeft: 'Ctrl', ControlRight: 'Ctrl',
-  AltLeft: 'Alt', AltRight: 'Alt',
+// Default colors for modifier keys and their triangles when user hasn't set a custom color
+const KEY_DEFAULT_MOD_COLOR = {
+  ShiftLeft:    '#7b9ee0', ShiftRight:   '#7b9ee0',
+  AltLeft:      '#7be09a', AltRight:     '#7be09a',
+  ControlLeft:  '#e07b39', ControlRight: '#e07b39',
 };
 
-const KEY_TO_MOD_SPLIT = {
-  ShiftLeft: 'ShiftLeft', ShiftRight: 'ShiftRight',
-  ControlLeft: 'CtrlLeft', ControlRight: 'CtrlRight',
-  AltLeft: 'AltLeft', AltRight: 'AltRight',
+// Maps binding modifier names → keyboard key IDs for color lookup
+const MOD_TO_KEY_IDS = {
+  Shift:      ['ShiftLeft', 'ShiftRight'],
+  ShiftLeft:  ['ShiftLeft'],
+  ShiftRight: ['ShiftRight'],
+  Alt:        ['AltLeft', 'AltRight'],
+  AltLeft:    ['AltLeft'],
+  AltRight:   ['AltRight'],
+  Ctrl:       ['ControlLeft', 'ControlRight'],
+  CtrlLeft:   ['ControlLeft'],
+  CtrlRight:  ['ControlRight'],
 };
+
+const DEFAULT_TRIANGLE_COLORS = {
+  Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
+  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
+  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
+};
+
+function modTriangleColor(mod, keyColors) {
+  for (const kid of (MOD_TO_KEY_IDS[mod] || [])) {
+    if (keyColors[kid]) return keyColors[kid];
+  }
+  return DEFAULT_TRIANGLE_COLORS[mod] || '#888';
+}
 
 const SPLIT_LABELS = {
   ShiftLeft: 'LShift', ShiftRight: 'RShift',
@@ -58,22 +78,16 @@ const STRIPE_E = STRIPE_W * 1.4142;
 function splitCornerPoints(corner, k) {
   const { x, y, w, h } = k;
   const e = STRIPE_E;
-  // L = full triangle (corner to hypotenuse).
-  // R = band that follows both key edges outward from the hypotenuse endpoints,
-  //     so it looks like the triangle continues in a second color.
   if (corner === 'shift') {
-    // upper-right. Triangle legs: right edge (x+w, y→y+SIZE) and top edge (x+w-SIZE→x+w, y)
     const lPts = `${x+w},${y} ${x+w},${y+SIZE} ${x+w-SIZE},${y}`;
     const rPts = `${x+w},${y+SIZE} ${x+w-SIZE},${y} ${x+w-SIZE-e},${y} ${x+w},${y+SIZE+e}`;
     return [lPts, rPts];
   }
   if (corner === 'alt') {
-    // lower-right. Triangle legs: right edge (x+w, y+h-SIZE→y+h) and bottom edge (x+w-SIZE→x+w, y+h)
     const lPts = `${x+w},${y+h} ${x+w},${y+h-SIZE} ${x+w-SIZE},${y+h}`;
     const rPts = `${x+w},${y+h-SIZE} ${x+w-SIZE},${y+h} ${x+w-SIZE-e},${y+h} ${x+w},${y+h-SIZE-e}`;
     return [lPts, rPts];
   }
-  // ctrl — lower-left. Triangle legs: left edge (x, y+h-SIZE→y+h) and bottom edge (x→x+SIZE, y+h)
   const lPts = `${x},${y+h} ${x},${y+h-SIZE} ${x+SIZE},${y+h}`;
   const rPts = `${x},${y+h-SIZE} ${x+SIZE},${y+h} ${x+SIZE+e},${y+h} ${x},${y+h-SIZE-e}`;
   return [lPts, rPts];
@@ -82,24 +96,16 @@ function splitCornerPoints(corner, k) {
 function trianglePoints(mod, k) {
   const { x, y, w, h } = k;
   if (mod === 'Shift' || mod === 'ShiftLeft' || mod === 'ShiftRight')
-    return `${x + w},${y} ${x + w},${y + SIZE} ${x + w - SIZE},${y}`;            // upper-right
+    return `${x + w},${y} ${x + w},${y + SIZE} ${x + w - SIZE},${y}`;
   if (mod === 'Alt' || mod === 'AltLeft' || mod === 'AltRight')
-    return `${x + w},${y + h} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h}`; // lower-right
+    return `${x + w},${y + h} ${x + w},${y + h - SIZE} ${x + w - SIZE},${y + h}`;
   if (mod === 'Ctrl' || mod === 'CtrlLeft' || mod === 'CtrlRight')
-    return `${x},${y + h} ${x},${y + h - SIZE} ${x + SIZE},${y + h}`;             // lower-left
+    return `${x},${y + h} ${x},${y + h - SIZE} ${x + SIZE},${y + h}`;
   return `${x},${y} ${x + SIZE},${y} ${x},${y + SIZE}`;
 }
 
-const DEFAULT_SETTINGS = {
-  splitModifiers: false,
-  modColors: DEFAULT_MOD_COLORS,
-  splitModColors: DEFAULT_SPLIT_MOD_COLORS,
-};
-
-export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = DEFAULT_SETTINGS }) {
-  const { splitModifiers, modColors, splitModColors } = settings;
-  const keyToMod   = splitModifiers ? KEY_TO_MOD_SPLIT   : KEY_TO_MOD_UNIFIED;
-  const keyModColors = splitModifiers ? splitModColors : modColors;
+export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = { splitModifiers: false } }) {
+  const { splitModifiers } = settings;
 
   const boundMap = {};
   for (const b of bindings) {
@@ -123,24 +129,23 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         ))}
       </defs>
       {KEYS.map(k => {
-        const keyBindings = boundMap[k.id] || [];
-        const isBound     = keyBindings.length > 0;
-        const isSelected  = keyBindings.some(b => bindingId(b.key, b.modifiers) === selectedId);
-        const customColor = keyColors[k.id];
-        const modRole     = keyToMod[k.id];
-        const modColor    = modRole ? keyModColors[modRole] : null;
+        const keyBindings    = boundMap[k.id] || [];
+        const isBound        = keyBindings.length > 0;
+        const isSelected     = keyBindings.some(b => bindingId(b.key, b.modifiers) === selectedId);
+        const customColor    = keyColors[k.id];
+        const defaultModColor = KEY_DEFAULT_MOD_COLOR[k.id] || null;
 
-        const fill   = customColor ? customColor
-                     : isBound    ? KEY_BOUND
-                     : modColor   ? modFill(modColor)
+        const fill   = customColor     ? customColor
+                     : isBound         ? KEY_BOUND
+                     : defaultModColor ? modFill(defaultModColor)
                      : KEY_DEFAULT;
-        const stroke = isSelected ? BORDER_SELECTED
-                     : isBound    ? BORDER_BOUND
-                     : modColor   ? modColor
+        const stroke = isSelected      ? BORDER_SELECTED
+                     : isBound         ? BORDER_BOUND
+                     : defaultModColor ? defaultModColor
                      : BORDER_DEFAULT;
         const textColor = isBound ? TEXT_BOUND : TEXT_DEFAULT;
 
-        const mods = [...new Set(keyBindings.flatMap(b => b.modifiers))];
+        const mods  = [...new Set(keyBindings.flatMap(b => b.modifiers))];
         const label = (splitModifiers && SPLIT_LABELS[k.id]) ? SPLIT_LABELS[k.id] : k.label;
 
         return (
@@ -165,7 +170,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
               for (const mod of mods) {
                 const corner = MOD_TO_CORNER[mod];
                 if (!corner) continue;
-                const color = modColors[mod] || splitModColors[mod] || '#888';
+                const color = modTriangleColor(mod, keyColors);
                 if (!corners[corner]) corners[corner] = [];
                 corners[corner].push({ mod, color });
               }

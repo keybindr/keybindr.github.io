@@ -8,7 +8,7 @@ const RECENT_KEY  = 'keybindr_recent_colors';
 
 export const MAX_FORMATS = 5;
 
-const DEFAULT_KEY_COLORS = { KeyW: '#1a4d2e', KeyA: '#1a4d2e', KeyS: '#1a4d2e', KeyD: '#1a4d2e' };
+const DEFAULT_KEY_COLORS = {};
 
 function makeFormat(empty = false) {
   return {
