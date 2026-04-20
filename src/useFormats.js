@@ -8,15 +8,18 @@ const RECENT_KEY  = 'keybindr_recent_colors';
 
 export const MAX_FORMATS = 5;
 
-const DEFAULT_KEY_COLORS = {};
-
-function makeFormat(empty = false) {
+function makeFormat(name = '', empty = false) {
   return {
-    name:      '',
+    name,
     bindings:  empty ? [] : [...DEFAULT_BINDINGS],
-    keyColors: empty ? {} : { ...DEFAULT_KEY_COLORS },
+    keyColors: {},
   };
 }
+
+const DEFAULT_FORMATS = [
+  makeFormat('On Foot'),
+  makeFormat('In Vehicle'),
+];
 
 function loadInitial() {
   try {
@@ -25,11 +28,14 @@ function loadInitial() {
       // migrate from legacy separate keys
       const oldBindings = JSON.parse(localStorage.getItem('keybindr_bindings'));
       const oldColors   = JSON.parse(localStorage.getItem('keybindr_key_colors'));
-      return [{
-        name:      '',
-        bindings:  oldBindings ?? [...DEFAULT_BINDINGS],
-        keyColors: { ...DEFAULT_KEY_COLORS, ...(oldColors ?? {}) },
-      }];
+      if (oldBindings || oldColors) {
+        return [{
+          name:      'On Foot',
+          bindings:  oldBindings ?? [...DEFAULT_BINDINGS],
+          keyColors: oldColors ?? {},
+        }];
+      }
+      return DEFAULT_FORMATS.map(f => ({ ...f, bindings: [...f.bindings] }));
     })();
     const rawActive = parseInt(localStorage.getItem(ACTIVE_KEY), 10);
     const active = isNaN(rawActive) ? 0 : Math.min(rawActive, formats.length - 1);
@@ -72,7 +78,7 @@ export function useFormats() {
   function addFormat() {
     mutate(s => {
       if (s.formats.length >= MAX_FORMATS) return s;
-      const next = [...s.formats, makeFormat(true)];
+      const next = [...s.formats, makeFormat('', true)];
       return { formats: next, active: next.length - 1 };
     });
   }
@@ -177,7 +183,7 @@ export function useFormats() {
 
   // ── Reset ─────────────────────────────────────────────────────────────
   function resetFormats() {
-    const fresh = { formats: [makeFormat()], active: 0 };
+    const fresh = { formats: DEFAULT_FORMATS.map(f => ({ ...f, bindings: [...f.bindings] })), active: 0 };
     setState(fresh);
     persist(fresh.formats, fresh.active);
     setRecent([]);
