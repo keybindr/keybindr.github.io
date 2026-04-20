@@ -146,36 +146,6 @@ export function useFormats() {
     mutate(() => ({ formats: newFormats.slice(0, MAX_FORMATS), active: 0 }));
   }
 
-  // ── Groups ────────────────────────────────────────────────────────────
-  function updateGroup(key, modifiers, group) {
-    const id = bindingId(key, modifiers);
-    mutateActiveFormat(f => ({
-      ...f,
-      bindings: f.bindings.map(b =>
-        bindingId(b.key, b.modifiers) === id ? { ...b, group: group || undefined } : b
-      ),
-    }));
-  }
-
-  function renameGroup(oldName, newName) {
-    mutateActiveFormat(f => ({
-      ...f,
-      bindings: f.bindings.map(b =>
-        b.group === oldName ? { ...b, group: newName || undefined } : b
-      ),
-    }));
-  }
-
-  function reorderGroup(fromGroupName, beforeGroupName) {
-    mutateActiveFormat(f => {
-      const fromBindings = f.bindings.filter(b => b.group === fromGroupName);
-      const rest         = f.bindings.filter(b => b.group !== fromGroupName);
-      const insertIdx    = rest.findIndex(b => b.group === beforeGroupName);
-      if (insertIdx === -1) return { ...f, bindings: [...rest, ...fromBindings] };
-      return { ...f, bindings: [...rest.slice(0, insertIdx), ...fromBindings, ...rest.slice(insertIdx)] };
-    });
-  }
-
   // ── Key colors ────────────────────────────────────────────────────────
   function setKeyColor(keyId, color) {
     mutateActiveFormat(f => ({ ...f, keyColors: { ...f.keyColors, [keyId]: color } }));
@@ -208,7 +178,7 @@ export function useFormats() {
   }
 
   function clearAllKeyColors() {
-    mutateActiveFormat(f => ({ ...f, keyColors: { ...DEFAULT_KEY_COLORS } }));
+    mutateActiveFormat(f => ({ ...f, keyColors: {} }));
   }
 
   // ── Reset ─────────────────────────────────────────────────────────────
@@ -232,6 +202,5 @@ export function useFormats() {
     replaceActiveBindings, replaceFormats,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
     resetFormats,
-    updateGroup, renameGroup, reorderGroup,
   };
 }
