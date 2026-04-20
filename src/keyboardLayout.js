@@ -7,7 +7,7 @@ const U = 44; // unit
 const G = 4;  // gap
 
 export const KEYBOARD_WIDTH  = 1040;
-export const KEYBOARD_HEIGHT = 280;
+export const KEYBOARD_HEIGHT = 268;
 
 function key(id, label, col, row, w = 1, h = 1, altLabel) {
   return {
@@ -17,7 +17,7 @@ function key(id, label, col, row, w = 1, h = 1, altLabel) {
     x: col * U + G,
     y: row * U + G,
     w: w * U - G,
-    h: h * U - 2 * G, // h=1→36px, h=2→80px (correctly spans rows)
+    h: h * U - G,
   };
 }
 
