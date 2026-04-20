@@ -116,7 +116,7 @@ html, body {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 4px;
+  padding: 4px 4px 8px;
   min-width: 160px;
   z-index: 50;
   box-shadow: 0 6px 24px rgba(0,0,0,0.5);
