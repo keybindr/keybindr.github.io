@@ -577,7 +577,7 @@ html, body {
   outline: none;
   border-color: var(--accent);
 }
-.help-modal-title { word-spacing: -0.2em; }
+.help-modal-title { word-spacing: -0.2em; padding-left: 10px; }
 
 .help-body {
   display: flex;
@@ -590,7 +590,7 @@ html, body {
   margin-bottom: 20px;
   max-height: 60vh;
   overflow-y: auto;
-  padding-right: 4px;
+  padding: 0 10px 0 10px;
 }
 .help-body h4 {
   font-size: 12px;

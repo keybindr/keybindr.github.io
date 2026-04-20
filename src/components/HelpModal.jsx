@@ -51,7 +51,16 @@ export default function HelpModal({ onClose }) {
 
           <h4>Settings</h4>
           <p>
-            Toggle between unified modifier keys (Shift) or separate left/right keys (LShift / RShift). Reset All clears all bindings, colors, and the layout name. More keyboard layouts coming soon!
+            <strong>Split Modifiers</strong> toggles between unified modifier keys (Shift) or separate left/right keys (LShift / RShift).
+          </p>
+          <p>
+            <strong>Physical Layout</strong> switches between keyboard form factors — ANSI 104, ISO 105, TKL (tenkeyless), 75%, 65%, and 60%. If switching would orphan any existing bindings (keys that don't exist on the new layout), you'll be prompted before anything is deleted.
+          </p>
+          <p>
+            <strong>Language / Region</strong> changes the key labels shown on the keyboard to match your locale — covering QWERTY, QWERTZ, AZERTY, and regional variants across 20 locales. Bindings are stored by physical key position, so switching locale never affects your bindings.
+          </p>
+          <p>
+            <strong>Reset All</strong> clears all bindings, colors, and the layout name and returns settings to defaults.
           </p>
         </div>
         <div className="modal-actions">
