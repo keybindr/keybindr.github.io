@@ -230,7 +230,7 @@ export default function BindModal({
 
           <div className="modal-actions">
             <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
-            <button type="submit" className="btn-primary" disabled={!isModifier && !action.trim()}>Save</button>
+            <button type="submit" className="btn-primary">Save</button>
           </div>
         </form>
       </div>
