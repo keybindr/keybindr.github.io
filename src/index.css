@@ -1065,9 +1065,6 @@ html, body {
 
   .legend-row { justify-content: flex-end; }
 
-  .layout-name,
-  .layout-name-input { font-size: 20px; }
-
   .modal {
     max-height: 90vh;
     overflow-y: auto;
