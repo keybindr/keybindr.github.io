@@ -113,8 +113,8 @@ function trianglePoints(mod, k) {
   return `${x},${y} ${x + SIZE},${y} ${x},${y + SIZE}`;
 }
 
-export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = { splitModifiers: false } }) {
-  const { splitModifiers } = settings;
+export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = { splitModifiers: false, showActions: false } }) {
+  const { splitModifiers, showActions } = settings;
   const [tooltip, setTooltip] = useState(null); // { keyId, x, y }
 
   const boundMap = {};
@@ -175,6 +175,12 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         const mods  = [...new Set(keyBindings.flatMap(b => b.modifiers))];
         const label = (splitModifiers && SPLIT_LABELS[k.id]) ? SPLIT_LABELS[k.id] : k.label;
 
+        // For showActions: prefer the no-modifier binding, fall back to first
+        const actionBinding = showActions && isBound
+          ? (keyBindings.find(b => b.modifiers.length === 0) ?? keyBindings[0])
+          : null;
+        const actionText = actionBinding?.action ?? null;
+
         return (
           <g
             key={k.id}
@@ -189,16 +195,39 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
               fill={fill} stroke={stroke}
               strokeWidth={isBound || isSelected ? 1.5 : 1}
             />
-            <text
-              x={k.x + k.w / 2} y={k.y + k.h / 2 + 1}
-              textAnchor="middle" dominantBaseline="middle"
-              fontSize={k.w > 60 ? 11 : 10}
-              fontFamily="'Courier New', monospace"
-              fill={textColor}
-              style={{ pointerEvents: 'none' }}
-            >
-              {label}
-            </text>
+            {actionText ? (
+              <>
+                <text
+                  x={k.x + k.w / 2} y={k.y + 12}
+                  textAnchor="middle" dominantBaseline="middle"
+                  fontSize={7}
+                  fontFamily="'Courier New', monospace"
+                  fill={TEXT_DEFAULT}
+                  style={{ pointerEvents: 'none' }}
+                  clipPath={`url(#clip-${k.id})`}
+                >{label}</text>
+                <text
+                  x={k.x + k.w / 2} y={k.y + k.h / 2 + 7}
+                  textAnchor="middle" dominantBaseline="middle"
+                  fontSize={k.w > 80 ? 9 : 8}
+                  fontFamily="'Courier New', monospace"
+                  fill={textColor}
+                  style={{ pointerEvents: 'none' }}
+                  clipPath={`url(#clip-${k.id})`}
+                >{actionText}</text>
+              </>
+            ) : (
+              <text
+                x={k.x + k.w / 2} y={k.y + k.h / 2 + 1}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize={k.w > 60 ? 11 : 10}
+                fontFamily="'Courier New', monospace"
+                fill={textColor}
+                style={{ pointerEvents: 'none' }}
+              >
+                {label}
+              </text>
+            )}
             {(() => {
               const corners = {};
               for (const mod of mods) {
