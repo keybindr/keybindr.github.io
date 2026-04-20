@@ -17,8 +17,8 @@ function makeFormat(name = '', empty = false) {
 }
 
 const DEFAULT_FORMATS = [
-  makeFormat('On Foot'),
-  { name: 'In Vehicle', bindings: [...DEFAULT_VEHICLE_BINDINGS], keyColors: {} },
+  makeFormat('__t:formatOnFoot'),
+  { name: '__t:formatInVehicle', bindings: [...DEFAULT_VEHICLE_BINDINGS], keyColors: {} },
 ];
 
 function loadInitial() {
@@ -30,7 +30,7 @@ function loadInitial() {
       const oldColors   = JSON.parse(localStorage.getItem('keybindr_key_colors'));
       if (oldBindings || oldColors) {
         return [{
-          name:      'On Foot',
+          name:      '__t:formatOnFoot',
           bindings:  oldBindings ?? [...DEFAULT_BINDINGS],
           keyColors: oldColors ?? {},
         }];

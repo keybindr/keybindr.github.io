@@ -94,6 +94,9 @@ const en = {
   actionLookBehind:    'Look Behind',
   actionRespawnVehicle:'Respawn Vehicle',
   actionMap:           'Map',
+  formatOnFoot:        'On Foot',
+  formatInVehicle:     'In Vehicle',
+  formatFallback:      'Format {n}',
 };
 
 const de = {
@@ -191,6 +194,9 @@ const de = {
   actionLookBehind:    'Zurückschauen',
   actionRespawnVehicle:'Fahrzeug respawnen',
   actionMap:           'Karte',
+  formatOnFoot:        'Zu Fuß',
+  formatInVehicle:     'Im Fahrzeug',
+  formatFallback:      'Format {n}',
 };
 
 const fr = {
@@ -288,6 +294,9 @@ const fr = {
   actionLookBehind:    'Regarder derrière',
   actionRespawnVehicle:'Réapparaître véhicule',
   actionMap:           'Carte',
+  formatOnFoot:        'À pied',
+  formatInVehicle:     'En véhicule',
+  formatFallback:      'Format {n}',
 };
 
 const es = {
@@ -385,6 +394,9 @@ const es = {
   actionLookBehind:    'Mirar atrás',
   actionRespawnVehicle:'Reaparecer vehículo',
   actionMap:           'Mapa',
+  formatOnFoot:        'A pie',
+  formatInVehicle:     'En vehículo',
+  formatFallback:      'Formato {n}',
 };
 
 const sv = {
@@ -482,6 +494,9 @@ const sv = {
   actionLookBehind:    'Titta bakåt',
   actionRespawnVehicle:'Återskapa fordon',
   actionMap:           'Karta',
+  formatOnFoot:        'Till fots',
+  formatInVehicle:     'I fordon',
+  formatFallback:      'Format {n}',
 };
 
 const nb = {
@@ -579,6 +594,9 @@ const nb = {
   actionLookBehind:    'Se bakover',
   actionRespawnVehicle:'Gjenskape kjøretøy',
   actionMap:           'Kart',
+  formatOnFoot:        'Til fots',
+  formatInVehicle:     'I kjøretøy',
+  formatFallback:      'Format {n}',
 };
 
 const da = {
@@ -676,6 +694,9 @@ const da = {
   actionLookBehind:    'Se bagud',
   actionRespawnVehicle:'Genopret køretøj',
   actionMap:           'Kort',
+  formatOnFoot:        'Til fods',
+  formatInVehicle:     'I køretøj',
+  formatFallback:      'Format {n}',
 };
 
 const fi = {
@@ -773,6 +794,9 @@ const fi = {
   actionLookBehind:    'Katso taakse',
   actionRespawnVehicle:'Palauta ajoneuvo',
   actionMap:           'Kartta',
+  formatOnFoot:        'Jalan',
+  formatInVehicle:     'Ajoneuvossa',
+  formatFallback:      'Muoto {n}',
 };
 
 const nl = {
@@ -870,6 +894,9 @@ const nl = {
   actionLookBehind:    'Kijk achteruit',
   actionRespawnVehicle:'Voertuig respawnen',
   actionMap:           'Kaart',
+  formatOnFoot:        'Te voet',
+  formatInVehicle:     'In voertuig',
+  formatFallback:      'Indeling {n}',
 };
 
 const pl = {
@@ -967,6 +994,9 @@ const pl = {
   actionLookBehind:    'Patrz za siebie',
   actionRespawnVehicle:'Odtwórz pojazd',
   actionMap:           'Mapa',
+  formatOnFoot:        'Pieszo',
+  formatInVehicle:     'W pojeździe',
+  formatFallback:      'Format {n}',
 };
 
 const cs = {
@@ -1064,6 +1094,9 @@ const cs = {
   actionLookBehind:    'Pohled dozadu',
   actionRespawnVehicle:'Obnovit vozidlo',
   actionMap:           'Mapa',
+  formatOnFoot:        'Pěšky',
+  formatInVehicle:     'Ve vozidle',
+  formatFallback:      'Formát {n}',
 };
 
 const sk = {
@@ -1161,6 +1194,9 @@ const sk = {
   actionLookBehind:    'Pohľad dozadu',
   actionRespawnVehicle:'Obnoviť vozidlo',
   actionMap:           'Mapa',
+  formatOnFoot:        'Peši',
+  formatInVehicle:     'Vo vozidle',
+  formatFallback:      'Formát {n}',
 };
 
 const hu = {
@@ -1258,6 +1294,9 @@ const hu = {
   actionLookBehind:    'Nézz hátra',
   actionRespawnVehicle:'Jármű újraindítása',
   actionMap:           'Térkép',
+  formatOnFoot:        'Gyalog',
+  formatInVehicle:     'Járműben',
+  formatFallback:      'Formátum {n}',
 };
 
 const ro = {
@@ -1355,6 +1394,9 @@ const ro = {
   actionLookBehind:    'Privește înapoi',
   actionRespawnVehicle:'Respawn vehicul',
   actionMap:           'Hartă',
+  formatOnFoot:        'Pe jos',
+  formatInVehicle:     'În vehicul',
+  formatFallback:      'Format {n}',
 };
 
 const ptBR = {
@@ -1452,6 +1494,9 @@ const ptBR = {
   actionLookBehind:    'Olhar para trás',
   actionRespawnVehicle:'Ressurgir veículo',
   actionMap:           'Mapa',
+  formatOnFoot:        'A pé',
+  formatInVehicle:     'No veículo',
+  formatFallback:      'Formato {n}',
 };
 
 const ptPT = {
@@ -1570,6 +1615,9 @@ const it = {
   actionLookBehind:    'Guarda indietro',
   actionRespawnVehicle:'Respawna veicolo',
   actionMap:           'Mappa',
+  formatOnFoot:        'A piedi',
+  formatInVehicle:     'In veicolo',
+  formatFallback:      'Formato {n}',
 };
 
 const tr = {
@@ -1667,6 +1715,9 @@ const tr = {
   actionLookBehind:    'Arkaya bak',
   actionRespawnVehicle:'Aracı yenile',
   actionMap:           'Harita',
+  formatOnFoot:        'Yaya',
+  formatInVehicle:     'Araçta',
+  formatFallback:      'Format {n}',
 };
 
 const el = {
@@ -1764,6 +1815,9 @@ const el = {
   actionLookBehind:    'Κοίτα πίσω',
   actionRespawnVehicle:'Αναγέννηση οχήματος',
   actionMap:           'Χάρτης',
+  formatOnFoot:        'Πεζός',
+  formatInVehicle:     'Σε όχημα',
+  formatFallback:      'Μορφή {n}',
 };
 
 const vi = {
@@ -1861,6 +1915,9 @@ const vi = {
   actionLookBehind:    'Nhìn ra sau',
   actionRespawnVehicle:'Hồi sinh xe',
   actionMap:           'Bản đồ',
+  formatOnFoot:        'Đi bộ',
+  formatInVehicle:     'Trên xe',
+  formatFallback:      'Định dạng {n}',
 };
 
 const bg = {
@@ -1958,6 +2015,9 @@ const bg = {
   actionLookBehind:    'Поглед назад',
   actionRespawnVehicle:'Рестарт на превозното средство',
   actionMap:           'Карта',
+  formatOnFoot:        'Пеш',
+  formatInVehicle:     'В превозно средство',
+  formatFallback:      'Формат {n}',
 };
 
 const sr = {
@@ -2055,6 +2115,9 @@ const sr = {
   actionLookBehind:    'Погледај иза',
   actionRespawnVehicle:'Респавнуј возило',
   actionMap:           'Карта',
+  formatOnFoot:        'Пешке',
+  formatInVehicle:     'У возилу',
+  formatFallback:      'Формат {n}',
 };
 
 const hr = {
@@ -2152,6 +2215,9 @@ const hr = {
   actionLookBehind:    'Pogled iza',
   actionRespawnVehicle:'Respawn vozila',
   actionMap:           'Karta',
+  formatOnFoot:        'Pješice',
+  formatInVehicle:     'U vozilu',
+  formatFallback:      'Format {n}',
 };
 
 const ru = {
@@ -2249,6 +2315,9 @@ const ru = {
   actionLookBehind:    'Посмотреть назад',
   actionRespawnVehicle:'Возродить транспорт',
   actionMap:           'Карта',
+  formatOnFoot:        'Пешком',
+  formatInVehicle:     'В транспорте',
+  formatFallback:      'Формат {n}',
 };
 
 const uk = {
@@ -2347,6 +2416,9 @@ const uk = {
   actionLookBehind:    'Подивитися назад',
   actionRespawnVehicle:'Відродити транспорт',
   actionMap:           'Карта',
+  formatOnFoot:        'Пішки',
+  formatInVehicle:     'У транспорті',
+  formatFallback:      'Формат {n}',
 };
 
 const ko = {
@@ -2444,6 +2516,9 @@ const ko = {
   actionLookBehind:    '뒤 보기',
   actionRespawnVehicle:'차량 재생성',
   actionMap:           '지도',
+  formatOnFoot:        '도보',
+  formatInVehicle:     '탑승 중',
+  formatFallback:      '형식 {n}',
 };
 
 const zhCN = {
@@ -2541,6 +2616,9 @@ const zhCN = {
   actionLookBehind:    '向后看',
   actionRespawnVehicle:'重生载具',
   actionMap:           '地图',
+  formatOnFoot:        '步行',
+  formatInVehicle:     '驾车',
+  formatFallback:      '格式 {n}',
 };
 
 const ja = {
@@ -2638,6 +2716,9 @@ const ja = {
   actionLookBehind:    '後方確認',
   actionRespawnVehicle:'車両をリスポーン',
   actionMap:           'マップ',
+  formatOnFoot:        '徒歩',
+  formatInVehicle:     '車両',
+  formatFallback:      'フォーマット {n}',
 };
 
 const id = {
@@ -2735,6 +2816,9 @@ const id = {
   actionLookBehind:    'Lihat ke belakang',
   actionRespawnVehicle:'Respawn kendaraan',
   actionMap:           'Peta',
+  formatOnFoot:        'Berjalan kaki',
+  formatInVehicle:     'Berkendara',
+  formatFallback:      'Format {n}',
 };
 
 export const TRANSLATIONS = {

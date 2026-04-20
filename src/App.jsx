@@ -15,15 +15,16 @@ import { encodeShareUrl, decodeShareHash } from './share';
 import { DEFAULT_BINDINGS, DEFAULT_VEHICLE_BINDINGS } from './defaultBindings';
 import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 import { localeUsesISO } from './keylabels';
-import { TranslationContext, makeT } from './useTranslation';
+import { TranslationContext, makeT, resolveAction } from './useTranslation';
 
-const DEFAULT_FORMAT_NAMES = ['On Foot', 'In Vehicle'];
+const DEFAULT_FORMAT_NAMES = ['__t:formatOnFoot', '__t:formatInVehicle'];
+const LEGACY_FORMAT_NAMES  = ['On Foot', 'In Vehicle'];
 const DEFAULT_BINDING_COUNTS = [DEFAULT_BINDINGS.length, DEFAULT_VEHICLE_BINDINGS.length];
 
 function hasCustomSession(formats, layoutName) {
   if (layoutName) return true;
   if (formats.length !== 2) return true;
-  if (formats.some((f, i) => f.name !== DEFAULT_FORMAT_NAMES[i])) return true;
+  if (formats.some((f, i) => f.name !== DEFAULT_FORMAT_NAMES[i] && f.name !== LEGACY_FORMAT_NAMES[i])) return true;
   if (formats.some(f => Object.keys(f.keyColors).length > 0)) return true;
   if (formats.some((f, i) => f.bindings.length !== DEFAULT_BINDING_COUNTS[i])) return true;
   return false;
@@ -55,7 +56,7 @@ function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove,
   return (
     <div className="format-tabs">
       {formats.map((f, i) => {
-        const label    = f.name || `Format ${i + 1}`;
+        const label    = resolveAction(f.name, t) || (t ? t('formatFallback', { n: String(i + 1) }) : `Format ${i + 1}`);
         const isActive = i === activeIndex;
         const removable = i > 0;
 
@@ -70,7 +71,7 @@ function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove,
               <input
                 ref={inputRef}
                 className="format-tab-input"
-                defaultValue={f.name}
+                defaultValue={resolveAction(f.name, t)}
                 maxLength={20}
                 onClick={e => e.stopPropagation()}
                 onBlur={e => commit(e.target.value)}
