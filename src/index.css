@@ -908,12 +908,20 @@ html, body {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
-  width: 240px;
-  flex-shrink: 0;
+  width: 252px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.7);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+.cpk-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   gap: 8px;
+  padding-right: 2px;
 }
 
 .cpk-panel-header {
@@ -957,9 +965,7 @@ html, body {
 .color-swatch-trigger.active { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 1px; }
 
 @media (max-width: 680px) {
-  .modal-backdrop { flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 16px; gap: 8px; }
-  .cpk-panel { width: 95vw; order: 2; }
-  .modal-backdrop .modal { order: 1; }
+  .cpk-panel { width: calc(100vw - 16px); left: 8px !important; top: auto !important; bottom: 8px; height: auto !important; max-height: 60vh; }
 }
 
 /* ── Settings color swatch / picker ─────────────────────────────────────────── */

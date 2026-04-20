@@ -3,6 +3,9 @@ import { KEY_MAP } from '../keyboardLayout';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
 
+const PICKER_WIDTH = 252; // px — must match .cpk-panel width in CSS
+const PICKER_GAP   = 12;
+
 function buildModDefs(settings) {
   const { splitModifiers, modColors, splitModColors } = settings;
   if (splitModifiers) {
@@ -36,7 +39,10 @@ export default function BindModal({
   const [action, setAction]         = useState('');
   const [localColor, setLocalColor] = useState(keyColor ?? '');
   const [showPicker, setShowPicker] = useState(false);
+  const [pickerPos, setPickerPos]   = useState(null);
+
   const inputRef = useRef(null);
+  const modalRef = useRef(null);
 
   const mods  = modifier ? [modifier] : [];
   const newId = bindingId(keyId, mods);
@@ -51,6 +57,17 @@ export default function BindModal({
     const existing = existingBindings.find(b => bindingId(b.key, b.modifiers) === newId);
     if (existing && action === '') setAction(existing.action);
   }, [modifier]);
+
+  // Measure the modal and position the picker flush to its left edge, same height
+  useEffect(() => {
+    if (!showPicker || !modalRef.current) return;
+    const rect = modalRef.current.getBoundingClientRect();
+    setPickerPos({
+      top:    rect.top,
+      left:   Math.max(8, rect.left - PICKER_WIDTH - PICKER_GAP),
+      height: rect.height,
+    });
+  }, [showPicker]);
 
   function applyColor(color) {
     setLocalColor(color);
@@ -69,41 +86,53 @@ export default function BindModal({
   return (
     <div className="modal-backdrop" onClick={onCancel}>
 
-      {/* Color picker panel — floats to the left of the modal */}
-      {showPicker && (
-        <div className="cpk-panel" onClick={e => e.stopPropagation()}>
+      {/* Color picker — fixed, left of modal, same height */}
+      {showPicker && pickerPos && (
+        <div
+          className="cpk-panel"
+          style={{
+            position: 'fixed',
+            top:    pickerPos.top,
+            left:   pickerPos.left,
+            height: pickerPos.height,
+            zIndex: 101,
+          }}
+          onClick={e => e.stopPropagation()}
+        >
           <div className="cpk-panel-header">
             <span className="cpk-panel-title">Key Color</span>
             <button className="cpk-panel-close" onClick={() => setShowPicker(false)}>✕</button>
           </div>
-          <ColorPicker color={localColor || '#4a4a4a'} onChange={applyColor} />
-          {localColor && (
-            <button type="button" className="btn-clear-color" style={{ marginTop: 4 }} onClick={() => applyColor('')}>
-              Clear Color
-            </button>
-          )}
-          {recentColors.length > 0 && (
-            <>
-              <div className="recently-picked-label" style={{ marginTop: 10 }}>Recently Picked</div>
-              <div className="recent-colors-row">
-                {recentColors.map(c => (
-                  <button
-                    key={c}
-                    type="button"
-                    className={`color-swatch${c === localColor ? ' active' : ''}`}
-                    style={{ background: c }}
-                    title={c}
-                    onClick={() => applyColor(c)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
+          <div className="cpk-panel-body">
+            <ColorPicker color={localColor || '#4a4a4a'} onChange={applyColor} />
+            {localColor && (
+              <button type="button" className="btn-clear-color" style={{ marginTop: 4 }} onClick={() => applyColor('')}>
+                Clear Color
+              </button>
+            )}
+            {recentColors.length > 0 && (
+              <>
+                <div className="recently-picked-label" style={{ marginTop: 10 }}>Recently Picked</div>
+                <div className="recent-colors-row">
+                  {recentColors.map(c => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`color-swatch${c === localColor ? ' active' : ''}`}
+                      style={{ background: c }}
+                      title={c}
+                      onClick={() => applyColor(c)}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
 
       {/* Main modal */}
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal" ref={modalRef} onClick={e => e.stopPropagation()}>
         <h3 className="modal-title">
           Bind <span className="modal-key">{modifier ? `${modLabel}+` : ''}{keyDef?.label ?? keyId}</span>
         </h3>
