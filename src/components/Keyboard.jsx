@@ -19,7 +19,6 @@ const KEY_DEFAULT_ACCENT = {
   ShiftLeft:    '#7b9ee0', ShiftRight:   '#7b9ee0',
   AltLeft:      '#7be09a', AltRight:     '#7be09a',
   ControlLeft:  '#e07b39', ControlRight: '#e07b39',
-  KeyW: '#7be09a', KeyA: '#7be09a', KeyS: '#7be09a', KeyD: '#7be09a',
 };
 
 // Maps binding modifier names → keyboard key IDs for color lookup

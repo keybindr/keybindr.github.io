@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { KEY_MAP } from '../keyboardLayout';
 import { bindingId } from '../useBindings';
 
+const KEY_BOUND_COLOR = '#3d3420';
+
 const MOD_COLORS = {
   Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
   Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
@@ -113,7 +115,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                   <button
                     type="button"
                     className="binding-color-swatch"
-                    style={keyColor ? { background: keyColor } : {}}
+                    style={{ background: keyColor || KEY_BOUND_COLOR }}
                     title="Edit key color"
                     onClick={e => { e.stopPropagation(); onOpenModal?.(b.key); }}
                   />
