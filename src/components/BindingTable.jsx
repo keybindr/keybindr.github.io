@@ -57,11 +57,11 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
       <table className="binding-table">
         <thead>
           <tr>
-            <th className="cell-drag" />
             <th>Modifier</th>
             <th>Key</th>
             <th>Action</th>
             <th></th>
+            <th className="cell-drag" />
           </tr>
         </thead>
         <tbody>
@@ -85,16 +85,6 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
                 onDrop={e => handleDrop(e, index)}
                 onDragLeave={() => setDragOverIndex(null)}
               >
-                <td className="cell-drag">
-                  <span
-                    className="drag-handle"
-                    draggable
-                    onDragStart={e => handleDragStart(e, index)}
-                    onDragEnd={handleDragEnd}
-                    onClick={e => e.stopPropagation()}
-                    title="Drag to reorder"
-                  >⠿</span>
-                </td>
                 <td className="cell-mod">
                   {b.modifiers.length > 0 ? (
                     b.modifiers.map(m => (
@@ -131,6 +121,16 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
                     title="Remove binding"
                     onClick={e => { e.stopPropagation(); onRemove(b.key, b.modifiers); }}
                   >✕</button>
+                </td>
+                <td className="cell-drag">
+                  <span
+                    className="drag-handle"
+                    draggable
+                    onDragStart={e => handleDragStart(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onClick={e => e.stopPropagation()}
+                    title="Drag to reorder"
+                  >⠿</span>
                 </td>
               </tr>
             );
