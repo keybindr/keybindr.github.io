@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { KEYS, KEYBOARD_WIDTH, KEYBOARD_HEIGHT } from '../keyboardLayout';
 import { bindingId } from '../useBindings';
 
@@ -66,6 +66,14 @@ function modFill(hex) {
   return `#${toHex(blend(r))}${toHex(blend(g))}${toHex(blend(b))}`;
 }
 
+const TOOLTIP_MOD_LABEL = {
+  Ctrl: 'Ctrl', CtrlLeft: 'LCtrl', CtrlRight: 'RCtrl',
+  Shift: 'Shift', ShiftLeft: 'LShift', ShiftRight: 'RShift',
+  Alt: 'Alt', AltLeft: 'LAlt', AltRight: 'RAlt',
+};
+
+const TOOLTIP_WIDTH = 220;
+
 const MOD_TO_CORNER = {
   Shift: 'shift', ShiftLeft: 'shift', ShiftRight: 'shift',
   Alt: 'alt',   AltLeft: 'alt',   AltRight: 'alt',
@@ -107,6 +115,7 @@ function trianglePoints(mod, k) {
 
 export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = { splitModifiers: false } }) {
   const { splitModifiers } = settings;
+  const [tooltip, setTooltip] = useState(null); // { keyId, x, y }
 
   const boundMap = {};
   for (const b of bindings) {
@@ -114,7 +123,24 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
     boundMap[b.key].push(b);
   }
 
+  function handleMouseEnter(e, keyId) {
+    if ((boundMap[keyId] || []).length === 0) return;
+    setTooltip({ keyId, x: e.clientX, y: e.clientY });
+  }
+
+  function handleMouseMove(e, keyId) {
+    if ((boundMap[keyId] || []).length === 0) return;
+    setTooltip({ keyId, x: e.clientX, y: e.clientY });
+  }
+
+  const tooltipBindings = tooltip ? (boundMap[tooltip.keyId] || []) : [];
+  const tipX = tooltip
+    ? (tooltip.x + 16 + TOOLTIP_WIDTH > window.innerWidth ? tooltip.x - TOOLTIP_WIDTH - 16 : tooltip.x + 16)
+    : 0;
+  const tipY = tooltip ? tooltip.y - 12 : 0;
+
   return (
+    <>
     <svg
       viewBox={`0 0 ${KEYBOARD_WIDTH} ${KEYBOARD_HEIGHT}`}
       width="100%"
@@ -150,7 +176,14 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         const label = (splitModifiers && SPLIT_LABELS[k.id]) ? SPLIT_LABELS[k.id] : k.label;
 
         return (
-          <g key={k.id} onClick={() => onKeyClick(k.id)} style={{ cursor: 'pointer' }}>
+          <g
+            key={k.id}
+            onClick={() => onKeyClick(k.id)}
+            onMouseEnter={e => handleMouseEnter(e, k.id)}
+            onMouseMove={e => handleMouseMove(e, k.id)}
+            onMouseLeave={() => setTooltip(null)}
+            style={{ cursor: 'pointer' }}
+          >
             <rect
               x={k.x} y={k.y} width={k.w} height={k.h} rx={4}
               fill={fill} stroke={stroke}
@@ -215,5 +248,30 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         </g>
       ))}
     </svg>
+
+    {tooltip && tooltipBindings.length > 0 && (
+      <div className="key-tooltip" style={{ left: tipX, top: tipY }}>
+        {tooltipBindings.map((b, i) => (
+          <div key={bindingId(b.key, b.modifiers)} className={`tooltip-row${i > 0 ? ' tooltip-row-sep' : ''}`}>
+            {b.modifiers.length > 0 && (
+              <>
+                {b.modifiers.map(m => (
+                  <span
+                    key={m}
+                    className="tooltip-mod-tag"
+                    style={{ borderColor: DEFAULT_TRIANGLE_COLORS[m] || '#888', color: DEFAULT_TRIANGLE_COLORS[m] || '#888' }}
+                  >
+                    {TOOLTIP_MOD_LABEL[m] || m}
+                  </span>
+                ))}
+                <span className="tooltip-arrow">→</span>
+              </>
+            )}
+            <span className="tooltip-action">{b.action}</span>
+          </div>
+        ))}
+      </div>
+    )}
+    </>
   );
 }

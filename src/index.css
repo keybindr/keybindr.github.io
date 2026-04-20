@@ -917,6 +917,52 @@ html, body {
 
 .footer-sep { color: var(--border); }
 
+/* ── Key hover tooltip ───────────────────────────────────────────────────────── */
+.key-tooltip {
+  position: fixed;
+  z-index: 200;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  pointer-events: none;
+  min-width: 100px;
+  max-width: 220px;
+}
+
+.tooltip-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 2px 0;
+  font-size: 12px;
+}
+
+.tooltip-row-sep {
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.tooltip-mod-tag {
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.tooltip-arrow {
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.tooltip-action {
+  color: var(--text);
+}
+
 /* ── Color picker floating panel ─────────────────────────────────────────────── */
 .cpk-panel {
   background: var(--surface);
