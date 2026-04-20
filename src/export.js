@@ -48,9 +48,9 @@ const SPLIT_LABELS = {
 };
 
 const MOD_COLORS = {
-  Ctrl: '#e07b39', CtrlLeft: '#e07b39', CtrlRight: '#e07b39',
+  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
   Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  Alt:   '#7be09a', AltLeft:  '#7be09a', AltRight:   '#7be09a',
+  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
 };
 
 function modFill(hex) {

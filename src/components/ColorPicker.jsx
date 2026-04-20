@@ -153,27 +153,35 @@ export default function ColorPicker({ color, onChange }) {
         <div className="cpk-cursor" style={{ left: `${s}%`, top: `${100 - v}%` }} />
       </div>
 
-      {/* Preview + sliders */}
-      <div className="cpk-slider-row">
+      {/* Row 1: color preview swatch + hue slider */}
+      <div className="cpk-color-row">
         <div className="cpk-preview-wrap">
           <div className="cpk-checker" />
           <div className="cpk-preview" style={{ background: currentStr }} />
         </div>
-        <div className="cpk-sliders">
-          <div className="cpk-track-wrap" style={{ background: hueBg }}>
-            <input type="range" min={0} max={360} step={1}
-              className="cpk-range"
-              value={Math.round(h)}
-              onChange={e => emit(+e.target.value, s, v, a)}
-            />
-          </div>
-          <div className="cpk-track-wrap" style={{ background: alphaBg }}>
-            <input type="range" min={0} max={100} step={1}
-              className="cpk-range"
-              value={Math.round(a * 100)}
-              onChange={e => emit(h, s, v, +e.target.value / 100)}
-            />
-          </div>
+        <div className="cpk-track-wrap" style={{ background: hueBg }}>
+          <input type="range" min={0} max={360} step={1}
+            className="cpk-range"
+            value={Math.round(h)}
+            onChange={e => emit(+e.target.value, s, v, a)}
+          />
+        </div>
+      </div>
+
+      {/* Row 2: opacity number input + opacity slider */}
+      <div className="cpk-alpha-row">
+        <input
+          type="number" min={0} max={100}
+          className="cpk-input cpk-alpha-input"
+          value={Math.round(a * 100)}
+          onChange={e => emit(h, s, v, clamp(parseInt(e.target.value, 10) || 0, 0, 100) / 100)}
+        />
+        <div className="cpk-track-wrap" style={{ background: alphaBg }}>
+          <input type="range" min={0} max={100} step={1}
+            className="cpk-range"
+            value={Math.round(a * 100)}
+            onChange={e => emit(h, s, v, +e.target.value / 100)}
+          />
         </div>
       </div>
 
@@ -192,12 +200,6 @@ export default function ColorPicker({ color, onChange }) {
               onChange={e => handleRgb(idx, e.target.value)} />
           </div>
         ))}
-        <div className="cpk-field cpk-field-num">
-          <span className="cpk-label">A%</span>
-          <input className="cpk-input" type="number" min={0} max={100}
-            value={Math.round(a * 100)}
-            onChange={e => emit(h, s, v, clamp(parseInt(e.target.value, 10) || 0, 0, 100) / 100)} />
-        </div>
       </div>
     </div>
   );

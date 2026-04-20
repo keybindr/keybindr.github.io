@@ -27,6 +27,17 @@ const KEY_ACCENT_COLORS = {
 const KEY_BOUND_DEFAULT   = '#3d3420';
 const KEY_UNBOUND_DEFAULT = '#2a2a2a';
 
+// Mirrors the modFill blend used in Keyboard rendering (25% accent over #1a1a1a)
+function modFill(hex) {
+  const h = n => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0');
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const bg = 0x1a;
+  const blend = c => Math.round(bg + (c - bg) * 0.25);
+  return `#${h(blend(r))}${h(blend(g))}${h(blend(b))}`;
+}
+
 const MOD_BUTTON_COLORS = {
   Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
   Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
@@ -64,8 +75,9 @@ export default function BindModal({
   const isModifier  = MODIFIER_KEY_IDS.has(keyId);
 
   const isBoundKey = existingBindings.some(b => b.key === keyId);
+  const accentHex = KEY_ACCENT_COLORS[keyId];
   const effectiveColor = keyColor
-    || KEY_ACCENT_COLORS[keyId]
+    || (accentHex ? modFill(accentHex) : null)
     || (isBoundKey ? KEY_BOUND_DEFAULT : KEY_UNBOUND_DEFAULT);
 
   const [modifiers, setModifiers]   = useState([]);

@@ -276,15 +276,15 @@ export default function App() {
   const { splitModifiers } = settings;
 
   // Legend colors follow modifier key custom colors, falling back to defaults
-  const legShift = keyColors['ShiftLeft'] || keyColors['ShiftRight'] || '#7b9ee0';
-  const legAlt   = keyColors['AltLeft']   || keyColors['AltRight']   || '#7be09a';
-  const legCtrl  = keyColors['ControlLeft'] || keyColors['ControlRight'] || '#e07b39';
-  const legShiftL = keyColors['ShiftLeft']    || '#7b9ee0';
-  const legShiftR = keyColors['ShiftRight']   || '#7b9ee0';
-  const legAltL   = keyColors['AltLeft']      || '#7be09a';
-  const legAltR   = keyColors['AltRight']     || '#7be09a';
-  const legCtrlL  = keyColors['ControlLeft']  || '#e07b39';
-  const legCtrlR  = keyColors['ControlRight'] || '#e07b39';
+  const legShift  = keyColors['ShiftLeft']   || keyColors['ShiftRight']   || '#7b9ee0';
+  const legAlt    = keyColors['AltLeft']     || keyColors['AltRight']     || '#7be09a';
+  const legCtrl   = keyColors['ControlLeft'] || keyColors['ControlRight'] || '#e07b39';
+  const legShiftL = keyColors['ShiftLeft']   || '#7b9ee0';
+  const legShiftR = keyColors['ShiftRight']  || '#7b9ee0';
+  const legAltL   = keyColors['AltLeft']     || '#7be09a';
+  const legAltR   = keyColors['AltRight']    || '#7be09a';
+  const legCtrlL  = keyColors['ControlLeft'] || '#e07b39';
+  const legCtrlR  = keyColors['ControlRight']|| '#e07b39';
 
   return (
     <div className="app">

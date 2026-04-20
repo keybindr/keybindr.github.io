@@ -1040,17 +1040,21 @@ html, body {
   pointer-events: none;
 }
 
-/* Preview + sliders row */
-.cpk-slider-row {
+/* Row 1: swatch + hue bar */
+.cpk-color-row {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 8px;
+}
+
+.cpk-color-row .cpk-track-wrap {
+  flex: 1;
 }
 
 .cpk-preview-wrap {
   position: relative;
-  width: 28px;
-  height: 52px;
+  width: 24px;
+  height: 24px;
   border-radius: 4px;
   overflow: hidden;
   flex-shrink: 0;
@@ -1068,17 +1072,26 @@ html, body {
   inset: 0;
 }
 
-.cpk-sliders {
-  flex: 1;
+/* Row 2: opacity input + opacity bar */
+.cpk-alpha-row {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+}
+
+.cpk-alpha-row .cpk-track-wrap {
+  flex: 1;
+}
+
+.cpk-alpha-row .cpk-alpha-input {
+  width: 40px;
+  flex: 0 0 40px;
+  text-align: center;
 }
 
 .cpk-track-wrap {
   height: 14px;
   border-radius: 7px;
-  overflow: hidden;
   position: relative;
   cursor: pointer;
 }
