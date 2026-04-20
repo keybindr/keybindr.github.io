@@ -78,18 +78,71 @@ export const LOCALES = {
     },
   },
 
-  'nordic': {
-    name: 'Nordic',
+  'sv-SE': {
+    name: 'Swedish',
     overrides: {
+      Backquote:     '§',
+      Minus:         '+',
+      Equal:         '´',
       BracketLeft:   'Å',
+      BracketRight:  '¨',
+      Backslash:     "'",
+      Semicolon:     'Ö',
+      Quote:         'Ä',
+      IntlHash:      "'",
+      IntlBackslash: '<',
+      Slash:         '-',
+    },
+  },
+
+  'fi-FI': {
+    name: 'Finnish',
+    overrides: {
+      Backquote:     '§',
+      Minus:         '+',
+      Equal:         '´',
+      BracketLeft:   'Å',
+      BracketRight:  '¨',
+      Backslash:     "'",
+      Semicolon:     'Ö',
+      Quote:         'Ä',
+      IntlHash:      "'",
+      IntlBackslash: '<',
+      Slash:         '-',
+    },
+  },
+
+  'nb-NO': {
+    name: 'Norwegian',
+    overrides: {
+      Backquote:     '|',
+      Minus:         '+',
+      Equal:         '\\',
+      BracketLeft:   'Å',
+      BracketRight:  '¨',
+      Backslash:     '@',
+      Semicolon:     'Ø',
+      Quote:         'Æ',
+      IntlHash:      '@',
+      IntlBackslash: '<',
+      Slash:         '-',
+    },
+  },
+
+  'da-DK': {
+    name: 'Danish',
+    overrides: {
+      Backquote:     '½',
+      Minus:         '+',
+      Equal:         '´',
+      BracketLeft:   'Å',
+      BracketRight:  '¨',
+      Backslash:     "'",
       Semicolon:     'Æ',
       Quote:         'Ø',
-      Backslash:     "'",
-      Equal:         '+',
-      Minus:         '-',
-      Backquote:     '|',
-      BracketRight:  '¨',
+      IntlHash:      "'",
       IntlBackslash: '<',
+      Slash:         '-',
     },
   },
 
