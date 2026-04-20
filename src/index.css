@@ -928,6 +928,34 @@ html, body {
   padding-right: 2px;
 }
 
+/* Color picker panel header (settings) */
+.cpk-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.cpk-panel-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.cpk-panel-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  border-radius: 3px;
+  transition: color 0.15s;
+}
+.cpk-panel-close:hover { color: var(--text); }
+
 /* Static current-color indicator in the Key Color row */
 .color-current-swatch {
   width: 24px;
@@ -941,11 +969,7 @@ html, body {
   .cpk-panel { width: calc(100vw - 16px); left: 8px !important; top: auto !important; bottom: 8px; height: auto !important; max-height: 60vh; }
 }
 
-/* ── Settings color swatch / picker ─────────────────────────────────────────── */
-.mod-color-block {
-  margin-bottom: 4px;
-}
-
+/* ── Settings color swatch ───────────────────────────────────────────────────── */
 .mod-color-swatch {
   width: 28px;
   height: 28px;
@@ -953,18 +977,10 @@ html, body {
   border: 1px solid rgba(255,255,255,0.2);
   cursor: pointer;
   flex-shrink: 0;
-  transition: transform 0.1s;
+  transition: transform 0.1s, border-color 0.15s;
 }
 .mod-color-swatch:hover { transform: scale(1.1); }
-
-.mod-color-picker {
-  margin-top: 8px;
-  margin-left: 62px;
-  padding: 10px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-}
+.mod-color-swatch.active { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 1px; }
 
 /* ── Custom color picker (cpk) ───────────────────────────────────────────────── */
 .cpk {

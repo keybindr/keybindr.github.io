@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import ColorPicker from './ColorPicker';
+
+const PICKER_WIDTH = 252;
+const PICKER_GAP   = 12;
 
 const UNIFIED_MODS = [
   { key: 'Shift', label: 'Shift' },
@@ -13,39 +16,77 @@ const SPLIT_MOD_GROUPS = [
   { leftKey: 'CtrlLeft',   rightKey: 'CtrlRight',  leftLabel: 'LCtrl',  rightLabel: 'RCtrl'  },
 ];
 
-function ModColorRow({ label, colorKey, color, expanded, onToggle, onChange }) {
-  return (
-    <div className="mod-color-block">
+export default function SettingsModal({ settings, onModColor, onSplitModColor, onToggleSplit, onClearKeys, onClose }) {
+  const { splitModifiers, modColors, splitModColors } = settings;
+  const [activeKey, setActiveKey] = useState(null);
+  const [pickerPos, setPickerPos] = useState(null);
+  const modalRef = useRef(null);
+
+  function handleSwatchClick(key) {
+    if (activeKey === key) {
+      setActiveKey(null);
+      setPickerPos(null);
+      return;
+    }
+    setActiveKey(key);
+    if (modalRef.current) {
+      const rect = modalRef.current.getBoundingClientRect();
+      setPickerPos({
+        top:  rect.top,
+        left: Math.max(8, rect.left - PICKER_WIDTH - PICKER_GAP),
+      });
+    }
+  }
+
+  // Always derive live color + handler from current settings so picker stays fresh
+  const liveColor    = activeKey ? (splitModifiers ? splitModColors[activeKey] : modColors[activeKey]) : null;
+  const liveOnChange = activeKey
+    ? (splitModifiers ? c => onSplitModColor(activeKey, c) : c => onModColor(activeKey, c))
+    : null;
+
+  function SwatchRow({ label, colorKey, color }) {
+    const isActive = activeKey === colorKey;
+    return (
       <div className="settings-row">
         <span className="settings-label">{label}</span>
         <button
           type="button"
-          className="mod-color-swatch"
+          className={`mod-color-swatch${isActive ? ' active' : ''}`}
           style={{ background: color }}
-          onClick={onToggle}
-          title={expanded ? 'Close picker' : 'Pick color'}
+          onClick={() => handleSwatchClick(colorKey)}
+          title={isActive ? 'Close picker' : 'Pick color'}
         />
       </div>
-      {expanded && (
-        <div className="mod-color-picker">
-          <ColorPicker color={color} onChange={onChange} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default function SettingsModal({ settings, onModColor, onSplitModColor, onToggleSplit, onClearKeys, onClose }) {
-  const { splitModifiers, modColors, splitModColors } = settings;
-  const [expanded, setExpanded] = useState(null);
-
-  function toggle(key) {
-    setExpanded(prev => prev === key ? null : key);
+    );
   }
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal modal-settings" onClick={e => e.stopPropagation()}>
+
+      {/* Color picker — fixed left of modal, natural height, dismissible */}
+      {activeKey && pickerPos && (
+        <div
+          className="cpk-panel"
+          style={{
+            position: 'fixed',
+            top:    pickerPos.top,
+            left:   pickerPos.left,
+            zIndex: 101,
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="cpk-panel-header">
+            <span className="cpk-panel-title">Color Picker</span>
+            <button className="cpk-panel-close" onClick={() => { setActiveKey(null); setPickerPos(null); }}>✕</button>
+          </div>
+          <div className="cpk-panel-body">
+            <ColorPicker color={liveColor} onChange={liveOnChange} />
+          </div>
+        </div>
+      )}
+
+      {/* Settings modal */}
+      <div className="modal modal-settings" ref={modalRef} onClick={e => e.stopPropagation()}>
         <div className="settings-header">
           <h3 className="modal-title" style={{ marginBottom: 0 }}>Settings</h3>
           <button className="btn-icon" onClick={onClose} title="Close">✕</button>
@@ -57,13 +98,13 @@ export default function SettingsModal({ settings, onModColor, onSplitModColor, o
             <div className="toggle-group">
               <button
                 className={`toggle-btn${!splitModifiers ? ' active' : ''}`}
-                onClick={() => onToggleSplit(false)}
+                onClick={() => { onToggleSplit(false); setActiveKey(null); }}
               >
                 Unified
               </button>
               <button
                 className={`toggle-btn${splitModifiers ? ' active' : ''}`}
-                onClick={() => onToggleSplit(true)}
+                onClick={() => { onToggleSplit(true); setActiveKey(null); }}
               >
                 Left / Right
               </button>
@@ -76,35 +117,13 @@ export default function SettingsModal({ settings, onModColor, onSplitModColor, o
 
           {!splitModifiers ? (
             UNIFIED_MODS.map(({ key, label }) => (
-              <ModColorRow
-                key={key}
-                label={label}
-                colorKey={key}
-                color={modColors[key]}
-                expanded={expanded === key}
-                onToggle={() => toggle(key)}
-                onChange={color => onModColor(key, color)}
-              />
+              <SwatchRow key={key} label={label} colorKey={key} color={modColors[key]} />
             ))
           ) : (
             SPLIT_MOD_GROUPS.map(({ leftKey, rightKey, leftLabel, rightLabel }) => (
               <React.Fragment key={leftKey}>
-                <ModColorRow
-                  label={leftLabel}
-                  colorKey={leftKey}
-                  color={splitModColors[leftKey]}
-                  expanded={expanded === leftKey}
-                  onToggle={() => toggle(leftKey)}
-                  onChange={color => onSplitModColor(leftKey, color)}
-                />
-                <ModColorRow
-                  label={rightLabel}
-                  colorKey={rightKey}
-                  color={splitModColors[rightKey]}
-                  expanded={expanded === rightKey}
-                  onToggle={() => toggle(rightKey)}
-                  onChange={color => onSplitModColor(rightKey, color)}
-                />
+                <SwatchRow label={leftLabel} colorKey={leftKey} color={splitModColors[leftKey]} />
+                <SwatchRow label={rightLabel} colorKey={rightKey} color={splitModColors[rightKey]} />
               </React.Fragment>
             ))
           )}
