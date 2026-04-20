@@ -430,7 +430,40 @@ html, body {
 .cell-color { width: 44px; text-align: center; }
 .cell-color-head { width: 44px; text-align: center; }
 .cell-action { color: var(--text); }
+.cell-group { width: 100px; cursor: pointer; }
+.cell-group-head { width: 100px; }
 .cell-del { width: 40px; text-align: center; }
+
+.group-header-row { background: #202020; }
+.group-header-row:hover { background: #252525; }
+.group-header-row.group-drag-over td { border-top: 2px solid var(--accent); }
+.group-header-cell {
+  padding: 6px 12px;
+  vertical-align: middle;
+}
+.group-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  cursor: text;
+  border-bottom: 1px dashed transparent;
+  transition: border-color 0.15s;
+}
+.group-name:hover { border-bottom-color: var(--text-dim); }
+.group-name-input { width: 140px; }
+.row-in-group td { padding-left: 24px; }
+.row-in-group .cell-drag { padding-left: 0 !important; }
+.group-tag {
+  display: inline-block;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 10px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
 
 .mod-tags {
   display: flex;

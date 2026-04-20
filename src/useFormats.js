@@ -107,7 +107,7 @@ export function useFormats() {
           ...f,
           bindings: f.bindings.map(b =>
             bindingId(b.key, b.modifiers) === id
-              ? { key, modifiers: modifiers.slice().sort(), action }
+              ? { ...b, key, modifiers: modifiers.slice().sort(), action }
               : b
           ),
         };
@@ -144,6 +144,36 @@ export function useFormats() {
 
   function replaceFormats(newFormats) {
     mutate(() => ({ formats: newFormats.slice(0, MAX_FORMATS), active: 0 }));
+  }
+
+  // ── Groups ────────────────────────────────────────────────────────────
+  function updateGroup(key, modifiers, group) {
+    const id = bindingId(key, modifiers);
+    mutateActiveFormat(f => ({
+      ...f,
+      bindings: f.bindings.map(b =>
+        bindingId(b.key, b.modifiers) === id ? { ...b, group: group || undefined } : b
+      ),
+    }));
+  }
+
+  function renameGroup(oldName, newName) {
+    mutateActiveFormat(f => ({
+      ...f,
+      bindings: f.bindings.map(b =>
+        b.group === oldName ? { ...b, group: newName || undefined } : b
+      ),
+    }));
+  }
+
+  function reorderGroup(fromGroupName, beforeGroupName) {
+    mutateActiveFormat(f => {
+      const fromBindings = f.bindings.filter(b => b.group === fromGroupName);
+      const rest         = f.bindings.filter(b => b.group !== fromGroupName);
+      const insertIdx    = rest.findIndex(b => b.group === beforeGroupName);
+      if (insertIdx === -1) return { ...f, bindings: [...rest, ...fromBindings] };
+      return { ...f, bindings: [...rest.slice(0, insertIdx), ...fromBindings, ...rest.slice(insertIdx)] };
+    });
   }
 
   // ── Key colors ────────────────────────────────────────────────────────

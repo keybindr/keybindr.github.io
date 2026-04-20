@@ -155,6 +155,7 @@ export default function App() {
     replaceActiveBindings, replaceFormats,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
     resetFormats,
+    updateGroup, renameGroup, reorderGroup,
   } = useFormats();
 
   const { settings, setSplitModifiers, resetSettings } = useSettings();
@@ -407,6 +408,9 @@ export default function App() {
           onRemove={remove}
           onReorder={reorderBindings}
           onOpenModal={handleKeyClick}
+          onUpdateGroup={updateGroup}
+          onRenameGroup={renameGroup}
+          onReorderGroup={reorderGroup}
         />
       </div>
 
