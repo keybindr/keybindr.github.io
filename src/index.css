@@ -401,6 +401,19 @@ html, body {
 .binding-table tr:hover { background: var(--surface2); }
 .binding-table tr.row-selected { background: #3a3010; }
 .binding-table tr.row-selected td { border-bottom-color: #4a4010; }
+.binding-table tr.row-dragging { opacity: 0.4; }
+.binding-table tr.row-drag-over td { border-top: 2px solid var(--accent); }
+
+.cell-drag { width: 24px; padding-right: 0 !important; }
+.drag-handle {
+  color: var(--text-dim);
+  cursor: grab;
+  font-size: 14px;
+  padding: 2px 4px;
+  display: inline-block;
+  line-height: 1;
+}
+.drag-handle:active { cursor: grabbing; }
 
 .cell-key {
   font-weight: 700;

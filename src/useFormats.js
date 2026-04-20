@@ -103,6 +103,15 @@ export function useFormats() {
     }));
   }
 
+  function reorderBindings(fromIndex, toIndex) {
+    mutateActiveFormat(f => {
+      const bs = [...f.bindings];
+      const [moved] = bs.splice(fromIndex, 1);
+      bs.splice(toIndex, 0, moved);
+      return { ...f, bindings: bs };
+    });
+  }
+
   function remove(key, modifiers) {
     const id = bindingId(key, modifiers);
     mutateActiveFormat(f => ({ ...f, bindings: f.bindings.filter(b => bindingId(b.key, b.modifiers) !== id) }));
@@ -176,7 +185,7 @@ export function useFormats() {
     bindings:  activeFormat?.bindings  ?? [],
     keyColors: activeFormat?.keyColors ?? { ...DEFAULT_KEY_COLORS },
     recentColors,
-    addOrUpdate, remove, updateAction,
+    addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
     resetFormats,

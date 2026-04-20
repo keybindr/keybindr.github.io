@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { KEY_MAP } from '../keyboardLayout';
 import { bindingId } from '../useBindings';
 
@@ -8,15 +8,11 @@ const MOD_COLORS = {
   Alt:   '#7be09a',
 };
 
-export default function BindingTable({ bindings, selectedId, onSelect, onUpdateAction, onRemove, onOpenModal }) {
-  const [editingId, setEditingId] = useState(null);
-  const [editValue, setEditValue] = useState('');
-
-  const sorted = [...bindings].sort((a, b) => {
-    const ak = a.key + a.modifiers.join('');
-    const bk = b.key + b.modifiers.join('');
-    return ak.localeCompare(bk);
-  });
+export default function BindingTable({ bindings, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal }) {
+  const [editingId, setEditingId]     = useState(null);
+  const [editValue, setEditValue]     = useState('');
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const dragIndex = useRef(null);
 
   function startEdit(b) {
     setEditingId(bindingId(b.key, b.modifiers));
@@ -24,10 +20,36 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
   }
 
   function commitEdit(b) {
-    if (editValue.trim()) {
-      onUpdateAction(b.key, b.modifiers, editValue.trim());
-    }
+    if (editValue.trim()) onUpdateAction(b.key, b.modifiers, editValue.trim());
     setEditingId(null);
+  }
+
+  function handleDragStart(e, index) {
+    dragIndex.current = index;
+    e.dataTransfer.effectAllowed = 'move';
+    // minimal ghost image — let browser default but mark the row
+    e.currentTarget.closest('tr').classList.add('row-dragging');
+  }
+
+  function handleDragEnd(e) {
+    e.currentTarget.closest('tr')?.classList.remove('row-dragging');
+    dragIndex.current = null;
+    setDragOverIndex(null);
+  }
+
+  function handleDragOver(e, index) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  }
+
+  function handleDrop(e, index) {
+    e.preventDefault();
+    if (dragIndex.current !== null && dragIndex.current !== index) {
+      onReorder(dragIndex.current, index);
+    }
+    dragIndex.current = null;
+    setDragOverIndex(null);
   }
 
   return (
@@ -35,6 +57,7 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
       <table className="binding-table">
         <thead>
           <tr>
+            <th className="cell-drag" />
             <th>Modifier</th>
             <th>Key</th>
             <th>Action</th>
@@ -42,19 +65,36 @@ export default function BindingTable({ bindings, selectedId, onSelect, onUpdateA
           </tr>
         </thead>
         <tbody>
-          {sorted.map(b => {
-            const id = bindingId(b.key, b.modifiers);
+          {bindings.map((b, index) => {
+            const id         = bindingId(b.key, b.modifiers);
             const isSelected = id === selectedId;
-            const keyLabel = KEY_MAP[b.key]?.label ?? b.key;
-            const isEditing = editingId === id;
+            const keyLabel   = KEY_MAP[b.key]?.label ?? b.key;
+            const isEditing  = editingId === id;
+            const isDragOver = dragOverIndex === index;
 
             return (
               <tr
                 key={id}
-                className={isSelected ? 'row-selected' : ''}
+                className={[
+                  isSelected  ? 'row-selected'  : '',
+                  isDragOver  ? 'row-drag-over' : '',
+                ].filter(Boolean).join(' ')}
                 onClick={() => onSelect(id)}
                 onDoubleClick={() => onOpenModal?.(b.key)}
+                onDragOver={e => handleDragOver(e, index)}
+                onDrop={e => handleDrop(e, index)}
+                onDragLeave={() => setDragOverIndex(null)}
               >
+                <td className="cell-drag">
+                  <span
+                    className="drag-handle"
+                    draggable
+                    onDragStart={e => handleDragStart(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onClick={e => e.stopPropagation()}
+                    title="Drag to reorder"
+                  >⠿</span>
+                </td>
                 <td className="cell-mod">
                   {b.modifiers.length > 0 ? (
                     b.modifiers.map(m => (

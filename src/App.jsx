@@ -151,7 +151,7 @@ export default function App() {
   const {
     formats, activeIndex, switchTo, addFormat, setFormatName, removeFormat,
     bindings, keyColors, recentColors,
-    addOrUpdate, remove, updateAction,
+    addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
     resetFormats,
@@ -390,6 +390,7 @@ export default function App() {
           onSelect={handleSelect}
           onUpdateAction={updateAction}
           onRemove={remove}
+          onReorder={reorderBindings}
           onOpenModal={handleKeyClick}
         />
       </div>
