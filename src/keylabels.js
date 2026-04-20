@@ -438,6 +438,24 @@ export const LOCALES = {
 
 export const LOCALE_IDS = Object.keys(LOCALES);
 
+// Locales whose physical keyboards use the ISO 105-key standard (extra IntlHash
+// and IntlBackslash keys, L-shaped Enter). Everything else defaults to ANSI 104.
+const ISO_LOCALE_SET = new Set([
+  'en-GB',
+  'cs-CZ', 'da-DK', 'de-DE', 'de-CH',
+  'el-GR', 'es-ES',
+  'fi-FI', 'fr-FR', 'fr-BE',
+  'hu-HU', 'it-IT',
+  'nb-NO', 'nl-NL',
+  'pl-PL', 'pt-PT', 'ro-RO',
+  'sk-SK', 'sv-SE',
+  'tr-TR',
+]);
+
+export function localeUsesISO(localeId) {
+  return ISO_LOCALE_SET.has(localeId);
+}
+
 // Returns the locale-specific label for a key, or null if no override exists.
 export function getLocaleLabel(keyId, localeId) {
   return LOCALES[localeId]?.overrides?.[keyId] ?? null;

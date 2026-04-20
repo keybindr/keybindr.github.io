@@ -46,7 +46,12 @@ export default function HelpModal({ onClose }) {
 
           <h4>Import / Export</h4>
           <p>
-            Use the Import / Export menu to load or save your layout as JSON (recommended between edit sessions). Exporting JSON saves all formats, the layout name, and key colors — importing a JSON file fully restores the layout. Export PNG produces an image for each format.
+            Use the Import / Export menu to load or save your layout as JSON (recommended between edit sessions). Exported JSON saves all formats, the layout name, key colors, physical layout, and language — importing fully restores everything. Export PNG produces an image per format showing the keyboard and binding table.
+          </p>
+
+          <h4>Share</h4>
+          <p>
+            The share icon in the header generates a URL that encodes your entire layout. Anyone opening the link will be offered the option to load it. If they already have a layout in progress, they'll be prompted to download it first before it's replaced.
           </p>
 
           <h4>Settings</h4>

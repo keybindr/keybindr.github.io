@@ -14,6 +14,7 @@ import OrphanWarningModal from './components/OrphanWarningModal';
 import { encodeShareUrl, decodeShareHash } from './share';
 import { DEFAULT_BINDINGS, DEFAULT_VEHICLE_BINDINGS } from './defaultBindings';
 import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
+import { localeUsesISO } from './keylabels';
 
 const DEFAULT_FORMAT_NAMES = ['On Foot', 'In Vehicle'];
 const DEFAULT_BINDING_COUNTS = [DEFAULT_BINDINGS.length, DEFAULT_VEHICLE_BINDINGS.length];
@@ -359,6 +360,23 @@ export default function App() {
     }
   }
 
+  const ANSI_ISO_PAIRS = {
+    'ansi-104': 'iso-105',
+    'iso-105':  'ansi-104',
+    'tkl-ansi': 'tkl-iso',
+    'tkl-iso':  'tkl-ansi',
+  };
+
+  function handleLocaleChange(newLocaleId) {
+    setLanguage(newLocaleId);
+    const current = settings.physicalLayout;
+    const newNeedsISO = localeUsesISO(newLocaleId);
+    const currentIsISO = current === 'iso-105' || current === 'tkl-iso';
+    if (newNeedsISO !== currentIsISO && ANSI_ISO_PAIRS[current]) {
+      handleLayoutChange(ANSI_ISO_PAIRS[current]);
+    }
+  }
+
   function confirmLayoutChange() {
     if (!pendingLayout) return;
     const newKeySet = new Set(getKeys(pendingLayout.id).map(k => k.id));
@@ -548,7 +566,7 @@ export default function App() {
           settings={settings}
           onToggleSplit={setSplitModifiers}
           onChangeLayout={handleLayoutChange}
-          onChangeLocale={setLanguage}
+          onChangeLocale={handleLocaleChange}
           onClearKeys={resetAll}
           onClose={() => setShowSettings(false)}
         />

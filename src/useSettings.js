@@ -1,11 +1,25 @@
 import { useState } from 'react';
+import { LOCALE_IDS, localeUsesISO } from './keylabels';
 
 const SETTINGS_KEY = 'keybindr_settings';
 
+function detectLocale() {
+  const langs = navigator.languages?.length ? navigator.languages : [navigator.language ?? 'en-US'];
+  for (const lang of langs) {
+    if (LOCALE_IDS.includes(lang)) return lang;
+    const prefix = lang.split('-')[0];
+    const match = LOCALE_IDS.find(id => id.startsWith(prefix + '-'));
+    if (match) return match;
+  }
+  return 'en-US';
+}
+
+const detectedLocale = detectLocale();
+
 const DEFAULTS = {
   splitModifiers: false,
-  physicalLayout: 'ansi-104',
-  language: 'en-US',
+  physicalLayout: localeUsesISO(detectedLocale) ? 'iso-105' : 'ansi-104',
+  language: detectedLocale,
 };
 
 function load() {
