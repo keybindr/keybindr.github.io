@@ -192,6 +192,28 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
           </g>
         );
       })}
+
+      {/* LED indicators above numpad — col centers: 20.5→926, 21.5→970, 22.5→1014 */}
+      {[
+        { label: 'NUM',  cx: 926  },
+        { label: 'CAPS', cx: 970  },
+        { label: 'SCRL', cx: 1014 },
+      ].map(({ label, cx }) => (
+        <g key={label} style={{ pointerEvents: 'none' }}>
+          <rect x={cx - 14} y={6} width={28} height={32} rx={4}
+            fill="#1a1a1a" stroke="#333" strokeWidth={1} />
+          <circle cx={cx} cy={18} r={4}
+            fill="#1c3320" stroke="#2d4d33" strokeWidth={1} />
+          <text
+            x={cx} y={31}
+            textAnchor="middle"
+            fontSize={7}
+            fontFamily="'Courier New', monospace"
+            fill="#444"
+            letterSpacing="0.5"
+          >{label}</text>
+        </g>
+      ))}
     </svg>
   );
 }
