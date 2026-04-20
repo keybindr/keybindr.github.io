@@ -213,6 +213,7 @@ export default function BindModal({
               placeholder={t('actionPlaceholder')}
               value={action}
               onChange={e => setAction(e.target.value)}
+              maxLength={60}
               className="modal-input"
             />
           </div>

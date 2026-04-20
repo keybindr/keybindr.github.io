@@ -158,6 +158,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                       autoFocus
                       value={editValue}
                       onChange={e => setEditValue(e.target.value)}
+                      maxLength={60}
                       onBlur={() => commitEdit(b)}
                       onKeyDown={e => {
                         if (e.key === 'Enter') commitEdit(b);
