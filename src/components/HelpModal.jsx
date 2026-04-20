@@ -10,9 +10,9 @@ export default function HelpModal({ onClose }) {
         <div className="help-body">
           <p className="mobile-only mobile-notice">{MOBILE_NOTICE}</p>
 
-          <p>
-            <strong>Keybindr</strong> is a visual keyboard binding planner. Map actions to key combinations, customize colors, name your layout, and export it for reference. All data is stored on your computer and there is zero user tracking.
-          </p>
+          <p><strong>Keybindr</strong> is a visual keyboard binding planner.</p>
+          <p>Map actions to key combinations, customize colors, name your layout, and export it for reference.</p>
+          <p>All data is stored on your computer.</p>
 
           <h4>Binding a key</h4>
           <p>
@@ -46,7 +46,7 @@ export default function HelpModal({ onClose }) {
 
           <h4>Import / Export</h4>
           <p>
-            Use the Import / Export menu to load or save your layout as JSON. Exporting JSON saves all formats, the layout name, and key colors — importing a JSON file fully restores the layout. Export PNG produces an image for each format; a single format downloads as a PNG, multiple formats download as a ZIP.
+            Use the Import / Export menu to load or save your layout as JSON (recommended between edit sessions). Exporting JSON saves all formats, the layout name, and key colors — importing a JSON file fully restores the layout. Export PNG produces an image for each format.
           </p>
 
           <h4>Settings</h4>
