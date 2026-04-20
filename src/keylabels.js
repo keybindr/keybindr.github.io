@@ -2,10 +2,10 @@
 // Values are the primary display label for that key in this locale.
 
 export const LOCALES = {
-  'en-US': { name: 'US English', overrides: {} },
+  'en-US': { name: 'English (US)', overrides: {} },
 
   'en-GB': {
-    name: 'UK English',
+    name: 'English (UK)',
     overrides: {
       Digit2:          '"',
       Digit3:          '£',
@@ -20,7 +20,7 @@ export const LOCALES = {
   },
 
   'de-DE': {
-    name: 'German (QWERTZ)',
+    name: 'Deutsch (QWERTZ)',
     overrides: {
       KeyY:          'Z',
       KeyZ:          'Y',
@@ -46,7 +46,7 @@ export const LOCALES = {
   },
 
   'fr-FR': {
-    name: 'French (AZERTY)',
+    name: 'Français (AZERTY)',
     overrides: {
       KeyQ:          'A',
       KeyA:          'Q',
@@ -79,7 +79,7 @@ export const LOCALES = {
   },
 
   'sv-SE': {
-    name: 'Swedish',
+    name: 'Svenska',
     overrides: {
       Backquote:     '§',
       Minus:         '+',
@@ -96,7 +96,7 @@ export const LOCALES = {
   },
 
   'fi-FI': {
-    name: 'Finnish',
+    name: 'Suomi',
     overrides: {
       Backquote:     '§',
       Minus:         '+',
@@ -113,7 +113,7 @@ export const LOCALES = {
   },
 
   'nb-NO': {
-    name: 'Norwegian',
+    name: 'Norsk',
     overrides: {
       Backquote:     '|',
       Minus:         '+',
@@ -130,7 +130,7 @@ export const LOCALES = {
   },
 
   'da-DK': {
-    name: 'Danish',
+    name: 'Dansk',
     overrides: {
       Backquote:     '½',
       Minus:         '+',
@@ -147,7 +147,7 @@ export const LOCALES = {
   },
 
   'es-ES': {
-    name: 'Spanish (Spain)',
+    name: 'Español (España)',
     overrides: {
       Backquote:     'º',
       Minus:         "'",
@@ -164,7 +164,7 @@ export const LOCALES = {
   },
 
   'es-419': {
-    name: 'Spanish (Latin America)',
+    name: 'Español (Latinoamérica)',
     overrides: {
       Backquote:     '|',
       Minus:         "'",
@@ -181,7 +181,7 @@ export const LOCALES = {
   },
 
   'pt-BR': {
-    name: 'Portuguese (Brazil)',
+    name: 'Português (Brasil)',
     overrides: {
       Backquote:     "'",
       BracketLeft:   '´',
@@ -196,7 +196,7 @@ export const LOCALES = {
   },
 
   'pt-PT': {
-    name: 'Portuguese (Portugal)',
+    name: 'Português (Portugal)',
     overrides: {
       Backquote:     '\\',
       Minus:         "'",
@@ -213,7 +213,7 @@ export const LOCALES = {
   },
 
   'it-IT': {
-    name: 'Italian',
+    name: 'Italiano',
     overrides: {
       Backquote:     '\\',
       Minus:         "'",
@@ -230,7 +230,7 @@ export const LOCALES = {
   },
 
   'de-CH': {
-    name: 'Swiss German (QWERTZ)',
+    name: 'Deutsch (Schweiz, QWERTZ)',
     overrides: {
       KeyY:          'Z',
       KeyZ:          'Y',
@@ -249,7 +249,7 @@ export const LOCALES = {
   },
 
   'fr-BE': {
-    name: 'Belgian (AZERTY)',
+    name: 'Français (Belgique, AZERTY)',
     overrides: {
       KeyQ:          'A',
       KeyA:          'Q',
@@ -282,7 +282,7 @@ export const LOCALES = {
   },
 
   'nl-NL': {
-    name: 'Dutch',
+    name: 'Nederlands',
     overrides: {
       Backquote:     '@',
       IntlBackslash: '<',
@@ -290,14 +290,14 @@ export const LOCALES = {
   },
 
   'pl-PL': {
-    name: 'Polish',
+    name: 'Polski',
     overrides: {
       IntlBackslash: '<',
     },
   },
 
   'cs-CZ': {
-    name: 'Czech (QWERTZ)',
+    name: 'Čeština (QWERTZ)',
     overrides: {
       KeyY:          'Z',
       KeyZ:          'Y',
@@ -325,7 +325,7 @@ export const LOCALES = {
   },
 
   'sk-SK': {
-    name: 'Slovak (QWERTZ)',
+    name: 'Slovenčina (QWERTZ)',
     overrides: {
       KeyY:          'Z',
       KeyZ:          'Y',
@@ -353,7 +353,7 @@ export const LOCALES = {
   },
 
   'hu-HU': {
-    name: 'Hungarian (QWERTZ)',
+    name: 'Magyar (QWERTZ)',
     overrides: {
       KeyY:          'Z',
       KeyZ:          'Y',
@@ -372,7 +372,7 @@ export const LOCALES = {
   },
 
   'ro-RO': {
-    name: 'Romanian',
+    name: 'Română',
     overrides: {
       BracketLeft:   'ș',
       BracketRight:  'î',
@@ -383,7 +383,7 @@ export const LOCALES = {
   },
 
   'tr-TR': {
-    name: 'Turkish Q',
+    name: 'Türkçe (Q)',
     overrides: {
       Backquote:     '"',
       Minus:         '*',
@@ -402,7 +402,7 @@ export const LOCALES = {
   },
 
   'el-GR': {
-    name: 'Greek',
+    name: 'Ελληνικά',
     overrides: {
       KeyQ: ';',
       KeyW: 'ς',
