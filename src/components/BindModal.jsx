@@ -13,6 +13,11 @@ const MOD_FAMILY = {
   Ctrl:  'Ctrl',  CtrlLeft:  'Ctrl',  CtrlRight:  'Ctrl',
 };
 
+const MODIFIER_KEY_IDS = new Set([
+  'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight',
+  'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight', 'ContextMenu',
+]);
+
 // Effective display color when no custom color is set
 const KEY_ACCENT_COLORS = {
   ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
@@ -54,8 +59,9 @@ export default function BindModal({
   onSave, onCancel,
   settings,
 }) {
-  const keyDef  = KEY_MAP[keyId];
-  const modDefs = buildModDefs(settings);
+  const keyDef      = KEY_MAP[keyId];
+  const modDefs     = buildModDefs(settings);
+  const isModifier  = MODIFIER_KEY_IDS.has(keyId);
 
   const isBoundKey = existingBindings.some(b => b.key === keyId);
   const effectiveColor = keyColor
@@ -114,7 +120,11 @@ export default function BindModal({
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!action.trim()) return;
+    if (!action.trim()) {
+      // Modifier key with no action: just commit the color and close
+      onSave(keyId, modifiers, null);
+      return;
+    }
     onSave(keyId, modifiers, action.trim());
   }
 
@@ -220,7 +230,7 @@ export default function BindModal({
 
           <div className="modal-actions">
             <button type="button" className="btn-secondary" onClick={onCancel}>Cancel</button>
-            <button type="submit" className="btn-primary" disabled={!action.trim()}>Save</button>
+            <button type="submit" className="btn-primary" disabled={!isModifier && !action.trim()}>Save</button>
           </div>
         </form>
       </div>

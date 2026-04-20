@@ -193,10 +193,10 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         );
       })}
 
-      {/* LED indicators above numpad — col centers: 20.5→926, 21.5→970, 22.5→1014 */}
+      {/* LED indicators above numpad — NUM on NumLock, evenly spaced across numpad width */}
       {[
-        { label: 'NUM',  cx: 926  },
-        { label: 'CAPS', cx: 970  },
+        { label: 'NUM',  cx: 882  },
+        { label: 'CAPS', cx: 948  },
         { label: 'SCRL', cx: 1014 },
       ].map(({ label, cx }) => (
         <g key={label} style={{ pointerEvents: 'none' }}>

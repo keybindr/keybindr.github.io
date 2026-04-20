@@ -237,8 +237,10 @@ export default function App() {
   }
 
   function handleSave(key, mods, action) {
-    addOrUpdate(key, mods, action);
-    setSelectedId(bindingId(key, mods));
+    if (action) {
+      addOrUpdate(key, mods, action);
+      setSelectedId(bindingId(key, mods));
+    }
     setModalKey(null);
   }
 
