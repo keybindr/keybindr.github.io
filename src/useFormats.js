@@ -226,11 +226,12 @@ export function useFormats() {
     formats, activeIndex,
     switchTo, addFormat, setFormatName, removeFormat,
     bindings:  activeFormat?.bindings  ?? [],
-    keyColors: activeFormat?.keyColors ?? { ...DEFAULT_KEY_COLORS },
+    keyColors: activeFormat?.keyColors ?? {},
     recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors,
     resetFormats,
+    updateGroup, renameGroup, reorderGroup,
   };
 }

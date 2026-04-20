@@ -430,8 +430,8 @@ html, body {
 .cell-color { width: 44px; text-align: center; }
 .cell-color-head { width: 44px; text-align: center; }
 .cell-action { color: var(--text); }
-.cell-group { width: 100px; cursor: pointer; }
-.cell-group-head { width: 100px; }
+.cell-group { width: 100px; cursor: pointer; text-align: left; }
+.cell-group-head { width: 100px; text-align: left; }
 .cell-del { width: 40px; text-align: center; }
 
 .group-header-row { background: #202020; }
