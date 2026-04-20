@@ -13,22 +13,28 @@ const MOD_FAMILY = {
   Ctrl:  'Ctrl',  CtrlLeft:  'Ctrl',  CtrlRight:  'Ctrl',
 };
 
+const MOD_BUTTON_COLORS = {
+  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
+  Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
+  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
+};
+
 function buildModDefs(settings) {
-  const { splitModifiers, modColors, splitModColors } = settings;
+  const { splitModifiers } = settings;
   if (splitModifiers) {
     return [
-      { value: 'ShiftLeft',  label: 'LShift', color: splitModColors.ShiftLeft  },
-      { value: 'ShiftRight', label: 'RShift', color: splitModColors.ShiftRight },
-      { value: 'AltLeft',    label: 'LAlt',   color: splitModColors.AltLeft    },
-      { value: 'AltRight',   label: 'RAlt',   color: splitModColors.AltRight   },
-      { value: 'CtrlLeft',   label: 'LCtrl',  color: splitModColors.CtrlLeft   },
-      { value: 'CtrlRight',  label: 'RCtrl',  color: splitModColors.CtrlRight  },
+      { value: 'ShiftLeft',  label: 'LShift', color: MOD_BUTTON_COLORS.ShiftLeft  },
+      { value: 'ShiftRight', label: 'RShift', color: MOD_BUTTON_COLORS.ShiftRight },
+      { value: 'AltLeft',    label: 'LAlt',   color: MOD_BUTTON_COLORS.AltLeft    },
+      { value: 'AltRight',   label: 'RAlt',   color: MOD_BUTTON_COLORS.AltRight   },
+      { value: 'CtrlLeft',   label: 'LCtrl',  color: MOD_BUTTON_COLORS.CtrlLeft   },
+      { value: 'CtrlRight',  label: 'RCtrl',  color: MOD_BUTTON_COLORS.CtrlRight  },
     ];
   }
   return [
-    { value: 'Ctrl',  label: 'Ctrl',  color: modColors.Ctrl  },
-    { value: 'Shift', label: 'Shift', color: modColors.Shift },
-    { value: 'Alt',   label: 'Alt',   color: modColors.Alt   },
+    { value: 'Ctrl',  label: 'Ctrl',  color: MOD_BUTTON_COLORS.Ctrl  },
+    { value: 'Shift', label: 'Shift', color: MOD_BUTTON_COLORS.Shift },
+    { value: 'Alt',   label: 'Alt',   color: MOD_BUTTON_COLORS.Alt   },
   ];
 }
 
