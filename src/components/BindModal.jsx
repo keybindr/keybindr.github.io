@@ -3,7 +3,7 @@ import { KEY_MAP } from '../keyboardLayout';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
 
-const PICKER_WIDTH = 252; // px — must match .cpk-panel width in CSS
+const PICKER_WIDTH = 252;
 const PICKER_GAP   = 12;
 
 function buildModDefs(settings) {
@@ -38,7 +38,6 @@ export default function BindModal({
   const [modifier, setModifier]     = useState('');
   const [action, setAction]         = useState('');
   const [localColor, setLocalColor] = useState(keyColor ?? '');
-  const [showPicker, setShowPicker] = useState(false);
   const [pickerPos, setPickerPos]   = useState(null);
 
   const inputRef = useRef(null);
@@ -58,16 +57,16 @@ export default function BindModal({
     if (existing && action === '') setAction(existing.action);
   }, [modifier]);
 
-  // Measure the modal and position the picker flush to its left edge, same height
+  // Position picker flush to the left of the modal, matching its height
   useEffect(() => {
-    if (!showPicker || !modalRef.current) return;
+    if (!modalRef.current) return;
     const rect = modalRef.current.getBoundingClientRect();
     setPickerPos({
       top:    rect.top,
       left:   Math.max(8, rect.left - PICKER_WIDTH - PICKER_GAP),
       height: rect.height,
     });
-  }, [showPicker]);
+  }, []);
 
   function applyColor(color) {
     setLocalColor(color);
@@ -86,8 +85,8 @@ export default function BindModal({
   return (
     <div className="modal-backdrop" onClick={onCancel}>
 
-      {/* Color picker — fixed, left of modal, same height */}
-      {showPicker && pickerPos && (
+      {/* Color picker — always visible, fixed to the left of the modal */}
+      {pickerPos && (
         <div
           className="cpk-panel"
           style={{
@@ -99,34 +98,8 @@ export default function BindModal({
           }}
           onClick={e => e.stopPropagation()}
         >
-          <div className="cpk-panel-header">
-            <span className="cpk-panel-title">Key Color</span>
-            <button className="cpk-panel-close" onClick={() => setShowPicker(false)}>✕</button>
-          </div>
           <div className="cpk-panel-body">
             <ColorPicker color={localColor || '#4a4a4a'} onChange={applyColor} />
-            {localColor && (
-              <button type="button" className="btn-clear-color" style={{ marginTop: 4 }} onClick={() => applyColor('')}>
-                Clear Color
-              </button>
-            )}
-            {recentColors.length > 0 && (
-              <>
-                <div className="recently-picked-label" style={{ marginTop: 10 }}>Recently Picked</div>
-                <div className="recent-colors-row">
-                  {recentColors.map(c => (
-                    <button
-                      key={c}
-                      type="button"
-                      className={`color-swatch${c === localColor ? ' active' : ''}`}
-                      style={{ background: c }}
-                      title={c}
-                      onClick={() => applyColor(c)}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
           </div>
         </div>
       )}
@@ -177,12 +150,20 @@ export default function BindModal({
           <div className="modal-row">
             <label>Key Color</label>
             <div className="color-pick-row">
-              <button
-                type="button"
-                className={`color-swatch-trigger${showPicker ? ' active' : ''}`}
+              {recentColors.map(c => (
+                <button
+                  key={c}
+                  type="button"
+                  className={`color-swatch${c === localColor ? ' active' : ''}`}
+                  style={{ background: c }}
+                  title={c}
+                  onClick={() => applyColor(c)}
+                />
+              ))}
+              <div
+                className="color-current-swatch"
                 style={{ background: localColor || 'var(--surface2)' }}
-                onClick={() => setShowPicker(v => !v)}
-                title="Pick color"
+                title="Current color"
               />
               {localColor && (
                 <button type="button" className="btn-clear-color" onClick={() => applyColor('')}>
