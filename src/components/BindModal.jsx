@@ -84,7 +84,7 @@ export default function BindModal({
   })();
 
   useEffect(() => {
-    if (inputRef.current) inputRef.current.focus();
+    if (inputRef.current && !('ontouchstart' in window)) inputRef.current.focus();
     const existing = existingBindings.find(b => bindingId(b.key, b.modifiers) === newId);
     if (existing) setAction(resolveAction(existing.action, t));
   }, []);
