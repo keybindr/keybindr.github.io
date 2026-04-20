@@ -505,6 +505,78 @@ html, body {
 
 /* Help modal */
 .modal-help { width: 520px; }
+
+/* Share modal */
+.modal-share { width: 480px; }
+
+/* Share import confirm modal */
+.modal-share-import { width: 420px; }
+
+.share-import-body {
+  font-size: 13px;
+  font-family: var(--font-ui);
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.share-import-body p { margin: 0; }
+
+.btn-download-current {
+  align-self: flex-start;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.btn-download-current:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.share-body {
+  font-size: 13px;
+  font-family: var(--font-ui);
+  line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.share-body p {
+  margin: 0 0 14px;
+  color: var(--text-dim);
+}
+
+.share-url-row {
+  display: flex;
+  gap: 8px;
+}
+
+.share-url-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 11px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  cursor: text;
+}
+
+.share-url-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
 .help-modal-title { word-spacing: -0.2em; }
 
 .help-body {

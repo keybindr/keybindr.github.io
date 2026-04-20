@@ -4,10 +4,26 @@ import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
 import HelpModal from './components/HelpModal';
 import SettingsModal from './components/SettingsModal';
+import ShareModal from './components/ShareModal';
+import ShareImportModal from './components/ShareImportModal';
 import { bindingId } from './useBindings';
 import { useFormats, MAX_FORMATS } from './useFormats';
 import { useSettings } from './useSettings';
 import { exportJSON, exportPNG, importFile } from './export';
+import { encodeShareUrl, decodeShareHash } from './share';
+import { DEFAULT_BINDINGS, DEFAULT_VEHICLE_BINDINGS } from './defaultBindings';
+
+const DEFAULT_FORMAT_NAMES = ['On Foot', 'In Vehicle'];
+const DEFAULT_BINDING_COUNTS = [DEFAULT_BINDINGS.length, DEFAULT_VEHICLE_BINDINGS.length];
+
+function hasCustomSession(formats, layoutName) {
+  if (layoutName) return true;
+  if (formats.length !== 2) return true;
+  if (formats.some((f, i) => f.name !== DEFAULT_FORMAT_NAMES[i])) return true;
+  if (formats.some(f => Object.keys(f.keyColors).length > 0)) return true;
+  if (formats.some((f, i) => f.bindings.length !== DEFAULT_BINDING_COUNTS[i])) return true;
+  return false;
+}
 
 const LAYOUT_NAME_KEY    = 'keybindr_layout_name';
 const MOBILE_WARNED_KEY  = 'keybindr_mobile_warned';
@@ -164,6 +180,9 @@ export default function App() {
   const [modalKey, setModalKey]         = useState(null);
   const [showHelp, setShowHelp]         = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showShare, setShowShare]             = useState(false);
+  const [shareUrl, setShareUrl]               = useState('');
+  const [pendingImport, setPendingImport]     = useState(null);
   const modalOriginalColor = useRef(undefined);
 
   const fileInputRef    = useRef(null);
@@ -198,6 +217,27 @@ export default function App() {
     setLayoutNameState(name);
     if (name) localStorage.setItem(LAYOUT_NAME_KEY, name);
     else localStorage.removeItem(LAYOUT_NAME_KEY);
+  }
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash || !hash.includes('layout=')) return;
+    decodeShareHash(hash).then(result => {
+      if (!result) return;
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      if (hasCustomSession(formats, layoutName)) {
+        setPendingImport(result);
+      } else {
+        applySharedImport(result);
+      }
+    });
+  }, []);
+
+  function applySharedImport(result) {
+    if (result.formats) replaceFormats(result.formats);
+    if (result.layoutName !== undefined) handleLayoutNameChange(result.layoutName);
+    setSelectedId(null);
+    setPendingImport(null);
   }
 
   function resetAll() {
@@ -273,6 +313,13 @@ export default function App() {
     setShowMobileWarning(false);
   }
 
+  function handleShare() {
+    encodeShareUrl(formats, layoutName).then(url => {
+      setShareUrl(url);
+      setShowShare(true);
+    });
+  }
+
   const { splitModifiers } = settings;
 
   // Legend colors follow modifier key custom colors, falling back to defaults
@@ -322,6 +369,15 @@ export default function App() {
               </div>
             )}
           </div>
+          <button className="btn-icon" title="Share layout" onClick={handleShare}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="13" cy="3" r="1.5"/>
+              <circle cx="3" cy="8" r="1.5"/>
+              <circle cx="13" cy="13" r="1.5"/>
+              <line x1="4.5" y1="7" x2="11.5" y2="4"/>
+              <line x1="4.5" y1="9" x2="11.5" y2="12"/>
+            </svg>
+          </button>
           <button className="btn-icon" title="Help" onClick={() => setShowHelp(true)}>?</button>
           <button className="btn-icon" title="Settings" onClick={() => setShowSettings(true)}>⚙</button>
         </div>
@@ -344,6 +400,9 @@ export default function App() {
                 Export PNG
               </button>
               <div className="hamburger-sep" />
+              <button className="hamburger-item" onClick={() => hamburgerAction(handleShare)}>
+                Share Layout
+              </button>
               <button className="hamburger-item" onClick={() => hamburgerAction(() => setShowHelp(true))}>
                 Help
               </button>
@@ -424,6 +483,16 @@ export default function App() {
       )}
 
       {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+
+      {showShare && <ShareModal url={shareUrl} onClose={() => setShowShare(false)} />}
+
+      {pendingImport && (
+        <ShareImportModal
+          onDownload={() => exportJSON(formats, layoutName)}
+          onConfirm={() => applySharedImport(pendingImport)}
+          onCancel={() => setPendingImport(null)}
+        />
+      )}
 
       {showSettings && (
         <SettingsModal
