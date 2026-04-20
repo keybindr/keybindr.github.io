@@ -1063,6 +1063,8 @@ html, body {
 
   .legend { display: none; }
 
+  .legend-row { justify-content: flex-end; }
+
   .modal {
     max-height: 90vh;
     overflow-y: auto;
