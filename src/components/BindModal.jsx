@@ -224,7 +224,7 @@ export default function BindModal({
               <div
                 className="color-current-swatch"
                 style={{ background: localColor || 'var(--surface2)' }}
-                title="Current color"
+                title={t('currentColor')}
               />
               {localColor && (
                 <button type="button" className="btn-clear-color" onClick={() => applyColor('')}>

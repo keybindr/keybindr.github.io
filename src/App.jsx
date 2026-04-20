@@ -459,7 +459,7 @@ export default function App() {
 
         {/* Mobile hamburger */}
         <div className="header-mobile" ref={hamburgerRef}>
-          <button className="btn-hamburger" onClick={() => setShowHamburger(v => !v)} title="Menu">
+          <button className="btn-hamburger" onClick={() => setShowHamburger(v => !v)} title={t('menu')}>
             ☰
           </button>
           {showHamburger && (

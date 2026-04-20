@@ -98,6 +98,8 @@ const en = {
   formatOnFoot:        'On Foot',
   formatInVehicle:     'In Vehicle',
   formatFallback:      'Format {n}',
+  menu:               'Menu',
+  currentColor:       'Current color',
 };
 
 const de = {
@@ -199,6 +201,8 @@ const de = {
   formatOnFoot:        'Zu Fuß',
   formatInVehicle:     'Im Fahrzeug',
   formatFallback:      'Format {n}',
+  menu:               'Menü',
+  currentColor:       'Aktuelle Farbe',
 };
 
 const fr = {
@@ -300,6 +304,8 @@ const fr = {
   formatOnFoot:        'À pied',
   formatInVehicle:     'En véhicule',
   formatFallback:      'Format {n}',
+  menu:               'Menu',
+  currentColor:       'Couleur actuelle',
 };
 
 const es = {
@@ -401,6 +407,8 @@ const es = {
   formatOnFoot:        'A pie',
   formatInVehicle:     'En vehículo',
   formatFallback:      'Formato {n}',
+  menu:               'Menú',
+  currentColor:       'Color actual',
 };
 
 const sv = {
@@ -502,6 +510,8 @@ const sv = {
   formatOnFoot:        'Till fots',
   formatInVehicle:     'I fordon',
   formatFallback:      'Format {n}',
+  menu:               'Meny',
+  currentColor:       'Aktuell färg',
 };
 
 const nb = {
@@ -603,6 +613,8 @@ const nb = {
   formatOnFoot:        'Til fots',
   formatInVehicle:     'I kjøretøy',
   formatFallback:      'Format {n}',
+  menu:               'Meny',
+  currentColor:       'Gjeldende farge',
 };
 
 const da = {
@@ -704,6 +716,8 @@ const da = {
   formatOnFoot:        'Til fods',
   formatInVehicle:     'I køretøj',
   formatFallback:      'Format {n}',
+  menu:               'Menu',
+  currentColor:       'Aktuel farve',
 };
 
 const fi = {
@@ -805,6 +819,8 @@ const fi = {
   formatOnFoot:        'Jalan',
   formatInVehicle:     'Ajoneuvossa',
   formatFallback:      'Muoto {n}',
+  menu:               'Valikko',
+  currentColor:       'Nykyinen väri',
 };
 
 const nl = {
@@ -906,6 +922,8 @@ const nl = {
   formatOnFoot:        'Te voet',
   formatInVehicle:     'In voertuig',
   formatFallback:      'Indeling {n}',
+  menu:               'Menu',
+  currentColor:       'Huidige kleur',
 };
 
 const pl = {
@@ -1007,6 +1025,8 @@ const pl = {
   formatOnFoot:        'Pieszo',
   formatInVehicle:     'W pojeździe',
   formatFallback:      'Format {n}',
+  menu:               'Menu',
+  currentColor:       'Bieżący kolor',
 };
 
 const cs = {
@@ -1108,6 +1128,8 @@ const cs = {
   formatOnFoot:        'Pěšky',
   formatInVehicle:     'Ve vozidle',
   formatFallback:      'Formát {n}',
+  menu:               'Nabídka',
+  currentColor:       'Aktuální barva',
 };
 
 const sk = {
@@ -1209,6 +1231,8 @@ const sk = {
   formatOnFoot:        'Peši',
   formatInVehicle:     'Vo vozidle',
   formatFallback:      'Formát {n}',
+  menu:               'Ponuka',
+  currentColor:       'Aktuálna farba',
 };
 
 const hu = {
@@ -1310,6 +1334,8 @@ const hu = {
   formatOnFoot:        'Gyalog',
   formatInVehicle:     'Járműben',
   formatFallback:      'Formátum {n}',
+  menu:               'Menü',
+  currentColor:       'Jelenlegi szín',
 };
 
 const ro = {
@@ -1411,6 +1437,8 @@ const ro = {
   formatOnFoot:        'Pe jos',
   formatInVehicle:     'În vehicul',
   formatFallback:      'Format {n}',
+  menu:               'Meniu',
+  currentColor:       'Culoarea curentă',
 };
 
 const ptBR = {
@@ -1512,6 +1540,8 @@ const ptBR = {
   formatOnFoot:        'A pé',
   formatInVehicle:     'No veículo',
   formatFallback:      'Formato {n}',
+  menu:               'Menu',
+  currentColor:       'Cor atual',
 };
 
 const ptPT = {
@@ -1533,6 +1563,8 @@ const ptPT = {
   helpIntro3:         'Todos os dados são armazenados no seu computador, pelo que é recomendado exportar no final de uma sessão.',
   helpResetLabel:     'Repor tudo',
   helpResetBody:      'apaga todos os atalhos, cores e o nome do layout e repõe as definições para os valores predefinidos.',
+  menu:               'Menu',
+  currentColor:       'Cor actual',
 };
 
 const it = {
@@ -1634,6 +1666,8 @@ const it = {
   formatOnFoot:        'A piedi',
   formatInVehicle:     'In veicolo',
   formatFallback:      'Formato {n}',
+  menu:               'Menu',
+  currentColor:       'Colore corrente',
 };
 
 const tr = {
@@ -1735,6 +1769,8 @@ const tr = {
   formatOnFoot:        'Yaya',
   formatInVehicle:     'Araçta',
   formatFallback:      'Format {n}',
+  menu:               'Menü',
+  currentColor:       'Geçerli renk',
 };
 
 const el = {
@@ -1836,6 +1872,8 @@ const el = {
   formatOnFoot:        'Πεζός',
   formatInVehicle:     'Σε όχημα',
   formatFallback:      'Μορφή {n}',
+  menu:               'Μενού',
+  currentColor:       'Τρέχον χρώμα',
 };
 
 const vi = {
@@ -1937,6 +1975,8 @@ const vi = {
   formatOnFoot:        'Đi bộ',
   formatInVehicle:     'Trên xe',
   formatFallback:      'Định dạng {n}',
+  menu:               'Menu',
+  currentColor:       'Màu hiện tại',
 };
 
 const bg = {
@@ -2038,6 +2078,8 @@ const bg = {
   formatOnFoot:        'Пеш',
   formatInVehicle:     'В превозно средство',
   formatFallback:      'Формат {n}',
+  menu:               'Меню',
+  currentColor:       'Текущ цвят',
 };
 
 const sr = {
@@ -2139,6 +2181,8 @@ const sr = {
   formatOnFoot:        'Пешке',
   formatInVehicle:     'У возилу',
   formatFallback:      'Формат {n}',
+  menu:               'Мени',
+  currentColor:       'Тренутна боја',
 };
 
 const hr = {
@@ -2240,6 +2284,8 @@ const hr = {
   formatOnFoot:        'Pješice',
   formatInVehicle:     'U vozilu',
   formatFallback:      'Format {n}',
+  menu:               'Izbornik',
+  currentColor:       'Trenutna boja',
 };
 
 const ru = {
@@ -2341,6 +2387,8 @@ const ru = {
   formatOnFoot:        'Пешком',
   formatInVehicle:     'В транспорте',
   formatFallback:      'Формат {n}',
+  menu:               'Меню',
+  currentColor:       'Текущий цвет',
 };
 
 const uk = {
@@ -2443,6 +2491,8 @@ const uk = {
   formatOnFoot:        'Пішки',
   formatInVehicle:     'У транспорті',
   formatFallback:      'Формат {n}',
+  menu:               'Меню',
+  currentColor:       'Поточний колір',
 };
 
 const ko = {
@@ -2544,6 +2594,8 @@ const ko = {
   formatOnFoot:        '도보',
   formatInVehicle:     '탑승 중',
   formatFallback:      '형식 {n}',
+  menu:               '메뉴',
+  currentColor:       '현재 색상',
 };
 
 const zhCN = {
@@ -2645,6 +2697,8 @@ const zhCN = {
   formatOnFoot:        '步行',
   formatInVehicle:     '驾车',
   formatFallback:      '格式 {n}',
+  menu:               '菜单',
+  currentColor:       '当前颜色',
 };
 
 const ja = {
@@ -2746,6 +2800,8 @@ const ja = {
   formatOnFoot:        '徒歩',
   formatInVehicle:     '車両',
   formatFallback:      'フォーマット {n}',
+  menu:               'メニュー',
+  currentColor:       '現在の色',
 };
 
 const id = {
@@ -2847,6 +2903,8 @@ const id = {
   formatOnFoot:        'Berjalan kaki',
   formatInVehicle:     'Berkendara',
   formatFallback:      'Format {n}',
+  menu:               'Menu',
+  currentColor:       'Warna saat ini',
 };
 
 export const TRANSLATIONS = {
