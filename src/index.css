@@ -410,7 +410,7 @@ html, body {
 .binding-table tr.row-dragging { opacity: 0.4; }
 .binding-table tr.row-drag-over td { border-top: 2px solid var(--accent); }
 
-.cell-drag { width: 24px; padding-right: 0 !important; }
+.cell-drag { width: 20px; padding-left: 0 !important; padding-right: 0 !important; }
 .drag-handle {
   color: var(--text-dim);
   cursor: grab;
