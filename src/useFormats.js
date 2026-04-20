@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DEFAULT_BINDINGS } from './defaultBindings';
+import { DEFAULT_BINDINGS, DEFAULT_VEHICLE_BINDINGS } from './defaultBindings';
 import { bindingId } from './useBindings';
 
 const FORMATS_KEY = 'keybindr_formats';
@@ -18,7 +18,7 @@ function makeFormat(name = '', empty = false) {
 
 const DEFAULT_FORMATS = [
   makeFormat('On Foot'),
-  makeFormat('In Vehicle'),
+  { name: 'In Vehicle', bindings: [...DEFAULT_VEHICLE_BINDINGS], keyColors: {} },
 ];
 
 function loadInitial() {
