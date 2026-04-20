@@ -600,8 +600,6 @@ export default function App() {
           <a href="https://github.com/keybindr/keybindr.github.io" className="footer-link" target="_blank" rel="noreferrer">{t('sourceCode')}</a>
           <span className="footer-sep">|</span>
           <a href="https://github.com/keybindr/keybindr.github.io/issues" className="footer-link" target="_blank" rel="noreferrer">{t('fileABug')}</a>
-          <span className="footer-sep">|</span>
-          <a href="https://github.com/keybindr/keybindr.github.io/blob/main/LICENSE" className="footer-link" target="_blank" rel="noreferrer">{t('mitLicense')}</a>
         </div>
       </footer>
     </div>
