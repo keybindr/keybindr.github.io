@@ -3094,6 +3094,7 @@ export const TRANSLATIONS = {
   'de-CH': {},
   'fr-FR': fr,
   'fr-BE': {},
+  'nl-BE': {},
   'es-ES': es,
   'es-419': {},
   'sv-SE': sv,
@@ -3127,5 +3128,6 @@ export const LANG_FALLBACK = {
   'en-GB':  'en-US',
   'de-CH':  'de-DE',
   'fr-BE':  'fr-FR',
+  'nl-BE':  'nl-NL',
   'es-419': 'es-ES',
 };
