@@ -17,58 +17,23 @@ import { DEFAULT_BINDINGS } from './defaultBindings';
 import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 import { localeUsesISO } from './keylabels';
 import { TranslationContext, makeT, resolveAction } from './useTranslation';
-import { MOD_FAMILY } from './modifierConstants';
 
-
-// Maps physical modifier key IDs to their logical family (for cross-format conflict detection)
-const MODIFIER_KEY_FAMILY = {
-  ShiftLeft: 'Shift', ShiftRight: 'Shift',
-  ControlLeft: 'Ctrl', ControlRight: 'Ctrl',
-  AltLeft: 'Alt', AltRight: 'Alt',
-};
 
 function detectCrossFormatConflicts(formats) {
   const results = [];
   for (let i = 0; i < formats.length; i++) {
     for (let j = i + 1; j < formats.length; j++) {
-      const aBindings = formats[i].bindings;
-      const bBindings = formats[j].bindings;
+      const aMap = new Map();
+      for (const b of formats[i].bindings) aMap.set(bindingId(b.key, b.modifiers), b);
 
-      const standaloneA = new Map();
-      const standaloneB = new Map();
-      for (const b of aBindings) {
-        const fam = MODIFIER_KEY_FAMILY[b.key];
-        if (fam && b.modifiers.length === 0) standaloneA.set(fam, b);
-      }
-      for (const b of bBindings) {
-        const fam = MODIFIER_KEY_FAMILY[b.key];
-        if (fam && b.modifiers.length === 0) standaloneB.set(fam, b);
+      const shared = [];
+      for (const b of formats[j].bindings) {
+        const id = bindingId(b.key, b.modifiers);
+        if (aMap.has(id)) shared.push({ a: aMap.get(id), b });
       }
 
-      const fromA = new Set();
-      const fromB = new Set();
-
-      for (const b of bBindings) {
-        for (const m of b.modifiers) {
-          const fam = MOD_FAMILY[m];
-          if (fam && standaloneA.has(fam)) {
-            fromA.add(standaloneA.get(fam));
-            fromB.add(b);
-          }
-        }
-      }
-      for (const b of aBindings) {
-        for (const m of b.modifiers) {
-          const fam = MOD_FAMILY[m];
-          if (fam && standaloneB.has(fam)) {
-            fromB.add(standaloneB.get(fam));
-            fromA.add(b);
-          }
-        }
-      }
-
-      if (fromA.size > 0 || fromB.size > 0) {
-        results.push({ a: i, b: j, fromA: [...fromA], fromB: [...fromB] });
+      if (shared.length > 0) {
+        results.push({ a: i, b: j, shared });
       }
     }
   }
@@ -689,18 +654,16 @@ export default function App() {
         if (crossConflicts.length === 0) return null;
         return (
           <div className="cross-format-warnings">
-            {crossConflicts.map(({ a, b, fromA, fromB }) => {
+            {crossConflicts.map(({ a, b, shared }) => {
               const nameA = resolveAction(formats[a].name, t) || t('formatFallback', { n: String(a + 1) });
               const nameB = resolveAction(formats[b].name, t) || t('formatFallback', { n: String(b + 1) });
-              const labelsA = fromA.map(bindingLabel).join(', ');
-              const labelsB = fromB.map(bindingLabel).join(', ');
+              const labels = shared.map(({ a: ba }) => bindingLabel(ba)).join(', ');
               return (
                 <div key={`${a}-${b}`} className="cross-format-warning-item">
                   <span className="conflict-icon">⚠</span>
                   {' '}
                   <strong>"{nameA}"</strong> × <strong>"{nameB}"</strong>
-                  {labelsA && <span className="cross-format-binding-list"> — {labelsA} <span className="cross-format-tab-name">({nameA})</span></span>}
-                  {labelsB && <span className="cross-format-binding-list"> / {labelsB} <span className="cross-format-tab-name">({nameB})</span></span>}
+                  <span className="cross-format-binding-list"> — {labels}</span>
                 </div>
               );
             })}
