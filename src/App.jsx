@@ -419,8 +419,8 @@ export default function App() {
     setSelectedId(null);
     setMouseModel('custom');
     setHotasModel('custom');
-    if (preset.formats.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
-    if (preset.formats.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
+    setShowMouseBindings(preset.formats.some(f => f.mouseBindings?.length > 0));
+    setShowHotasBindings(preset.formats.some(f => f.hotasBindings?.length > 0));
   }
 
   function handleSelect(id) {
