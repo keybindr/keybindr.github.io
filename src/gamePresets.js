@@ -596,6 +596,504 @@ const ARMA_ACTION_COLORS = {
   AC_MAP:C.ui, AC_GAME_MENU:C.ui,
 };
 
+// ── Eve Online labels & bindings ──────────────────────────────────────────────
+
+const EVE_LABELS = {
+  // Navigation
+  STOP_SHIP:    'Stop Ship',
+  WARP_TO:      'Warp To',
+  ORBIT:        'Orbit',
+  KEEP_AT_RANGE:'Keep at Range',
+  APPROACH:     'Approach',
+  ALIGN_TO:     'Align To',
+  DOCK:         'Dock',
+  JUMP:         'Activate Gate / Jump',
+  // Modules
+  MODULE_1:'Activate Module 1', MODULE_2:'Activate Module 2',
+  MODULE_3:'Activate Module 3', MODULE_4:'Activate Module 4',
+  MODULE_5:'Activate Module 5', MODULE_6:'Activate Module 6',
+  MODULE_7:'Activate Module 7', MODULE_8:'Activate Module 8',
+  // Targeting
+  LOCK_TARGET:    'Lock Target',
+  UNLOCK_TARGET:  'Unlock Target',
+  TARGET_NEAREST: 'Target Nearest',
+  // Drones
+  DRONES_LAUNCH: 'Launch Drones',
+  DRONES_ENGAGE: 'Engage Target',
+  DRONES_RECALL: 'Return to Bay',
+  DRONES_HOLD:   'Hold Position',
+  // UI
+  INVENTORY:        'Inventory',
+  MAP:              'System Map',
+  GALAXY_MAP:       'Galaxy Map',
+  CHARACTER:        'Character Sheet',
+  SCANNER:          'Scanner',
+  PEOPLE_PLACES:    'People & Places',
+  JOURNAL:          'Journal',
+  TACTICAL_OVERLAY: 'Tactical Overlay',
+  SCREENSHOT:       'Screenshot',
+};
+
+function eve(key, modifiers, id) {
+  return { key, modifiers: modifiers.slice().sort(), action: `__eve:${id}` };
+}
+
+const EVE_BINDINGS = [
+  // Navigation (QWERT row → ship commands)
+  eve('KeyQ', [],        'STOP_SHIP'),
+  eve('KeyW', [],        'WARP_TO'),
+  eve('KeyE', [],        'ORBIT'),
+  eve('KeyR', [],        'KEEP_AT_RANGE'),
+  eve('KeyT', [],        'APPROACH'),
+  eve('KeyA', [],        'ALIGN_TO'),
+  eve('KeyD', [],        'DOCK'),
+  eve('KeyF', [],        'JUMP'),
+  // Modules
+  eve('F1',   [],        'MODULE_1'),
+  eve('F2',   [],        'MODULE_2'),
+  eve('F3',   [],        'MODULE_3'),
+  eve('F4',   [],        'MODULE_4'),
+  eve('F5',   [],        'MODULE_5'),
+  eve('F6',   [],        'MODULE_6'),
+  eve('F7',   [],        'MODULE_7'),
+  eve('F8',   [],        'MODULE_8'),
+  // Targeting
+  eve('Tab',   [],       'LOCK_TARGET'),
+  eve('Tab',   ['Ctrl'], 'UNLOCK_TARGET'),
+  // Drones
+  eve('KeyH',  [],       'DRONES_HOLD'),
+  eve('KeyV',  [],       'DRONES_RECALL'),
+  // UI
+  eve('KeyI',  [],       'INVENTORY'),
+  eve('KeyM',  [],       'MAP'),
+  eve('F10',   [],       'GALAXY_MAP'),
+  eve('KeyK',  [],       'CHARACTER'),
+  eve('KeyS',  [],       'SCANNER'),
+  eve('KeyP',  [],       'PEOPLE_PLACES'),
+  eve('KeyJ',  [],       'JOURNAL'),
+  eve('KeyX',  [],       'TACTICAL_OVERLAY'),
+  eve('F12',   [],       'SCREENSHOT'),
+];
+
+const EVE_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [],       action: 'Select / Interact',  keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [],       action: 'Open Context Menu',  keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: ['Ctrl'], action: 'Lock Target',        keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [],       action: 'Zoom In',            keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [],       action: 'Zoom Out',           keyboardKey: '' },
+];
+
+const EVE_ACTION_COLORS = {
+  STOP_SHIP:C.movement, WARP_TO:C.movement, ORBIT:C.movement,
+  KEEP_AT_RANGE:C.movement, APPROACH:C.movement, ALIGN_TO:C.movement,
+  DOCK:C.movement, JUMP:C.movement,
+  MODULE_1:C.ability1, MODULE_2:C.ability1, MODULE_3:C.ability1,
+  MODULE_4:C.ability1, MODULE_5:C.ability1, MODULE_6:C.ability1,
+  MODULE_7:C.ability2, MODULE_8:C.ability2,
+  LOCK_TARGET:C.targeting, UNLOCK_TARGET:C.targeting, TARGET_NEAREST:C.targeting,
+  DRONES_LAUNCH:C.ability3, DRONES_ENGAGE:C.ability3,
+  DRONES_RECALL:C.ability3, DRONES_HOLD:C.ability3,
+  INVENTORY:C.ui, MAP:C.ui, GALAXY_MAP:C.ui, CHARACTER:C.ui,
+  SCANNER:C.ui, PEOPLE_PLACES:C.ui, JOURNAL:C.ui,
+  TACTICAL_OVERLAY:C.ui, SCREENSHOT:C.ui,
+};
+
+// ── Star Citizen labels & bindings ────────────────────────────────────────────
+
+const SC_LABELS = {
+  // Flight — thrust & maneuver
+  FLT_THROTTLE_UP:  'Throttle Up',
+  FLT_THROTTLE_DOWN:'Throttle Down',
+  FLT_STRAFE_LEFT:  'Strafe Left',
+  FLT_STRAFE_RIGHT: 'Strafe Right',
+  FLT_STRAFE_UP:    'Strafe Up',
+  FLT_STRAFE_DOWN:  'Strafe Down',
+  FLT_ROLL_LEFT:    'Roll Left',
+  FLT_ROLL_RIGHT:   'Roll Right',
+  FLT_BOOST:        'Boost / Afterburner',
+  FLT_DECOUPLE:     'Toggle Decoupled Mode',
+  FLT_QUANTUM:      'Quantum Travel',
+  FLT_GEAR:         'Landing Gear',
+  FLT_LIGHTS:       'Lights',
+  // Flight — combat
+  FLT_FIRE_1:       'Fire Group 1',
+  FLT_FIRE_2:       'Fire Group 2',
+  FLT_FIRE_3:       'Fire Group 3',
+  FLT_FIRE_4:       'Fire Group 4',
+  FLT_MISSILES:     'Launch Missiles',
+  FLT_TARGET_AHEAD: 'Target Ahead',
+  FLT_TARGET_CYCLE: 'Cycle Target',
+  // Flight — UI
+  FLT_INTERACT:     'Interact',
+  FLT_NIGHT_VISION: 'Night Vision / VISR',
+  FLT_MOBIGLAS:     'MobiGlas',
+  FLT_STAR_MAP:     'Star Map',
+  FLT_GAME_MENU:    'Game Menu',
+  // On Foot — movement
+  FP_MOVE_FORWARD:  'Move Forward',
+  FP_MOVE_BACKWARD: 'Move Backward',
+  FP_STRAFE_LEFT:   'Strafe Left',
+  FP_STRAFE_RIGHT:  'Strafe Right',
+  FP_SPRINT:        'Sprint',
+  FP_JUMP:          'Jump',
+  FP_CROUCH:        'Toggle Crouch',
+  FP_PRONE:         'Toggle Prone',
+  FP_INTERACT:      'Interact / Use',
+  // On Foot — combat
+  FP_RELOAD:        'Reload',
+  FP_GRENADE:       'Throw Grenade',
+  FP_SCAN:          'Scan / Ping',
+  FP_WEAPON_1:      'Weapon Slot 1',
+  FP_WEAPON_2:      'Weapon Slot 2',
+  FP_WEAPON_3:      'Weapon Slot 3',
+  FP_WEAPON_4:      'Weapon Slot 4',
+  FP_WEAPON_5:      'Weapon Slot 5',
+  FP_FIRE_MODE:     'Switch Firing Mode',
+  // On Foot — UI
+  FP_NIGHT_VISION:  'Night Vision / VISR',
+  FP_MOBIGLAS:      'MobiGlas',
+  FP_INVENTORY:     'Inventory',
+  FP_STAR_MAP:      'Star Map',
+  FP_GAME_MENU:     'Game Menu',
+  // EVA
+  EVA_FORWARD:      'Thrust Forward',
+  EVA_BACKWARD:     'Thrust Backward',
+  EVA_LEFT:         'Thrust Left',
+  EVA_RIGHT:        'Thrust Right',
+  EVA_UP:           'Thrust Up',
+  EVA_DOWN:         'Thrust Down',
+  EVA_BOOST:        'Boost',
+  EVA_ROLL_LEFT:    'Roll Left',
+  EVA_ROLL_RIGHT:   'Roll Right',
+  EVA_INTERACT:     'Interact / Grab',
+  EVA_GAME_MENU:    'Game Menu',
+};
+
+function sc(key, modifiers, id) {
+  return { key, modifiers: modifiers.slice().sort(), action: `__sc:${id}` };
+}
+
+const SC_FLIGHT_BINDINGS = [
+  // Thrust / maneuver
+  sc('KeyW',        [], 'FLT_THROTTLE_UP'),
+  sc('KeyS',        [], 'FLT_THROTTLE_DOWN'),
+  sc('KeyA',        [], 'FLT_STRAFE_LEFT'),
+  sc('KeyD',        [], 'FLT_STRAFE_RIGHT'),
+  sc('Space',       [], 'FLT_STRAFE_UP'),
+  sc('ControlLeft', [], 'FLT_STRAFE_DOWN'),
+  sc('KeyQ',        [], 'FLT_ROLL_LEFT'),
+  sc('KeyE',        [], 'FLT_ROLL_RIGHT'),
+  sc('ShiftLeft',   [], 'FLT_BOOST'),
+  sc('KeyX',        [], 'FLT_DECOUPLE'),
+  sc('KeyJ',        [], 'FLT_QUANTUM'),
+  sc('KeyG',        [], 'FLT_GEAR'),
+  sc('KeyL',        [], 'FLT_LIGHTS'),
+  // Combat
+  sc('Digit1',      [], 'FLT_FIRE_1'),
+  sc('Digit2',      [], 'FLT_FIRE_2'),
+  sc('Digit3',      [], 'FLT_FIRE_3'),
+  sc('Digit4',      [], 'FLT_FIRE_4'),
+  sc('KeyR',        [], 'FLT_MISSILES'),
+  sc('Tab',         [], 'FLT_TARGET_CYCLE'),
+  sc('KeyT',        [], 'FLT_TARGET_AHEAD'),
+  // UI
+  sc('KeyF',        [], 'FLT_INTERACT'),
+  sc('KeyN',        [], 'FLT_NIGHT_VISION'),
+  sc('KeyM',        [], 'FLT_MOBIGLAS'),
+  sc('F2',          [], 'FLT_STAR_MAP'),
+  sc('Escape',      [], 'FLT_GAME_MENU'),
+];
+
+const SC_FOOT_BINDINGS = [
+  // Movement
+  sc('KeyW',        [], 'FP_MOVE_FORWARD'),
+  sc('KeyS',        [], 'FP_MOVE_BACKWARD'),
+  sc('KeyA',        [], 'FP_STRAFE_LEFT'),
+  sc('KeyD',        [], 'FP_STRAFE_RIGHT'),
+  sc('ShiftLeft',   [], 'FP_SPRINT'),
+  sc('Space',       [], 'FP_JUMP'),
+  sc('ControlLeft', [], 'FP_CROUCH'),
+  sc('KeyX',        [], 'FP_PRONE'),
+  sc('KeyF',        [], 'FP_INTERACT'),
+  // Combat
+  sc('KeyR',        [], 'FP_RELOAD'),
+  sc('KeyG',        [], 'FP_GRENADE'),
+  sc('KeyT',        [], 'FP_SCAN'),
+  sc('Digit1',      [], 'FP_WEAPON_1'),
+  sc('Digit2',      [], 'FP_WEAPON_2'),
+  sc('Digit3',      [], 'FP_WEAPON_3'),
+  sc('Digit4',      [], 'FP_WEAPON_4'),
+  sc('Digit5',      [], 'FP_WEAPON_5'),
+  sc('KeyV',        [], 'FP_FIRE_MODE'),
+  // UI
+  sc('KeyN',        [], 'FP_NIGHT_VISION'),
+  sc('Tab',         [], 'FP_MOBIGLAS'),
+  sc('KeyI',        [], 'FP_INVENTORY'),
+  sc('KeyM',        [], 'FP_STAR_MAP'),
+  sc('Escape',      [], 'FP_GAME_MENU'),
+];
+
+const SC_EVA_BINDINGS = [
+  sc('KeyW',        [], 'EVA_FORWARD'),
+  sc('KeyS',        [], 'EVA_BACKWARD'),
+  sc('KeyA',        [], 'EVA_LEFT'),
+  sc('KeyD',        [], 'EVA_RIGHT'),
+  sc('Space',       [], 'EVA_UP'),
+  sc('ControlLeft', [], 'EVA_DOWN'),
+  sc('ShiftLeft',   [], 'EVA_BOOST'),
+  sc('KeyQ',        [], 'EVA_ROLL_LEFT'),
+  sc('KeyE',        [], 'EVA_ROLL_RIGHT'),
+  sc('KeyF',        [], 'EVA_INTERACT'),
+  sc('Escape',      [], 'EVA_GAME_MENU'),
+];
+
+const SC_FLIGHT_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Primary Fire',     keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim / Look',       keyboardKey: '' },
+  { button: 'Mouse3',    modifiers: [], action: 'Cycle Fire Group', keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Throttle Up',      keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Throttle Down',    keyboardKey: '' },
+];
+
+const SC_FOOT_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Fire',             keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim Down Sights',  keyboardKey: '' },
+  { button: 'Mouse3',    modifiers: [], action: 'Melee',            keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',          keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',         keyboardKey: '' },
+];
+
+const SC_ACTION_COLORS = {
+  // Flight — thrust
+  FLT_THROTTLE_UP:C.movement, FLT_THROTTLE_DOWN:C.movement,
+  FLT_STRAFE_LEFT:C.movement, FLT_STRAFE_RIGHT:C.movement,
+  FLT_STRAFE_UP:C.movement,   FLT_STRAFE_DOWN:C.movement,
+  FLT_ROLL_LEFT:C.movement,   FLT_ROLL_RIGHT:C.movement,
+  FLT_BOOST:C.ability3,       FLT_DECOUPLE:C.ability2,
+  FLT_QUANTUM:C.movement,     FLT_GEAR:C.ability2, FLT_LIGHTS:C.ability2,
+  // Flight — combat
+  FLT_FIRE_1:C.ability1, FLT_FIRE_2:C.ability1,
+  FLT_FIRE_3:C.ability1, FLT_FIRE_4:C.ability1,
+  FLT_MISSILES:C.ability3,
+  FLT_TARGET_AHEAD:C.targeting, FLT_TARGET_CYCLE:C.targeting,
+  // Flight — UI
+  FLT_INTERACT:C.ui, FLT_NIGHT_VISION:C.ability2,
+  FLT_MOBIGLAS:C.ui, FLT_STAR_MAP:C.ui, FLT_GAME_MENU:C.ui,
+  // On Foot — movement
+  FP_MOVE_FORWARD:C.movement, FP_MOVE_BACKWARD:C.movement,
+  FP_STRAFE_LEFT:C.movement,  FP_STRAFE_RIGHT:C.movement,
+  FP_SPRINT:C.movement,       FP_JUMP:C.movement,
+  FP_CROUCH:C.movement,       FP_PRONE:C.movement,
+  FP_INTERACT:C.ability1,
+  // On Foot — combat
+  FP_RELOAD:C.ability1,  FP_GRENADE:C.ability3, FP_SCAN:C.ability2,
+  FP_WEAPON_1:C.ability1, FP_WEAPON_2:C.ability1, FP_WEAPON_3:C.ability1,
+  FP_WEAPON_4:C.ability1, FP_WEAPON_5:C.ability1,
+  FP_FIRE_MODE:C.ability2,
+  // On Foot — UI
+  FP_NIGHT_VISION:C.ability2,
+  FP_MOBIGLAS:C.ui, FP_INVENTORY:C.ui, FP_STAR_MAP:C.ui, FP_GAME_MENU:C.ui,
+  // EVA
+  EVA_FORWARD:C.movement, EVA_BACKWARD:C.movement,
+  EVA_LEFT:C.movement,    EVA_RIGHT:C.movement,
+  EVA_UP:C.movement,      EVA_DOWN:C.movement,
+  EVA_BOOST:C.ability3,
+  EVA_ROLL_LEFT:C.movement, EVA_ROLL_RIGHT:C.movement,
+  EVA_INTERACT:C.ability1,  EVA_GAME_MENU:C.ui,
+};
+
+// ── Kerbal Space Program labels & bindings ────────────────────────────────────
+
+const KSP_LABELS = {
+  // Flight — attitude
+  PITCH_DOWN:    'Pitch Down',    PITCH_UP:      'Pitch Up',
+  YAW_LEFT:      'Yaw Left',      YAW_RIGHT:     'Yaw Right',
+  ROLL_LEFT:     'Roll Left',     ROLL_RIGHT:    'Roll Right',
+  // Flight — throttle & staging
+  THROTTLE_UP:   'Throttle Up',   THROTTLE_DOWN: 'Throttle Down',
+  THROTTLE_MAX:  'Full Throttle', THROTTLE_CUT:  'Cut Throttle',
+  STAGE:         'Activate Stage',
+  ABORT:         'Abort',
+  // Flight — systems
+  TOGGLE_SAS:    'Toggle SAS',
+  TOGGLE_RCS:    'Toggle RCS',
+  TOGGLE_GEAR:   'Toggle Landing Gear',
+  TOGGLE_BRAKES: 'Toggle Brakes',
+  TOGGLE_LIGHTS: 'Toggle Lights',
+  // Action groups
+  ACTION_1:'Action Group 1', ACTION_2:'Action Group 2',
+  ACTION_3:'Action Group 3', ACTION_4:'Action Group 4',
+  ACTION_5:'Action Group 5', ACTION_6:'Action Group 6',
+  ACTION_7:'Action Group 7', ACTION_8:'Action Group 8',
+  ACTION_9:'Action Group 9', ACTION_10:'Action Group 10',
+  // Time warp
+  WARP_UP:   'Increase Time Warp',
+  WARP_DOWN: 'Decrease Time Warp',
+  WARP_STOP: 'Stop Time Warp',
+  // UI
+  CAMERA_CYCLE: 'Cycle Camera Mode',
+  IVA_VIEW:     'Toggle IVA View',
+  MAP:          'Toggle Map View',
+  QUICKSAVE:    'Quick Save',
+  QUICKLOAD:    'Quick Load',
+  SCREENSHOT:   'Screenshot',
+  TOGGLE_UI:    'Toggle UI',
+  GAME_MENU:    'Pause / Menu',
+  // EVA
+  EVA_FORWARD:  'Move Forward',   EVA_BACKWARD: 'Move Backward',
+  EVA_LEFT:     'Move Left',      EVA_RIGHT:    'Move Right',
+  EVA_UP:       'Thrust Up / Jump',
+  EVA_DOWN:     'Thrust Down',
+  EVA_SPRINT:   'Sprint',
+  EVA_JETPACK:  'Toggle Jetpack',
+  EVA_GRAB:     'Grab / Interact',
+  EVA_BRAKE:    'Brake',
+  EVA_LIGHTS:   'Toggle Helmet Lights',
+  EVA_MAP:      'Toggle Map View',
+  EVA_GAME_MENU:'Pause / Menu',
+  // Rover
+  ROV_FORWARD:  'Drive Forward',  ROV_BACKWARD: 'Drive Backward',
+  ROV_LEFT:     'Steer Left',     ROV_RIGHT:    'Steer Right',
+  ROV_BRAKES:   'Toggle Brakes',
+  ROV_LIGHTS:   'Toggle Lights',
+  ROV_CAMERA:   'Cycle Camera',
+  ROV_MAP:      'Toggle Map View',
+  ROV_WARP_UP:  'Increase Time Warp',
+  ROV_WARP_DOWN:'Decrease Time Warp',
+  ROV_GAME_MENU:'Pause / Menu',
+};
+
+function ksp(key, modifiers, id) {
+  return { key, modifiers: modifiers.slice().sort(), action: `__ksp:${id}` };
+}
+
+const KSP_FLIGHT_BINDINGS = [
+  // Attitude
+  ksp('KeyW',        [], 'PITCH_DOWN'),
+  ksp('KeyS',        [], 'PITCH_UP'),
+  ksp('KeyA',        [], 'YAW_LEFT'),
+  ksp('KeyD',        [], 'YAW_RIGHT'),
+  ksp('KeyQ',        [], 'ROLL_LEFT'),
+  ksp('KeyE',        [], 'ROLL_RIGHT'),
+  // Throttle & staging
+  ksp('ShiftLeft',   [], 'THROTTLE_UP'),
+  ksp('ControlLeft', [], 'THROTTLE_DOWN'),
+  ksp('KeyZ',        [], 'THROTTLE_MAX'),
+  ksp('KeyX',        [], 'THROTTLE_CUT'),
+  ksp('Space',       [], 'STAGE'),
+  ksp('Backspace',   [], 'ABORT'),
+  // Systems
+  ksp('KeyT',        [], 'TOGGLE_SAS'),
+  ksp('KeyR',        [], 'TOGGLE_RCS'),
+  ksp('KeyG',        [], 'TOGGLE_GEAR'),
+  ksp('KeyB',        [], 'TOGGLE_BRAKES'),
+  ksp('KeyU',        [], 'TOGGLE_LIGHTS'),
+  // Action groups
+  ksp('Digit1',      [], 'ACTION_1'),
+  ksp('Digit2',      [], 'ACTION_2'),
+  ksp('Digit3',      [], 'ACTION_3'),
+  ksp('Digit4',      [], 'ACTION_4'),
+  ksp('Digit5',      [], 'ACTION_5'),
+  ksp('Digit6',      [], 'ACTION_6'),
+  ksp('Digit7',      [], 'ACTION_7'),
+  ksp('Digit8',      [], 'ACTION_8'),
+  ksp('Digit9',      [], 'ACTION_9'),
+  ksp('Digit0',      [], 'ACTION_10'),
+  // Time warp
+  ksp('Period',      [], 'WARP_UP'),
+  ksp('Comma',       [], 'WARP_DOWN'),
+  ksp('Slash',       [], 'WARP_STOP'),
+  // UI
+  ksp('KeyV',        [], 'CAMERA_CYCLE'),
+  ksp('KeyC',        [], 'IVA_VIEW'),
+  ksp('KeyM',        [], 'MAP'),
+  ksp('F5',          [], 'QUICKSAVE'),
+  ksp('F9',          [], 'QUICKLOAD'),
+  ksp('F1',          [], 'SCREENSHOT'),
+  ksp('F2',          [], 'TOGGLE_UI'),
+  ksp('Escape',      [], 'GAME_MENU'),
+];
+
+const KSP_EVA_BINDINGS = [
+  ksp('KeyW',        [], 'EVA_FORWARD'),
+  ksp('KeyS',        [], 'EVA_BACKWARD'),
+  ksp('KeyA',        [], 'EVA_LEFT'),
+  ksp('KeyD',        [], 'EVA_RIGHT'),
+  ksp('Space',       [], 'EVA_UP'),
+  ksp('ControlLeft', [], 'EVA_DOWN'),
+  ksp('ShiftLeft',   [], 'EVA_SPRINT'),
+  ksp('KeyR',        [], 'EVA_JETPACK'),
+  ksp('KeyF',        [], 'EVA_GRAB'),
+  ksp('KeyB',        [], 'EVA_BRAKE'),
+  ksp('KeyU',        [], 'EVA_LIGHTS'),
+  ksp('KeyM',        [], 'EVA_MAP'),
+  ksp('Escape',      [], 'EVA_GAME_MENU'),
+];
+
+const KSP_ROVER_BINDINGS = [
+  ksp('KeyW',   [], 'ROV_FORWARD'),
+  ksp('KeyS',   [], 'ROV_BACKWARD'),
+  ksp('KeyA',   [], 'ROV_LEFT'),
+  ksp('KeyD',   [], 'ROV_RIGHT'),
+  ksp('Space',  [], 'ROV_BRAKES'),
+  ksp('KeyU',   [], 'ROV_LIGHTS'),
+  ksp('KeyV',   [], 'ROV_CAMERA'),
+  ksp('KeyM',   [], 'ROV_MAP'),
+  ksp('Period', [], 'ROV_WARP_UP'),
+  ksp('Comma',  [], 'ROV_WARP_DOWN'),
+  ksp('Escape', [], 'ROV_GAME_MENU'),
+];
+
+const KSP_FLIGHT_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Select / Interact', keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Pan Camera',         keyboardKey: '' },
+  { button: 'Mouse3',    modifiers: [], action: 'Reset Camera',       keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',            keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',           keyboardKey: '' },
+];
+
+const KSP_EVA_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Select / Interact', keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Look Around',        keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',            keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',           keyboardKey: '' },
+];
+
+const KSP_ACTION_COLORS = {
+  // Flight — attitude & throttle
+  PITCH_DOWN:C.movement,  PITCH_UP:C.movement,
+  YAW_LEFT:C.movement,    YAW_RIGHT:C.movement,
+  ROLL_LEFT:C.movement,   ROLL_RIGHT:C.movement,
+  THROTTLE_UP:C.movement, THROTTLE_DOWN:C.movement,
+  THROTTLE_MAX:C.movement,THROTTLE_CUT:C.movement,
+  STAGE:C.ability3,       ABORT:C.ability3,
+  // Systems
+  TOGGLE_SAS:C.ability2, TOGGLE_RCS:C.ability2,
+  TOGGLE_GEAR:C.ability2, TOGGLE_BRAKES:C.ability2, TOGGLE_LIGHTS:C.ability2,
+  // Action groups
+  ACTION_1:C.ability1, ACTION_2:C.ability1, ACTION_3:C.ability1,
+  ACTION_4:C.ability1, ACTION_5:C.ability1, ACTION_6:C.ability1,
+  ACTION_7:C.ability1, ACTION_8:C.ability1, ACTION_9:C.ability1,
+  ACTION_10:C.ability1,
+  // Time warp & UI
+  WARP_UP:C.ui, WARP_DOWN:C.ui, WARP_STOP:C.ui,
+  CAMERA_CYCLE:C.ui, IVA_VIEW:C.ui, MAP:C.ui,
+  QUICKSAVE:C.ui, QUICKLOAD:C.ui, SCREENSHOT:C.ui, TOGGLE_UI:C.ui, GAME_MENU:C.ui,
+  // EVA
+  EVA_FORWARD:C.movement, EVA_BACKWARD:C.movement,
+  EVA_LEFT:C.movement,    EVA_RIGHT:C.movement,
+  EVA_UP:C.movement,      EVA_DOWN:C.movement,     EVA_SPRINT:C.movement,
+  EVA_JETPACK:C.ability2, EVA_GRAB:C.ability1,
+  EVA_BRAKE:C.ability3,   EVA_LIGHTS:C.ability2,
+  EVA_MAP:C.ui,           EVA_GAME_MENU:C.ui,
+  // Rover
+  ROV_FORWARD:C.movement, ROV_BACKWARD:C.movement,
+  ROV_LEFT:C.movement,    ROV_RIGHT:C.movement,
+  ROV_BRAKES:C.ability3,  ROV_LIGHTS:C.ability2,
+  ROV_CAMERA:C.ui,        ROV_MAP:C.ui,
+  ROV_WARP_UP:C.ui,       ROV_WARP_DOWN:C.ui,      ROV_GAME_MENU:C.ui,
+};
+
 // ── Elite Dangerous ───────────────────────────────────────────────────────────
 
 const ED_SHIP_BINDINGS = [
@@ -761,6 +1259,9 @@ export const GAME_ACTION_LABELS = {
   ...Object.fromEntries(Object.entries(GW2_LABELS).map(([k, v])   => [`__gw2:${k}`,   v])),
   ...Object.fromEntries(Object.entries(ESO_LABELS).map(([k, v])   => [`__eso:${k}`,   v])),
   ...Object.fromEntries(Object.entries(ARMA_LABELS).map(([k, v])  => [`__arma:${k}`,  v])),
+  ...Object.fromEntries(Object.entries(EVE_LABELS).map(([k, v])   => [`__eve:${k}`,   v])),
+  ...Object.fromEntries(Object.entries(SC_LABELS).map(([k, v])    => [`__sc:${k}`,    v])),
+  ...Object.fromEntries(Object.entries(KSP_LABELS).map(([k, v])   => [`__ksp:${k}`,   v])),
 };
 
 // ── Preset registry ───────────────────────────────────────────────────────────
@@ -801,6 +1302,32 @@ export const GAME_PRESETS = [
     label: 'Guild Wars 2',
     layoutName: 'Guild Wars 2 Default Layout',
     formats: [{ name: '__t:formatDefault', bindings: GW2_BINDINGS, keyColors: computeKeyColors(GW2_BINDINGS, GW2_ACTION_COLORS), mouseBindings: GW2_MOUSE_BINDINGS }],
+  },
+  {
+    id: 'eve-online',
+    label: 'Eve Online',
+    layoutName: 'Eve Online Default Layout',
+    formats: [{ name: '__t:formatDefault', bindings: EVE_BINDINGS, keyColors: computeKeyColors(EVE_BINDINGS, EVE_ACTION_COLORS), mouseBindings: EVE_MOUSE_BINDINGS }],
+  },
+  {
+    id: 'star-citizen',
+    label: 'Star Citizen',
+    layoutName: 'Star Citizen Default Layout',
+    formats: [
+      { name: '__t:formatShip',   bindings: SC_FLIGHT_BINDINGS, keyColors: computeKeyColors(SC_FLIGHT_BINDINGS, SC_ACTION_COLORS), mouseBindings: SC_FLIGHT_MOUSE_BINDINGS },
+      { name: '__t:formatOnFoot', bindings: SC_FOOT_BINDINGS,   keyColors: computeKeyColors(SC_FOOT_BINDINGS,   SC_ACTION_COLORS), mouseBindings: SC_FOOT_MOUSE_BINDINGS   },
+      { name: '__t:formatEVA',    bindings: SC_EVA_BINDINGS,    keyColors: computeKeyColors(SC_EVA_BINDINGS,    SC_ACTION_COLORS), mouseBindings: []                        },
+    ],
+  },
+  {
+    id: 'ksp',
+    label: 'Kerbal Space Program',
+    layoutName: 'Kerbal Space Program Default Layout',
+    formats: [
+      { name: '__t:formatFlight',  bindings: KSP_FLIGHT_BINDINGS, keyColors: computeKeyColors(KSP_FLIGHT_BINDINGS, KSP_ACTION_COLORS), mouseBindings: KSP_FLIGHT_MOUSE_BINDINGS },
+      { name: '__t:formatEVA',     bindings: KSP_EVA_BINDINGS,    keyColors: computeKeyColors(KSP_EVA_BINDINGS,    KSP_ACTION_COLORS), mouseBindings: KSP_EVA_MOUSE_BINDINGS    },
+      { name: '__t:formatVehicle', bindings: KSP_ROVER_BINDINGS,  keyColors: computeKeyColors(KSP_ROVER_BINDINGS,  KSP_ACTION_COLORS), mouseBindings: []                         },
+    ],
   },
   {
     id: 'elite-dangerous',
