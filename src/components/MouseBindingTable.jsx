@@ -33,7 +33,7 @@ export default function MouseBindingTable({ mouseBindings = [], onUpdateAction, 
         <colgroup>
           <col style={{ width: 20 }} />
           <col style={{ width: 110 }} />
-          <col style={{ width: 80 }} />
+          <col style={{ width: 95 }} />
           <col />
           <col style={{ width: 40 }} />
         </colgroup>

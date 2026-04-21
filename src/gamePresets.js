@@ -409,6 +409,68 @@ const FFXIV_CONTROLS_BINDINGS = [
   ffxiv('Escape',  [],        'CANCEL'),
 ];
 
+// ── WoW mouse bindings ────────────────────────────────────────────────────────
+
+const WOW_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [],        action: 'Interact / Move',   keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [],        action: 'Turn Camera / Move', keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: ['Shift'], action: 'Loot All',           keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: ['Ctrl'],  action: 'Split Stack',        keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [],        action: 'Zoom In',            keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [],        action: 'Zoom Out',           keyboardKey: '' },
+];
+
+// ── FFXIV mouse bindings ──────────────────────────────────────────────────────
+
+const FFXIV_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Confirm / Select Target',  keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Cancel / Rotate Camera',   keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',                  keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',                 keyboardKey: '' },
+];
+
+// ── ESO mouse bindings ────────────────────────────────────────────────────────
+
+const ESO_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Light Attack / Interact',  keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Block / Rotate Camera',    keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',                  keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',                 keyboardKey: '' },
+];
+
+// ── Arma 3 mouse bindings ─────────────────────────────────────────────────────
+
+const ARMA_FOOT_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Fire',              keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim Down Sights',   keyboardKey: '' },
+  { button: 'Mouse3',    modifiers: [], action: 'Hold Breath / Zoom',keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',           keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',          keyboardKey: '' },
+];
+
+const ARMA_VEHICLE_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Fire',     keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim',      keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',  keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out', keyboardKey: '' },
+];
+
+const ARMA_AIRCRAFT_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Fire Weapons', keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim',          keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',      keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',     keyboardKey: '' },
+];
+
+// ── GW2 mouse bindings ────────────────────────────────────────────────────────
+
+const GW2_MOUSE_BINDINGS = [
+  { button: 'Mouse1',    modifiers: [], action: 'Attack / Interact',        keyboardKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Rotate Camera / Move',     keyboardKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',                  keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',                 keyboardKey: '' },
+];
+
 // ── Preset key colors ─────────────────────────────────────────────────────────
 
 const C = {
@@ -551,36 +613,36 @@ export const GAME_PRESETS = [
     id: 'wow',
     label: 'World of Warcraft',
     layoutName: 'World of Warcraft Default Layout',
-    formats: [{ name: '__t:formatDefault', bindings: WOW_BINDINGS, keyColors: computeKeyColors(WOW_BINDINGS, WOW_ACTION_COLORS) }],
+    formats: [{ name: '__t:formatDefault', bindings: WOW_BINDINGS, keyColors: computeKeyColors(WOW_BINDINGS, WOW_ACTION_COLORS), mouseBindings: WOW_MOUSE_BINDINGS }],
   },
   {
     id: 'ffxiv',
     label: 'Final Fantasy XIV',
     layoutName: 'Final Fantasy XIV Default Layout',
     formats: [
-      { name: '__t:formatDefault', bindings: [...FFXIV_CONTROLS_BINDINGS, ...FFXIV_HOTBAR_BINDINGS], keyColors: computeKeyColors([...FFXIV_CONTROLS_BINDINGS, ...FFXIV_HOTBAR_BINDINGS], FFXIV_ACTION_COLORS) },
+      { name: '__t:formatDefault', bindings: [...FFXIV_CONTROLS_BINDINGS, ...FFXIV_HOTBAR_BINDINGS], keyColors: computeKeyColors([...FFXIV_CONTROLS_BINDINGS, ...FFXIV_HOTBAR_BINDINGS], FFXIV_ACTION_COLORS), mouseBindings: FFXIV_MOUSE_BINDINGS },
     ],
   },
   {
     id: 'eso',
     label: 'Elder Scrolls Online',
     layoutName: 'Elder Scrolls Online Default Layout',
-    formats: [{ name: '__t:formatDefault', bindings: ESO_BINDINGS, keyColors: computeKeyColors(ESO_BINDINGS, ESO_ACTION_COLORS) }],
+    formats: [{ name: '__t:formatDefault', bindings: ESO_BINDINGS, keyColors: computeKeyColors(ESO_BINDINGS, ESO_ACTION_COLORS), mouseBindings: ESO_MOUSE_BINDINGS }],
   },
   {
     id: 'arma3',
     label: 'Arma 3',
     layoutName: 'Arma 3 Default Layout',
     formats: [
-      { name: '__t:formatOnFoot',  bindings: ARMA_FOOT_BINDINGS,     keyColors: computeKeyColors(ARMA_FOOT_BINDINGS,     ARMA_ACTION_COLORS) },
-      { name: '__t:formatVehicle', bindings: ARMA_VEHICLE_BINDINGS,   keyColors: computeKeyColors(ARMA_VEHICLE_BINDINGS,   ARMA_ACTION_COLORS) },
-      { name: '__t:formatAircraft',bindings: ARMA_AIRCRAFT_BINDINGS,  keyColors: computeKeyColors(ARMA_AIRCRAFT_BINDINGS,  ARMA_ACTION_COLORS) },
+      { name: '__t:formatOnFoot',  bindings: ARMA_FOOT_BINDINGS,    keyColors: computeKeyColors(ARMA_FOOT_BINDINGS,    ARMA_ACTION_COLORS), mouseBindings: ARMA_FOOT_MOUSE_BINDINGS    },
+      { name: '__t:formatVehicle', bindings: ARMA_VEHICLE_BINDINGS, keyColors: computeKeyColors(ARMA_VEHICLE_BINDINGS, ARMA_ACTION_COLORS), mouseBindings: ARMA_VEHICLE_MOUSE_BINDINGS },
+      { name: '__t:formatAircraft',bindings: ARMA_AIRCRAFT_BINDINGS,keyColors: computeKeyColors(ARMA_AIRCRAFT_BINDINGS,ARMA_ACTION_COLORS), mouseBindings: ARMA_AIRCRAFT_MOUSE_BINDINGS},
     ],
   },
   {
     id: 'gw2',
     label: 'Guild Wars 2',
     layoutName: 'Guild Wars 2 Default Layout',
-    formats: [{ name: '__t:formatDefault', bindings: GW2_BINDINGS, keyColors: computeKeyColors(GW2_BINDINGS, GW2_ACTION_COLORS) }],
+    formats: [{ name: '__t:formatDefault', bindings: GW2_BINDINGS, keyColors: computeKeyColors(GW2_BINDINGS, GW2_ACTION_COLORS), mouseBindings: GW2_MOUSE_BINDINGS }],
   },
 ];

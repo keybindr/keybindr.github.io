@@ -392,7 +392,7 @@ export default function App() {
   }
 
   function handleLoadPreset(preset) {
-    replaceFormats(preset.formats.map(f => ({ name: f.name, bindings: f.bindings, keyColors: f.keyColors ?? {} })));
+    replaceFormats(preset.formats.map(f => ({ name: f.name, bindings: f.bindings, keyColors: f.keyColors ?? {}, mouseBindings: f.mouseBindings ?? [] })));
     if (preset.layoutName) handleLayoutNameChange(preset.layoutName);
     setActivePreset(preset.id);
     setDeleteLocked(true);
