@@ -475,7 +475,7 @@ export default function App() {
           />
           <div className="dropdown" ref={presetsRef}>
             <button className="btn-export btn-presets" onClick={() => setShowPresets(v => !v)}>
-              {activePreset ? GAME_PRESETS.find(p => p.id === activePreset)?.label : 'Game Layouts'}
+              {activePreset ? GAME_PRESETS.find(p => p.id === activePreset)?.label : t('gameDefaults')}
             </button>
             {showPresets && (
               <div className="dropdown-menu">
@@ -515,12 +515,12 @@ export default function App() {
                       <div className="dropdown-sep" />
                       {ap.importFn && (
                         <button className="dropdown-item" onClick={() => menuAction(() => gameImportRef.current?.click())}>
-                          {ap.importLabel}
+                          {t(ap.importLabel)}
                         </button>
                       )}
                       {ap.exportFn && (
                         <button className="dropdown-item" onClick={() => menuAction(() => ap.exportFn(formats))}>
-                          {ap.exportLabel}
+                          {t(ap.exportLabel)}
                         </button>
                       )}
                     </>
