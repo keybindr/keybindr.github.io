@@ -417,6 +417,8 @@ export default function App() {
     setActivePreset(preset.id);
     setDeleteLocked(true);
     setSelectedId(null);
+    setMouseModel('custom');
+    setHotasModel('custom');
     if (preset.formats.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
     if (preset.formats.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
   }
