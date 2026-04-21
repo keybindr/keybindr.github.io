@@ -96,7 +96,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
             <th>{t('colAction')}</th>
             <th className="cell-del-head">
               <button className="btn-lock" onClick={e => { e.stopPropagation(); setLocked(v => !v); }} title={locked ? t('unlockDelete') : t('lockDelete')}>
-                <span style={locked ? {} : { position: 'relative', left: '4px' }}>{locked ? '🔒' : '🔓'}</span>
+                <span style={{ position: 'relative', left: '4px' }}>{locked ? '🔒' : '🔓'}</span>
               </button>
             </th>
           </tr>
@@ -180,13 +180,12 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                   )}
                 </td>
                 <td className="cell-del">
-                  {!locked && (
-                    <button
-                      className="btn-del"
-                      title={t('removeBinding')}
-                      onClick={e => { e.stopPropagation(); onRemove(b.key, b.modifiers); }}
-                    >✕</button>
-                  )}
+                  <button
+                    className="btn-del"
+                    style={{ visibility: locked ? 'hidden' : 'visible' }}
+                    title={t('removeBinding')}
+                    onClick={e => { e.stopPropagation(); if (!locked) onRemove(b.key, b.modifiers); }}
+                  >✕</button>
                 </td>
               </tr>
             );
