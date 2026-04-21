@@ -4,12 +4,15 @@ import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
 import MouseBindingTable from './components/MouseBindingTable';
 import MouseBindModal from './components/MouseBindModal';
+import HOTASBindingTable from './components/HOTASBindingTable';
+import HOTASBindModal from './components/HOTASBindModal';
 import HelpModal from './components/HelpModal';
 import SettingsModal from './components/SettingsModal';
 import ShareModal from './components/ShareModal';
 import ShareImportModal from './components/ShareImportModal';
 import { bindingId } from './useBindings';
-import { useFormats, MAX_FORMATS } from './useFormats';
+import { useFormats, MAX_FORMATS, MOUSE_BUTTONS } from './useFormats';
+import { getAllHotasInputs, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from './hotasConstants';
 import { useSettings } from './useSettings';
 import { exportJSON, exportPNG, importFile } from './export';
 import { GAME_PRESETS } from './gamePresets';
@@ -174,17 +177,19 @@ function MobileWarningModal({ onClose }) {
 export default function App() {
   const {
     formats, activeIndex, switchTo, addFormat, setFormatName, removeFormat,
-    bindings, keyColors, mouseBindings, recentColors,
+    bindings, keyColors, mouseBindings, hotasBindings, recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats, removeOrphanBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors, addRecentColor,
     addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
+    addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction,
     resetFormats,
     undo, redo,
   } = useFormats();
 
-  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, resetSettings } = useSettings();
+  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, setShowHotasBindings, setJoystickButtonCount, setThrottleButtonCount, setPedalsButtonCount, resetSettings } = useSettings();
   const [mouseModal, setMouseModal] = useState(null);
+  const [hotasModal, setHotasModal] = useState(null);
 
   const [layoutName, setLayoutNameState] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
   const [selectedId, setSelectedId]     = useState(null);
@@ -282,6 +287,7 @@ export default function App() {
     if (result.physicalLayout) setPhysicalLayout(result.physicalLayout);
     if (result.language)       setLanguage(result.language);
     if (result.formats?.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
+    if (result.formats?.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
     setSelectedId(null);
     setPendingImport(null);
   }
@@ -309,9 +315,11 @@ export default function App() {
           if (result.data.physicalLayout) setPhysicalLayout(result.data.physicalLayout);
           if (result.data.language)       setLanguage(result.data.language);
           if (result.data.formats?.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
+          if (result.data.formats?.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
         } else if (result.type === 'formats') {
           replaceFormats(result.data);
           if (result.data.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
+          if (result.data.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
         } else {
           replaceActiveBindings(result.data);
         }
@@ -395,12 +403,13 @@ export default function App() {
   }
 
   function handleLoadPreset(preset) {
-    replaceFormats(preset.formats.map(f => ({ name: f.name, bindings: f.bindings, keyColors: f.keyColors ?? {}, mouseBindings: f.mouseBindings ?? [] })));
+    replaceFormats(preset.formats.map(f => ({ name: f.name, bindings: f.bindings, keyColors: f.keyColors ?? {}, mouseBindings: f.mouseBindings ?? [], hotasBindings: f.hotasBindings ?? [] })));
     if (preset.layoutName) handleLayoutNameChange(preset.layoutName);
     setActivePreset(preset.id);
     setDeleteLocked(true);
     setSelectedId(null);
-    setShowMouseBindings(true);
+    if (preset.formats.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
+    if (preset.formats.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
   }
 
   function handleSelect(id) {
@@ -666,6 +675,7 @@ export default function App() {
           keyColors={keyColors}
           settings={settings}
           mouseBindings={mouseBindings}
+          hotasBindings={hotasBindings}
         />
       </div>
 
@@ -699,11 +709,78 @@ export default function App() {
             onUpdateAction={updateMouseAction}
             onRemove={removeMouseBinding}
             onOpenModal={(button, modifiers) => {
-              const existing = mouseBindings.find(b => b.button === button && JSON.stringify(b.modifiers) === JSON.stringify(modifiers ?? []));
-              setMouseModal({ button: button ?? null, modifiers: modifiers ?? [], keyboardKey: existing?.keyboardKey ?? '' });
+              const resolvedButton = button ?? (() => {
+                const used = new Set(mouseBindings.map(b => b.button));
+                return MOUSE_BUTTONS.find(b => !used.has(b)) ?? MOUSE_BUTTONS[0];
+              })();
+              const existing = mouseBindings.find(b => b.button === resolvedButton && JSON.stringify(b.modifiers) === JSON.stringify(modifiers ?? []));
+              setMouseModal({ button: resolvedButton, modifiers: modifiers ?? [], keyboardKey: existing?.keyboardKey ?? '' });
             }}
           />
         </div>
+      )}
+
+      {settings.showHotasBindings && (
+        <div className="panel" style={{ marginTop: 10 }}>
+          <h2 className="panel-title">{t('hotasBindingsTitle')} <span className="count-badge">{hotasBindings.length}</span></h2>
+          <HOTASBindingTable
+            hotasBindings={hotasBindings}
+            settings={settings}
+            locked={deleteLocked}
+            onToggleLocked={setDeleteLocked}
+            onUpdateAction={updateHotasAction}
+            onRemove={removeHotasBinding}
+            onOpenModal={(input, modifiers, hotasMod, isHotasMod) => {
+              const resolvedInput = input ?? (() => {
+                const used = new Set(hotasBindings.map(b => b.input));
+                const all  = getAllHotasInputs(
+                  settings.joystickButtonCount ?? DEFAULT_JOYSTICK_BUTTONS,
+                  settings.throttleButtonCount ?? DEFAULT_THROTTLE_BUTTONS,
+                  settings.pedalsButtonCount   ?? DEFAULT_PEDALS_BUTTONS,
+                );
+                return all.find(id => !used.has(id)) ?? all[0];
+              })();
+              const existing = input != null
+                ? hotasBindings.find(b =>
+                    b.input === resolvedInput &&
+                    JSON.stringify(b.modifiers ?? []) === JSON.stringify(modifiers ?? []) &&
+                    (b.hotasMod ?? '') === (hotasMod ?? '')
+                  )
+                : null;
+              setHotasModal({
+                input:        resolvedInput,
+                modifiers:    modifiers   ?? [],
+                hotasMod:     hotasMod    ?? '',
+                isHotasMod:   isHotasMod  ?? false,
+                keyboardKey:  existing?.keyboardKey ?? '',
+              });
+            }}
+          />
+        </div>
+      )}
+
+      {hotasModal && (
+        <HOTASBindModal
+          initialInput={hotasModal.input}
+          initialModifiers={hotasModal.modifiers ?? []}
+          initialKeyboardKey={hotasModal.keyboardKey ?? ''}
+          initialHotasMod={hotasModal.hotasMod ?? ''}
+          initialIsHotasMod={hotasModal.isHotasMod ?? false}
+          existingBindings={hotasBindings}
+          bindings={bindings}
+          settings={settings}
+          layoutKeys={getKeys(settings.physicalLayout)}
+          onSave={(input, modifiers, action, keyboardKey, hotasMod, isHotasMod) => {
+            addOrUpdateHotasBinding(input, modifiers, action, keyboardKey, hotasMod, isHotasMod);
+            if (keyboardKey && !isHotasMod) addOrUpdate(keyboardKey, [], action);
+            setHotasModal(null);
+          }}
+          onRemove={(input) => {
+            removeHotasModifier(input);
+            setHotasModal(null);
+          }}
+          onCancel={() => setHotasModal(null)}
+        />
       )}
 
       {mouseModal && (
@@ -760,6 +837,10 @@ export default function App() {
           onChangeUiLocale={handleUiLocaleChange}
           onToggleCrossFormatWarnings={setWarnCrossFormatConflicts}
           onToggleMouseBindings={setShowMouseBindings}
+          onToggleHotasBindings={setShowHotasBindings}
+          onChangeJoystickButtonCount={setJoystickButtonCount}
+          onChangeThrottleButtonCount={setThrottleButtonCount}
+          onChangePedalsButtonCount={setPedalsButtonCount}
           onClearKeys={resetAll}
           onClose={() => setShowSettings(false)}
         />

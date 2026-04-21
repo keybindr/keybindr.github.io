@@ -596,6 +596,163 @@ const ARMA_ACTION_COLORS = {
   AC_MAP:C.ui, AC_GAME_MENU:C.ui,
 };
 
+// ── Elite Dangerous ───────────────────────────────────────────────────────────
+
+const ED_SHIP_BINDINGS = [
+  { key: 'KeyW', modifiers: [], action: 'Thrust Forward' },
+  { key: 'KeyS', modifiers: [], action: 'Thrust Backward' },
+  { key: 'KeyA', modifiers: [], action: 'Yaw Left' },
+  { key: 'KeyD', modifiers: [], action: 'Yaw Right' },
+  { key: 'KeyQ', modifiers: [], action: 'Roll Left' },
+  { key: 'KeyE', modifiers: [], action: 'Roll Right' },
+  { key: 'KeyW', modifiers: ['Shift'], action: 'Thrust Up' },
+  { key: 'KeyS', modifiers: ['Shift'], action: 'Thrust Down' },
+  { key: 'KeyA', modifiers: ['Shift'], action: 'Strafe Left' },
+  { key: 'KeyD', modifiers: ['Shift'], action: 'Strafe Right' },
+  { key: 'Space', modifiers: [], action: 'Boost' },
+  { key: 'KeyR', modifiers: [], action: 'Deploy Hardpoints' },
+  { key: 'KeyG', modifiers: [], action: 'Landing Gear' },
+  { key: 'KeyL', modifiers: [], action: 'External Lights' },
+  { key: 'KeyN', modifiers: [], action: 'Night Vision' },
+  { key: 'Tab', modifiers: [], action: 'Enable FSD' },
+  { key: 'Tab', modifiers: ['Shift'], action: 'Supercruise' },
+  { key: 'KeyJ', modifiers: [], action: 'Hyperspace Jump' },
+  { key: 'Backspace', modifiers: [], action: 'Cargo Scoop' },
+  { key: 'Delete', modifiers: [], action: 'Silent Running' },
+  { key: 'F1', modifiers: [], action: 'Focus Radar' },
+  { key: 'F2', modifiers: [], action: 'Focus Comms' },
+  { key: 'F3', modifiers: [], action: 'Role Panel' },
+  { key: 'F4', modifiers: [], action: 'Codex' },
+  { key: 'Numpad5', modifiers: [], action: 'Center View' },
+  { key: 'Numpad8', modifiers: [], action: 'View Up' },
+  { key: 'Numpad2', modifiers: [], action: 'View Down' },
+  { key: 'KeyU', modifiers: [], action: 'Target Ahead' },
+  { key: 'KeyT', modifiers: [], action: 'Select Target' },
+  { key: 'Escape', modifiers: [], action: 'Open Menu' },
+];
+
+const ED_SHIP_HOTAS = [
+  { input: 'Joystick_Button1', action: 'Primary Fire' },
+  { input: 'Joystick_Button2', action: 'Secondary Fire' },
+  { input: 'Joystick_Button3', action: 'Boost' },
+  { input: 'Joystick_Button4', action: 'Deploy Hardpoints' },
+  { input: 'Joystick_Button5', action: 'Landing Gear' },
+  { input: 'Joystick_Button6', action: 'External Lights' },
+  { input: 'Joystick_Button7', action: 'Silent Running' },
+  { input: 'Joystick_Button8', action: 'Cargo Scoop' },
+  { input: 'Joystick_Hat1_Up',        action: 'Target Ahead' },
+  { input: 'Joystick_Hat1_Down',       action: 'Next Hostile Target' },
+  { input: 'Joystick_Hat1_Left',       action: 'Previous Target' },
+  { input: 'Joystick_Hat1_Right',      action: 'Select Highest Threat' },
+  { input: 'Joystick_Hat1_UpRight',    action: 'Next Subsystem' },
+  { input: 'Joystick_Hat1_UpLeft',     action: 'Previous Subsystem' },
+  { input: 'Joystick_Hat2_Up',         action: 'Power to Engines' },
+  { input: 'Joystick_Hat2_Down',       action: 'Power to Weapons' },
+  { input: 'Joystick_Hat2_Left',       action: 'Power to Systems' },
+  { input: 'Joystick_Hat2_Right',      action: 'Balance Power' },
+  { input: 'Throttle_Button1', action: 'Enable FSD' },
+  { input: 'Throttle_Button2', action: 'Supercruise' },
+  { input: 'Throttle_Button3', action: 'Hyperspace Jump' },
+  { input: 'Throttle_Button4', action: 'Galaxy Map' },
+  { input: 'Throttle_Button5', action: 'System Map' },
+  { input: 'Throttle_Button6', action: 'Focus Comms' },
+  { input: 'Throttle_Button7', action: 'Role Panel' },
+  { input: 'Throttle_Hat1_Up',    action: 'Next Fire Group' },
+  { input: 'Throttle_Hat1_Down',  action: 'Previous Fire Group' },
+  { input: 'Throttle_Hat1_Left',  action: 'Select Wingman Target' },
+  { input: 'Throttle_Hat1_Right', action: 'Wingman Nav Lock' },
+  { input: 'Throttle_Switch1_On',  action: 'Hardpoints Deployed' },
+  { input: 'Throttle_Switch1_Off', action: 'Hardpoints Retracted' },
+  { input: 'Throttle_Rotary1_CW',  action: 'Next Subsystem Target' },
+  { input: 'Throttle_Rotary1_CCW', action: 'Previous Subsystem Target' },
+];
+
+const ED_FOOT_BINDINGS = [
+  { key: 'KeyW', modifiers: [], action: 'Walk Forward' },
+  { key: 'KeyS', modifiers: [], action: 'Walk Backward' },
+  { key: 'KeyA', modifiers: [], action: 'Strafe Left' },
+  { key: 'KeyD', modifiers: [], action: 'Strafe Right' },
+  { key: 'ShiftLeft', modifiers: [], action: 'Sprint' },
+  { key: 'ControlLeft', modifiers: [], action: 'Crouch / Prone' },
+  { key: 'Space', modifiers: [], action: 'Jump' },
+  { key: 'KeyF', modifiers: [], action: 'Interact' },
+  { key: 'KeyR', modifiers: [], action: 'Reload' },
+  { key: 'KeyG', modifiers: [], action: 'Throw Grenade' },
+  { key: 'KeyT', modifiers: [], action: 'Backpack' },
+  { key: 'KeyX', modifiers: [], action: 'Holster Weapon' },
+  { key: 'Tab', modifiers: [], action: 'Enter / Exit Ship' },
+  { key: 'Escape', modifiers: [], action: 'Open Menu' },
+];
+
+const ED_FOOT_MOUSE = [
+  { button: 'Mouse1', modifiers: [], action: 'Primary Fire', keyboardKey: '' },
+  { button: 'Mouse2', modifiers: [], action: 'Aim Down Sights', keyboardKey: '' },
+  { button: 'Mouse3', modifiers: [], action: 'Melee', keyboardKey: '' },
+  { button: 'WheelUp', modifiers: [], action: 'Zoom In', keyboardKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out', keyboardKey: '' },
+];
+
+const ED_SRV_BINDINGS = [
+  { key: 'KeyW', modifiers: [], action: 'Drive Forward' },
+  { key: 'KeyS', modifiers: [], action: 'Drive Backward' },
+  { key: 'KeyA', modifiers: [], action: 'Steer Left' },
+  { key: 'KeyD', modifiers: [], action: 'Steer Right' },
+  { key: 'Space', modifiers: [], action: 'Handbrake' },
+  { key: 'ShiftLeft', modifiers: [], action: 'Boost' },
+  { key: 'KeyQ', modifiers: [], action: 'Turret Left' },
+  { key: 'KeyE', modifiers: [], action: 'Turret Right' },
+  { key: 'KeyR', modifiers: [], action: 'Toggle Drive Mode' },
+  { key: 'KeyF', modifiers: [], action: 'Surface Scan' },
+  { key: 'KeyG', modifiers: [], action: 'Cargo Scoop' },
+  { key: 'KeyL', modifiers: [], action: 'Headlights' },
+  { key: 'KeyU', modifiers: [], action: 'Target Ahead' },
+  { key: 'Tab', modifiers: [], action: 'Enter / Exit SRV' },
+  { key: 'Escape', modifiers: [], action: 'Open Menu' },
+];
+
+const ED_SRV_HOTAS = [
+  { input: 'Joystick_Button1', action: 'Fire Weapons' },
+  { input: 'Joystick_Button2', action: 'Secondary Fire' },
+  { input: 'Joystick_Button3', action: 'Boost' },
+  { input: 'Joystick_Hat1_Up',   action: 'Target Ahead' },
+  { input: 'Joystick_Hat1_Down', action: 'Next Target' },
+  { input: 'Joystick_Hat2_Up',    action: 'Turret Up' },
+  { input: 'Joystick_Hat2_Down',  action: 'Turret Down' },
+  { input: 'Joystick_Hat2_Left',  action: 'Turret Left' },
+  { input: 'Joystick_Hat2_Right', action: 'Turret Right' },
+  { input: 'Throttle_Button1', action: 'Cargo Scoop' },
+  { input: 'Throttle_Button2', action: 'Surface Scan' },
+];
+
+const ED_SHIP_KEY_COLORS = {
+  KeyW: C.movement, KeyS: C.movement, KeyA: C.movement, KeyD: C.movement,
+  KeyQ: C.movement, KeyE: C.movement, Space: C.movement,
+  KeyR: C.ability1, KeyG: C.ability1, KeyL: C.ability2, KeyN: C.ability2,
+  Delete: C.ability2,
+  Tab: C.ui, KeyJ: C.movement,
+  Backspace: C.ability3,
+  KeyU: C.targeting, KeyT: C.targeting,
+  F1: C.ui, F2: C.ui, F3: C.ui, F4: C.ui,
+  Escape: C.ui,
+};
+
+const ED_FOOT_KEY_COLORS = {
+  KeyW: C.movement, KeyS: C.movement, KeyA: C.movement, KeyD: C.movement,
+  ShiftLeft: C.movement, ControlLeft: C.movement, Space: C.movement,
+  KeyF: C.ability1, KeyR: C.ability1,
+  KeyG: C.ability3, KeyT: C.ability2, KeyX: C.ability2,
+  Tab: C.ui, Escape: C.ui,
+};
+
+const ED_SRV_KEY_COLORS = {
+  KeyW: C.movement, KeyS: C.movement, KeyA: C.movement, KeyD: C.movement,
+  Space: C.movement, ShiftLeft: C.movement,
+  KeyQ: C.ability1, KeyE: C.ability1,
+  KeyR: C.ability2, KeyG: C.ability3, KeyL: C.ability2,
+  KeyF: C.ability2, KeyU: C.targeting,
+  Tab: C.ui, Escape: C.ui,
+};
+
 // ── Combined label map (used by resolveAction) ────────────────────────────────
 
 export const GAME_ACTION_LABELS = {
@@ -644,5 +801,33 @@ export const GAME_PRESETS = [
     label: 'Guild Wars 2',
     layoutName: 'Guild Wars 2 Default Layout',
     formats: [{ name: '__t:formatDefault', bindings: GW2_BINDINGS, keyColors: computeKeyColors(GW2_BINDINGS, GW2_ACTION_COLORS), mouseBindings: GW2_MOUSE_BINDINGS }],
+  },
+  {
+    id: 'elite-dangerous',
+    label: 'Elite Dangerous',
+    layoutName: 'Elite Dangerous Default Layout',
+    formats: [
+      {
+        name: '__t:formatShip',
+        bindings: ED_SHIP_BINDINGS,
+        keyColors: ED_SHIP_KEY_COLORS,
+        mouseBindings: [],
+        hotasBindings: ED_SHIP_HOTAS,
+      },
+      {
+        name: '__t:formatOnFoot',
+        bindings: ED_FOOT_BINDINGS,
+        keyColors: ED_FOOT_KEY_COLORS,
+        mouseBindings: ED_FOOT_MOUSE,
+        hotasBindings: [],
+      },
+      {
+        name: '__t:formatSRV',
+        bindings: ED_SRV_BINDINGS,
+        keyColors: ED_SRV_KEY_COLORS,
+        mouseBindings: [],
+        hotasBindings: ED_SRV_HOTAS,
+      },
+    ],
   },
 ];

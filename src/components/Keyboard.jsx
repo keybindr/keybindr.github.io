@@ -4,6 +4,7 @@ import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from '../modifierConstants';
 import { useT, resolveAction } from '../useTranslation';
+import { getHotasLabel, hotasBindingId } from '../hotasConstants';
 
 const KEY_SELECTED    = '#5a4a1a';
 const BORDER_DEFAULT  = '#444';
@@ -91,7 +92,7 @@ function trianglePoints(mod, k) {
   return `${cx},${cy} ${cx},${cy-SIZE} ${cx+SIZE},${cy}`;
 }
 
-export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = {}, mouseBindings = [] }) {
+export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = {}, mouseBindings = [], hotasBindings = [] }) {
   const { splitModifiers, physicalLayout = 'ansi-104', language = 'en-US' } = settings;
   const t = useT();
   const [tooltip, setTooltip] = useState(null);
@@ -114,17 +115,27 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
     }
   }
 
+  // Build map of keyboard keys that are remapped from HOTAS buttons
+  const hotasRemapMap = {};
+  for (const hb of hotasBindings) {
+    if (hb.keyboardKey) {
+      if (!hotasRemapMap[hb.keyboardKey]) hotasRemapMap[hb.keyboardKey] = [];
+      hotasRemapMap[hb.keyboardKey].push(hb);
+    }
+  }
+
   function handleMouseEnter(e, keyId) {
-    if ((boundMap[keyId] || []).length === 0 && (mouseRemapMap[keyId] || []).length === 0) return;
+    if ((boundMap[keyId] || []).length === 0 && (mouseRemapMap[keyId] || []).length === 0 && (hotasRemapMap[keyId] || []).length === 0) return;
     setTooltip({ keyId, x: e.clientX, y: e.clientY });
   }
   function handleMouseMove(e, keyId) {
-    if ((boundMap[keyId] || []).length === 0 && (mouseRemapMap[keyId] || []).length === 0) return;
+    if ((boundMap[keyId] || []).length === 0 && (mouseRemapMap[keyId] || []).length === 0 && (hotasRemapMap[keyId] || []).length === 0) return;
     setTooltip({ keyId, x: e.clientX, y: e.clientY });
   }
 
-  const tooltipBindings = tooltip ? (boundMap[tooltip.keyId] || []) : [];
+  const tooltipBindings      = tooltip ? (boundMap[tooltip.keyId]      || []) : [];
   const tooltipMouseBindings = tooltip ? (mouseRemapMap[tooltip.keyId] || []) : [];
+  const tooltipHotasBindings = tooltip ? (hotasRemapMap[tooltip.keyId] || []) : [];
   const tipX = tooltip
     ? (tooltip.x + 16 + TOOLTIP_WIDTH > window.innerWidth ? tooltip.x - TOOLTIP_WIDTH - 16 : tooltip.x + 16)
     : 0;
@@ -169,6 +180,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
 
         const mods = [...new Set(keyBindings.flatMap(b => b.modifiers))];
         const mouseRemaps = mouseRemapMap[k.id] || [];
+        const hotasRemaps = hotasRemapMap[k.id] || [];
 
         // Label: split modifier display → locale override → layout default
         let label;
@@ -242,14 +254,25 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
 
             {mouseRemaps.length > 0 && (
               <text
-                x={k.x + 4}
-                y={k.y + k.h - 3}
+                x={k.x + 2}
+                y={k.y + 8}
                 fontSize={7}
                 fontFamily="'Courier New', monospace"
                 fill="#b0c8ff"
                 style={{ pointerEvents: 'none' }}
                 clipPath={`url(#clip-${k.id})`}
               >🖱</text>
+            )}
+            {hotasRemaps.length > 0 && (
+              <text
+                x={k.x + (mouseRemaps.length > 0 ? 12 : 2)}
+                y={k.y + 8}
+                fontSize={7}
+                fontFamily="'Courier New', monospace"
+                fill="#b0c8ff"
+                style={{ pointerEvents: 'none' }}
+                clipPath={`url(#clip-${k.id})`}
+              >🕹</text>
             )}
           </g>
         );
@@ -268,7 +291,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
       ))}
     </svg>
 
-    {tooltip && (tooltipBindings.length > 0 || tooltipMouseBindings.length > 0) && (
+    {tooltip && (tooltipBindings.length > 0 || tooltipMouseBindings.length > 0 || tooltipHotasBindings.length > 0) && (
       <div className="key-tooltip" style={{ left: tipX, top: tipY }}>
         {tooltipBindings.map((b, i) => (
           <div key={bindingId(b.key, b.modifiers)} className={`tooltip-row${i > 0 ? ' tooltip-row-sep' : ''}`}>
@@ -301,6 +324,23 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
               </>
             )}
             <span className="tooltip-action">{mb.button}: {resolveAction(mb.action, t)}</span>
+          </div>
+        ))}
+        {tooltipHotasBindings.map(hb => (
+          <div key={hotasBindingId(hb.input, hb.modifiers ?? [], hb.hotasMod ?? '')} className="tooltip-row tooltip-row-sep tooltip-mouse-row">
+            <span className="tooltip-mouse-icon">🕹</span>
+            {(hb.modifiers ?? []).length > 0 && (
+              <>
+                {(hb.modifiers ?? []).map(m => (
+                  <span key={m} className="tooltip-mod-tag"
+                    style={{ borderColor: MOD_COLORS[m] || '#888', color: MOD_COLORS[m] || '#888' }}>
+                    {TOOLTIP_MOD_LABEL[m] || m}
+                  </span>
+                ))}
+                <span className="tooltip-arrow">→</span>
+              </>
+            )}
+            <span className="tooltip-action">{getHotasLabel(hb.input)}: {resolveAction(hb.action, t)}</span>
           </div>
         ))}
       </div>

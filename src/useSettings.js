@@ -25,6 +25,10 @@ const DEFAULTS = {
   uiLanguage: null,
   warnCrossFormatConflicts: false,
   showMouseBindings: true,
+  showHotasBindings: false,
+  joystickButtonCount: 32,
+  throttleButtonCount: 32,
+  pedalsButtonCount: 4,
 };
 
 function load() {
@@ -39,6 +43,10 @@ function load() {
       uiLanguage:                saved.uiLanguage                ?? null,
       warnCrossFormatConflicts:  !!saved.warnCrossFormatConflicts,
       showMouseBindings:         saved.showMouseBindings ?? true,
+      showHotasBindings:         saved.showHotasBindings ?? false,
+      joystickButtonCount:       saved.joystickButtonCount ?? 32,
+      throttleButtonCount:       saved.throttleButtonCount ?? 32,
+      pedalsButtonCount:         saved.pedalsButtonCount   ?? 4,
     };
   } catch {
     return DEFAULTS;
@@ -76,9 +84,25 @@ export function useSettings() {
     setSettings(prev => { const next = { ...prev, showMouseBindings: val }; persist(next); return next; });
   }
 
+  function setShowHotasBindings(val) {
+    setSettings(prev => { const next = { ...prev, showHotasBindings: val }; persist(next); return next; });
+  }
+
+  function setJoystickButtonCount(val) {
+    setSettings(prev => { const next = { ...prev, joystickButtonCount: Number(val) }; persist(next); return next; });
+  }
+
+  function setThrottleButtonCount(val) {
+    setSettings(prev => { const next = { ...prev, throttleButtonCount: Number(val) }; persist(next); return next; });
+  }
+
+  function setPedalsButtonCount(val) {
+    setSettings(prev => { const next = { ...prev, pedalsButtonCount: Number(val) }; persist(next); return next; });
+  }
+
   function resetSettings() {
     setSettings(() => { persist(DEFAULTS); return DEFAULTS; });
   }
 
-  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, resetSettings };
+  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, setShowHotasBindings, setJoystickButtonCount, setThrottleButtonCount, setPedalsButtonCount, resetSettings };
 }

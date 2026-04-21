@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { DEFAULT_BINDINGS } from './defaultBindings';
 import { bindingId } from './useBindings';
+import { hotasBindingId } from './hotasConstants';
 
 const FORMATS_KEY = 'keybindr_formats';
 const ACTIVE_KEY  = 'keybindr_active_format';
@@ -16,6 +17,7 @@ function makeFormat(name = '', empty = false) {
     bindings:      empty ? [] : [...DEFAULT_BINDINGS],
     keyColors:     {},
     mouseBindings: [],
+    hotasBindings: [],
   };
 }
 
@@ -216,6 +218,67 @@ export function useFormats() {
     }));
   }
 
+  // ── HOTAS bindings ────────────────────────────────────────────────────
+  function addOrUpdateHotasBinding(input, modifiers = [], action, keyboardKey = '', hotasMod = '', isHotasMod = false) {
+    const id = hotasBindingId(input, modifiers, hotasMod);
+    mutateActiveFormat(f => {
+      const current = Array.isArray(f.hotasBindings) ? f.hotasBindings : [];
+      const exists = current.some(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === id);
+      const entry  = { input, modifiers: modifiers.slice().sort(), action, keyboardKey, hotasMod, isHotasMod };
+      if (exists) {
+        return { ...f, hotasBindings: current.map(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === id ? entry : b) };
+      }
+      return { ...f, hotasBindings: [...current, entry] };
+    });
+  }
+
+  function removeHotasBinding(input, modifiers = [], hotasMod = '') {
+    const id = hotasBindingId(input, modifiers, hotasMod);
+    mutateActiveFormat(f => ({
+      ...f,
+      hotasBindings: (Array.isArray(f.hotasBindings) ? f.hotasBindings : []).filter(
+        b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') !== id
+      ),
+    }));
+  }
+
+  /**
+   * Remove a HOTAS modifier binding and clear its reference from any dependent bindings.
+   * Called when the user unchecks "Mark as HOTAS modifier" and saves.
+   */
+  function removeHotasModifier(input) {
+    mutateActiveFormat(f => {
+      const current = Array.isArray(f.hotasBindings) ? f.hotasBindings : [];
+      return {
+        ...f,
+        hotasBindings: current
+          // Drop the modifier binding itself
+          .filter(b => !(b.isHotasMod && b.input === input))
+          // Clear hotasMod on any binding that referenced this modifier
+          .map(b => b.hotasMod === input ? { ...b, hotasMod: '' } : b),
+      };
+    });
+  }
+
+  function updateHotasAction(input, modifiers = [], hotasMod = '', action) {
+    const id = hotasBindingId(input, modifiers, hotasMod);
+    mutateActiveFormat(f => ({
+      ...f,
+      hotasBindings: (Array.isArray(f.hotasBindings) ? f.hotasBindings : []).map(b =>
+        hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === id ? { ...b, action } : b
+      ),
+    }));
+  }
+
+  function reorderHotasBindings(fromIndex, toIndex) {
+    mutateActiveFormat(f => {
+      const bs = [...(Array.isArray(f.hotasBindings) ? f.hotasBindings : [])];
+      const [moved] = bs.splice(fromIndex, 1);
+      bs.splice(toIndex, 0, moved);
+      return { ...f, hotasBindings: bs };
+    });
+  }
+
   function replaceFormats(newFormats) {
     mutate(() => ({ formats: newFormats.slice(0, MAX_FORMATS), active: 0 }));
   }
@@ -285,10 +348,12 @@ export function useFormats() {
     bindings:      activeFormat?.bindings      ?? [],
     keyColors:     activeFormat?.keyColors     ?? {},
     mouseBindings: Array.isArray(activeFormat?.mouseBindings) ? activeFormat.mouseBindings : [],
+    hotasBindings: Array.isArray(activeFormat?.hotasBindings) ? activeFormat.hotasBindings : [],
     recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats, removeOrphanBindings,
     addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
+    addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction, reorderHotasBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors, addRecentColor,
     resetFormats,
     undo, redo,

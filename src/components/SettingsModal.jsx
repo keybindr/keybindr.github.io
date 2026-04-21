@@ -11,9 +11,9 @@ function stripKeyboardHints(name) {
     .trim();
 }
 
-export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onChangeUiLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onClearKeys, onClose }) {
+export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onChangeUiLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onToggleHotasBindings, onChangeJoystickButtonCount, onChangeThrottleButtonCount, onChangePedalsButtonCount, onClearKeys, onClose }) {
   const t = useT();
-  const { splitModifiers, physicalLayout, language, uiLanguage, warnCrossFormatConflicts, showMouseBindings } = settings;
+  const { splitModifiers, physicalLayout, language, uiLanguage, warnCrossFormatConflicts, showMouseBindings, showHotasBindings, joystickButtonCount, throttleButtonCount, pedalsButtonCount } = settings;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -123,6 +123,60 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
               </button>
             </div>
           </div>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-section-title">{t('showHotasBindings')}</div>
+          <div className="settings-row">
+            <div className="toggle-group">
+              <button
+                className={`toggle-btn${!showHotasBindings ? ' active' : ''}`}
+                onClick={() => onToggleHotasBindings(false)}
+              >
+                {t('off')}
+              </button>
+              <button
+                className={`toggle-btn${showHotasBindings ? ' active' : ''}`}
+                onClick={() => onToggleHotasBindings(true)}
+              >
+                {t('on')}
+              </button>
+            </div>
+          </div>
+          {showHotasBindings && (
+            <div style={{ marginTop: 10 }}>
+              <div className="settings-row settings-row-labeled" style={{ marginTop: 6 }}>
+                <label className="settings-label">{t('joystickButtonCount')}</label>
+                <select
+                  className="settings-select"
+                  value={joystickButtonCount}
+                  onChange={e => onChangeJoystickButtonCount(Number(e.target.value))}
+                >
+                  {[8,16,24,32,48,64].map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+              </div>
+              <div className="settings-row settings-row-labeled" style={{ marginTop: 6 }}>
+                <label className="settings-label">{t('throttleButtonCount')}</label>
+                <select
+                  className="settings-select"
+                  value={throttleButtonCount}
+                  onChange={e => onChangeThrottleButtonCount(Number(e.target.value))}
+                >
+                  {[8,16,24,32,48,64].map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+              </div>
+              <div className="settings-row settings-row-labeled" style={{ marginTop: 6 }}>
+                <label className="settings-label">{t('pedalsButtonCount')}</label>
+                <select
+                  className="settings-select"
+                  value={pedalsButtonCount}
+                  onChange={e => onChangePedalsButtonCount(Number(e.target.value))}
+                >
+                  {[2,4,6,8].map(n => <option key={n} value={n}>{n}</option>)}
+                </select>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="settings-danger-section">

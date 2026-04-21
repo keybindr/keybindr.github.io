@@ -2,6 +2,7 @@ import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
 import { resolveLabel } from './keylabels';
 import { makeT, resolveAction } from './useTranslation';
 import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from './modifierConstants';
+import { getHotasLabel } from './hotasConstants';
 
 // Reverse map: US-English label → key ID, built from the union of all layouts.
 // Used for JSON import to map human-readable labels back to key IDs.
@@ -304,6 +305,79 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US', ke
   }
 }
 
+function drawHotasTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
+  const t    = makeT(language);
+  const FONT = `'Fira Code', 'Courier New', monospace`;
+
+  const fontSize   = 13 * S;
+  const headerSize = 11 * S;
+  const cellPadX   = 12 * S;
+  const rowH       = 28 * S;
+  const headerH    = 26 * S;
+
+  // Two columns: Input (180px) + Action (auto)
+  const colInput  = x + cellPadX;
+  const colAct    = x + (180 + 12) * S;
+  const maxActW   = availW - (colAct - x) - cellPadX;
+
+  // ── Header ──────────────────────────────────────────────────────────
+  ctx.font      = `bold ${headerSize}px ${FONT}`;
+  ctx.fillStyle = '#888';
+  ctx.fillText(t('hotasColInput').toUpperCase(), colInput, y + headerH * 0.78);
+  ctx.fillText(t('colAction').toUpperCase(),     colAct,   y + headerH * 0.78);
+
+  // Header bottom border
+  ctx.strokeStyle = '#3a3a3a';
+  ctx.lineWidth   = S;
+  ctx.beginPath();
+  ctx.moveTo(x, y + headerH);
+  ctx.lineTo(x + availW, y + headerH);
+  ctx.stroke();
+
+  // ── Rows ─────────────────────────────────────────────────────────────
+  for (let i = 0; i < bindings.length; i++) {
+    const b    = bindings[i];
+    const rowY = y + headerH + i * rowH;
+    const ty   = rowY + rowH * 0.72;
+
+    // Row separator
+    if (i > 0) {
+      ctx.strokeStyle = '#2a2a2a';
+      ctx.lineWidth   = S * 0.5;
+      ctx.beginPath();
+      ctx.moveTo(x, rowY);
+      ctx.lineTo(x + availW, rowY);
+      ctx.stroke();
+    }
+
+    // Input label — prefix with HOTAS mod and keyboard mods if present
+    ctx.font      = `bold ${fontSize}px ${FONT}`;
+    ctx.fillStyle = '#f0c060';
+    const modPrefix = [
+      ...(b.hotasMod    ? [`[${getHotasLabel(b.hotasMod).split(' ').pop()}]+`] : []),
+      ...((b.modifiers ?? []).map(m => `${m}+`)),
+    ].join('');
+    const baseLabel = b.keyboardKey
+      ? (() => {
+          const k     = b.keyboardKey;
+          const label = /^Numpad\d$/.test(k) ? `Num${k.slice(-1)}` : resolveLabel(k, ALL_KEY_MAP[k], language);
+          return `${getHotasLabel(b.input)} → ${label}`;
+        })()
+      : (getHotasLabel(b.input) || b.input);
+    ctx.fillText(clampText(ctx, modPrefix + baseLabel, (colAct - colInput) - cellPadX), colInput, ty);
+
+    // Action — or MODIFIER badge
+    ctx.font      = `${fontSize}px ${FONT}`;
+    if (b.isHotasMod) {
+      ctx.fillStyle = '#a06020';
+      ctx.fillText('[MODIFIER]', colAct, ty);
+    } else {
+      ctx.fillStyle = '#d0d0d0';
+      ctx.fillText(clampText(ctx, resolveAction(b.action, t) || '', maxActW), colAct, ty);
+    }
+  }
+}
+
 async function renderFormatToCanvas(format, layoutName, settings) {
   const S    = 2;
   const FONT = `'Fira Code', 'Courier New', monospace`;
@@ -311,6 +385,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
 
   const bindings      = format.bindings || [];
   const mouseBindings = Array.isArray(format.mouseBindings) ? format.mouseBindings : [];
+  const hotasBindings = Array.isArray(format.hotasBindings) ? format.hotasBindings : [];
   const kc            = format.keyColors || {};
 
   const { width: KB_W, height: KB_H } = getLayout(settings.physicalLayout ?? 'ansi-104');
@@ -340,6 +415,13 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   const sMTblBox     = mTblBoxH;
   const sMGapAfter   = mouseBindings.length > 0 ? 16 * S : 0;
 
+  const hTblContentH = hotasBindings.length > 0 ? tblHeaderH + hotasBindings.length * tblRowH : 0;
+  const hTblBoxH     = hotasBindings.length > 0 ? hTblContentH + 2 * tblInset : 0;
+  const sHTitle      = hotasBindings.length > 0 ? 22 * S : 0;
+  const sHGap        = hotasBindings.length > 0 ? 10 * S : 0;
+  const sHTblBox     = hTblBoxH;
+  const sHGapAfter   = hotasBindings.length > 0 ? 16 * S : 0;
+
   // Section heights (already in canvas px)
   const sTopPad  = 24 * S;
   const sTitle   = 28 * S;
@@ -363,6 +445,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
                  sKbBox + sGap4 + sSep + sGap5 +
                  sKbTitle + sKbTitleGap + sTblBox + sGap6 +
                  sMTitle + sMGap + sMTblBox + sMGapAfter +
+                 sHTitle + sHGap + sHTblBox + sHGapAfter +
                  sFooter + sBotPad;
 
   const canvas = document.createElement('canvas');
@@ -444,6 +527,20 @@ async function renderFormatToCanvas(format, layoutName, settings) {
     y += sMTblBox + sMGapAfter;
   }
 
+  // HOTAS bindings section
+  if (hotasBindings.length > 0) {
+    const tFmt = makeT(settings.uiLanguage || settings.language || 'en-US');
+    ctx.font      = `bold ${14 * S}px ${FONT}`;
+    ctx.fillStyle = '#e0a84b';
+    y += sHTitle;
+    ctx.fillText(tFmt('hotasBindingsTitle').toUpperCase(), pad, y);
+    y += sHGap;
+    fillRoundRect  (ctx, pad, y, contentW, hTblBoxH, 8 * S, '#1a1a1a');
+    strokeRoundRect(ctx, pad, y, contentW, hTblBoxH, 8 * S, '#3a3a3a', S);
+    drawHotasTable(ctx, hotasBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US');
+    y += sHTblBox + sHGapAfter;
+  }
+
   // Footer
   ctx.font      = `${10 * S}px ${FONT}`;
   ctx.fillStyle = '#f0c060';
@@ -474,6 +571,14 @@ export function exportJSON(formats, layoutName, settings = {}) {
         modifiers:   b.modifiers,
         action:      resolveAction(b.action, t),
         keyboardKey: b.keyboardKey || '',
+      })),
+      hotasBindings: (Array.isArray(f.hotasBindings) ? f.hotasBindings : []).map(b => ({
+        input:       b.input,
+        modifiers:   b.modifiers   ?? [],
+        hotasMod:    b.hotasMod    ?? '',
+        isHotasMod:  b.isHotasMod  ?? false,
+        action:      resolveAction(b.action, t),
+        keyboardKey: b.keyboardKey ?? '',
       })),
     })),
   };
@@ -542,6 +647,17 @@ function parseMouseBindingsArray(arr) {
   })).filter(b => b.button);
 }
 
+function parseHotasBindingsArray(arr) {
+  return (Array.isArray(arr) ? arr : []).map(b => ({
+    input:       String(b.input ?? ''),
+    modifiers:   (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
+    hotasMod:    String(b.hotasMod    ?? ''),
+    isHotasMod:  !!b.isHotasMod,
+    action:      String(b.action      ?? ''),
+    keyboardKey: String(b.keyboardKey ?? ''),
+  })).filter(b => b.input);
+}
+
 function parseJSON(text) {
   const data = JSON.parse(text);
   if (data.formats && Array.isArray(data.formats)) {
@@ -550,6 +666,7 @@ function parseJSON(text) {
       bindings:  parseBindingsArray(f.bindings),
       keyColors: (f.keyColors && typeof f.keyColors === 'object') ? f.keyColors : {},
       mouseBindings: parseMouseBindingsArray(f.mouseBindings),
+      hotasBindings: parseHotasBindingsArray(f.hotasBindings),
     }));
     if (data.version >= 3 && data.layoutName !== undefined) {
       return {
