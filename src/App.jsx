@@ -434,7 +434,6 @@ export default function App() {
 
   function handleUiLocaleChange(newLocaleId) {
     setUiLanguage(newLocaleId);
-    if (newLocaleId) handleLocaleChange(newLocaleId);
   }
 
   function confirmLayoutChange() {
