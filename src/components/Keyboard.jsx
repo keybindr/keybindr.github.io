@@ -91,7 +91,7 @@ function trianglePoints(mod, k) {
   return `${cx},${cy} ${cx},${cy-SIZE} ${cx+SIZE},${cy}`;
 }
 
-export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = {} }) {
+export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = {}, mouseBindings = [] }) {
   const { splitModifiers, physicalLayout = 'ansi-104', language = 'en-US' } = settings;
   const t = useT();
   const [tooltip, setTooltip] = useState(null);
@@ -105,16 +105,26 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
     boundMap[b.key].push(b);
   }
 
+  // Build map of keyboard keys that are remapped from mouse buttons
+  const mouseRemapMap = {};
+  for (const mb of mouseBindings) {
+    if (mb.keyboardKey) {
+      if (!mouseRemapMap[mb.keyboardKey]) mouseRemapMap[mb.keyboardKey] = [];
+      mouseRemapMap[mb.keyboardKey].push(mb);
+    }
+  }
+
   function handleMouseEnter(e, keyId) {
-    if ((boundMap[keyId] || []).length === 0) return;
+    if ((boundMap[keyId] || []).length === 0 && (mouseRemapMap[keyId] || []).length === 0) return;
     setTooltip({ keyId, x: e.clientX, y: e.clientY });
   }
   function handleMouseMove(e, keyId) {
-    if ((boundMap[keyId] || []).length === 0) return;
+    if ((boundMap[keyId] || []).length === 0 && (mouseRemapMap[keyId] || []).length === 0) return;
     setTooltip({ keyId, x: e.clientX, y: e.clientY });
   }
 
   const tooltipBindings = tooltip ? (boundMap[tooltip.keyId] || []) : [];
+  const tooltipMouseBindings = tooltip ? (mouseRemapMap[tooltip.keyId] || []) : [];
   const tipX = tooltip
     ? (tooltip.x + 16 + TOOLTIP_WIDTH > window.innerWidth ? tooltip.x - TOOLTIP_WIDTH - 16 : tooltip.x + 16)
     : 0;
@@ -158,6 +168,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
         const textColor = isBound ? TEXT_BOUND : TEXT_DEFAULT;
 
         const mods = [...new Set(keyBindings.flatMap(b => b.modifiers))];
+        const mouseRemaps = mouseRemapMap[k.id] || [];
 
         // Label: split modifier display → locale override → layout default
         let label;
@@ -228,6 +239,18 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
                 ];
               });
             })()}
+
+            {mouseRemaps.length > 0 && (
+              <text
+                x={k.x + 4}
+                y={k.y + k.h - 3}
+                fontSize={7}
+                fontFamily="'Courier New', monospace"
+                fill="#b0c8ff"
+                style={{ pointerEvents: 'none' }}
+                clipPath={`url(#clip-${k.id})`}
+              >🖱</text>
+            )}
           </g>
         );
       })}
@@ -245,7 +268,7 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
       ))}
     </svg>
 
-    {tooltip && tooltipBindings.length > 0 && (
+    {tooltip && (tooltipBindings.length > 0 || tooltipMouseBindings.length > 0) && (
       <div className="key-tooltip" style={{ left: tipX, top: tipY }}>
         {tooltipBindings.map((b, i) => (
           <div key={bindingId(b.key, b.modifiers)} className={`tooltip-row${i > 0 ? ' tooltip-row-sep' : ''}`}>
@@ -261,6 +284,23 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
               </>
             )}
             <span className="tooltip-action">{resolveAction(b.action, t)}</span>
+          </div>
+        ))}
+        {tooltipMouseBindings.map((mb, i) => (
+          <div key={bindingId(mb.button, mb.modifiers)} className={`tooltip-row tooltip-row-sep tooltip-mouse-row`}>
+            <span className="tooltip-mouse-icon">🖱</span>
+            {mb.modifiers.length > 0 && (
+              <>
+                {mb.modifiers.map(m => (
+                  <span key={m} className="tooltip-mod-tag"
+                    style={{ borderColor: MOD_COLORS[m] || '#888', color: MOD_COLORS[m] || '#888' }}>
+                    {TOOLTIP_MOD_LABEL[m] || m}
+                  </span>
+                ))}
+                <span className="tooltip-arrow">→</span>
+              </>
+            )}
+            <span className="tooltip-action">{mb.button}: {resolveAction(mb.action, t)}</span>
           </div>
         ))}
       </div>

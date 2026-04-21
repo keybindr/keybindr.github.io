@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
-import { resolveLabel } from '../keylabels';
+import { resolveDisplayLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 import { useT, resolveAction } from '../useTranslation';
 import { KEY_BOUND, MOD_COLORS, MOD_FAMILY } from '../modifierConstants';
@@ -110,6 +110,14 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
   return (
     <div className="table-wrapper">
       <table className="binding-table">
+        <colgroup>
+          <col style={{ width: 20 }} />
+          <col style={{ width: 110 }} />
+          <col style={{ width: 80 }} />
+          <col style={{ width: 60 }} />
+          <col />
+          <col style={{ width: 40 }} />
+        </colgroup>
         <thead>
           <tr>
             <th className="cell-drag" />
@@ -140,7 +148,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
           {bindings.map((b, index) => {
             const id         = bindingId(b.key, b.modifiers);
             const isSelected = id === selectedId;
-            const keyLabel   = resolveLabel(b.key, ALL_KEY_MAP[b.key], language);
+            const keyLabel   = resolveDisplayLabel(b.key, ALL_KEY_MAP[b.key], language);
             const isEditing  = editingId === id;
             const isDragOver = dragOverIndex === index;
             const keyColor   = keyColors[b.key];

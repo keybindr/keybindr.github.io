@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
-import { resolveLabel } from '../keylabels';
+import { resolveDisplayLabel } from '../keylabels';
 import { useT, resolveAction } from '../useTranslation';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
@@ -149,7 +149,7 @@ export default function BindModal({
 
   // Build title: e.g. "Ctrl+Shift+A"
   const modLabels = modifiers.map(m => modDefs.find(d => d.value === m)?.label ?? m);
-  const titleCombo = [...modLabels, resolveLabel(keyId, keyDef, language)].join('+');
+  const titleCombo = [...modLabels, resolveDisplayLabel(keyId, keyDef, language)].join('+');
 
   return (
     <div className="modal-backdrop" onClick={onCancel}>

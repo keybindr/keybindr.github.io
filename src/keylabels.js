@@ -616,3 +616,30 @@ export function getLocaleLabel(keyId, localeId) {
 export function resolveLabel(keyId, keyDef, localeId) {
   return getLocaleLabel(keyId, localeId) ?? keyDef?.label ?? keyId;
 }
+
+// Like resolveLabel but applies unambiguous naming for keys that share display labels.
+// Use this everywhere except the keyboard SVG itself.
+const DISPLAY_LABEL_OVERRIDES = {
+  // Left/right modifier pairs — both sides share the same base label on the SVG
+  ShiftLeft:    'LShift',   ShiftRight:   'RShift',
+  ControlLeft:  'LCtrl',    ControlRight: 'RCtrl',
+  AltLeft:      'LAlt',     AltRight:     'RAlt',
+  MetaLeft:     'LMeta',    MetaRight:    'RMeta',
+  // Numpad keys — share digit/symbol labels with the main keyboard
+  NumLock:          'Num Lock',
+  NumpadEnter:      'Numpad Enter',
+  NumpadAdd:        'Numpad +',
+  NumpadSubtract:   'Numpad -',
+  NumpadMultiply:   'Numpad *',
+  NumpadDivide:     'Numpad /',
+  NumpadDecimal:    'Numpad .',
+};
+
+export function resolveDisplayLabel(keyId, keyDef, localeId) {
+  if (DISPLAY_LABEL_OVERRIDES[keyId]) return DISPLAY_LABEL_OVERRIDES[keyId];
+  if (keyId.startsWith('Numpad')) {
+    const digit = resolveLabel(keyId, keyDef, localeId);
+    return `Numpad ${digit}`;
+  }
+  return resolveLabel(keyId, keyDef, localeId);
+}

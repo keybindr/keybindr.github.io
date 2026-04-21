@@ -344,6 +344,18 @@ export default function App() {
     fn();
   }
 
+  // In unified mode, modifier key colors are mirrored to both sides of the pair
+  const UNIFIED_MOD_PAIRS = {
+    ShiftLeft:    'ShiftRight',   ShiftRight:   'ShiftLeft',
+    ControlLeft:  'ControlRight', ControlRight: 'ControlLeft',
+    AltLeft:      'AltRight',     AltRight:     'AltLeft',
+    MetaLeft:     'MetaRight',    MetaRight:    'MetaLeft',
+  };
+
+  function getModPair(keyId) {
+    return !settings.splitModifiers ? (UNIFIED_MOD_PAIRS[keyId] ?? null) : null;
+  }
+
   function handleKeyClick(keyId) {
     modalOriginalColor.current = keyColors[keyId];
     setModalKey(keyId);
@@ -363,12 +375,20 @@ export default function App() {
 
   function handleModalCancel() {
     restoreKeyColor(modalKey, modalOriginalColor.current);
+    const pair = getModPair(modalKey);
+    if (pair) restoreKeyColor(pair, modalOriginalColor.current);
     setModalKey(null);
   }
 
   function handleColorChange(keyId, color) {
     if (color) setKeyColor(keyId, color);
     else clearKeyColor(keyId);
+    // Mirror to the paired modifier key in unified mode
+    const pair = getModPair(keyId);
+    if (pair) {
+      if (color) setKeyColor(pair, color);
+      else clearKeyColor(pair);
+    }
   }
 
   function handleLoadPreset(preset) {
@@ -642,6 +662,7 @@ export default function App() {
           onKeyClick={handleKeyClick}
           keyColors={keyColors}
           settings={settings}
+          mouseBindings={mouseBindings}
         />
       </div>
 
@@ -669,9 +690,15 @@ export default function App() {
           <h2 className="panel-title">{t('mouseBindingsTitle')} <span className="count-badge">{mouseBindings.length}</span></h2>
           <MouseBindingTable
             mouseBindings={mouseBindings}
+            settings={settings}
+            locked={deleteLocked}
+            onToggleLocked={setDeleteLocked}
             onUpdateAction={updateMouseAction}
             onRemove={removeMouseBinding}
-            onOpenModal={(button, modifiers) => setMouseModal({ button: button ?? null, modifiers: modifiers ?? [] })}
+            onOpenModal={(button, modifiers) => {
+              const existing = mouseBindings.find(b => b.button === button && JSON.stringify(b.modifiers) === JSON.stringify(modifiers ?? []));
+              setMouseModal({ button: button ?? null, modifiers: modifiers ?? [], keyboardKey: existing?.keyboardKey ?? '' });
+            }}
           />
         </div>
       )}
@@ -680,10 +707,14 @@ export default function App() {
         <MouseBindModal
           initialButton={mouseModal.button}
           initialModifiers={mouseModal.modifiers}
+          initialKeyboardKey={mouseModal.keyboardKey ?? ''}
           existingBindings={mouseBindings}
+          bindings={bindings}
           settings={settings}
-          onSave={(button, modifiers, action) => {
-            addOrUpdateMouseBinding(button, modifiers, action);
+          layoutKeys={getKeys(settings.physicalLayout)}
+          onSave={(button, modifiers, action, keyboardKey) => {
+            addOrUpdateMouseBinding(button, modifiers, action, keyboardKey);
+            if (keyboardKey) addOrUpdate(keyboardKey, [], action);
             setMouseModal(null);
           }}
           onCancel={() => setMouseModal(null)}

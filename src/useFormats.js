@@ -8,7 +8,7 @@ const RECENT_KEY  = 'keybindr_recent_colors';
 
 export const MAX_FORMATS = 5;
 
-export const MOUSE_BUTTONS = ['Mouse1', 'Mouse2', 'Mouse3', 'Mouse4', 'Mouse5', 'WheelUp', 'WheelDown'];
+export const MOUSE_BUTTONS = ['Mouse1', 'Mouse2', 'Mouse3', 'Mouse4', 'Mouse5', 'WheelUp', 'WheelDown', 'Mouse6', 'Mouse7', 'Mouse8', 'Mouse9', 'Mouse10', 'Mouse11', 'Mouse12', 'Mouse13', 'Mouse14', 'Mouse15', 'Mouse16', 'Mouse17', 'Mouse18', 'Mouse19', 'Mouse20'];
 
 function makeFormat(name = '', empty = false) {
   return {
@@ -179,7 +179,7 @@ export function useFormats() {
     mutateActiveFormat(f => ({ ...f, bindings }));
   }
 
-  function addOrUpdateMouseBinding(button, modifiers, action) {
+  function addOrUpdateMouseBinding(button, modifiers, action, keyboardKey = '') {
     const id = bindingId(button, modifiers);
     mutateActiveFormat(f => {
       const current = Array.isArray(f.mouseBindings) ? f.mouseBindings : [];
@@ -189,12 +189,12 @@ export function useFormats() {
           ...f,
           mouseBindings: current.map(b =>
             bindingId(b.button, b.modifiers) === id
-              ? { ...b, button, modifiers: modifiers.slice().sort(), action }
+              ? { ...b, button, modifiers: modifiers.slice().sort(), action, keyboardKey }
               : b
           ),
         };
       }
-      return { ...f, mouseBindings: [...current, { button, modifiers: modifiers.slice().sort(), action }] };
+      return { ...f, mouseBindings: [...current, { button, modifiers: modifiers.slice().sort(), action, keyboardKey }] };
     });
   }
 

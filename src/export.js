@@ -202,67 +202,104 @@ function clampText(ctx, text, maxW) {
   return text + '…';
 }
 
-function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US', keyHeader = null, keyField = 'key', resolveKeyLabel = null) {
-  const t = makeT(language);
-  const FONT    = `'Courier New', monospace`;
-  const rowH    = 26 * S;
-  const headerH = 32 * S;
-  const colKey  = x + 160 * S;
-  const colAct  = x + 260 * S;
-  const maxActW = availW - (colAct - x) - 16 * S;
+function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US', keyHeader = null, keyField = 'key', resolveKeyLabel = null, keyColors = null) {
+  const t    = makeT(language);
+  const FONT = `'Fira Code', 'Courier New', monospace`;
 
-  const modPad  = 10 * S;
-  ctx.font      = `bold ${10 * S}px ${FONT}`;
-  ctx.fillStyle = '#555';
-  ctx.fillText(t('colModifier').toUpperCase(),               x + modPad, y + headerH * 0.7);
-  ctx.fillText((keyHeader ?? t('colKey')).toUpperCase(),     colKey,     y + headerH * 0.7);
-  ctx.fillText(t('colAction').toUpperCase(),                 colAct,     y + headerH * 0.7);
+  // Sizes matching website CSS (.binding-table th/td)
+  const fontSize   = 13 * S;
+  const headerSize = 11 * S;
+  const tagSize    = 10 * S;
+  const cellPadX   = 12 * S;
+  const rowH       = 28 * S;   // font 13 + padding 7×2
+  const headerH    = 26 * S;   // font 11 + padding 6×2
+  const swatchSz   = 18 * S;   // .binding-color-swatch 18×18
 
-  ctx.strokeStyle = '#2a2a2a';
+  // Column positions mirroring colgroup (mod=110 key=80 color=60 action=auto)
+  // drag col (20px) omitted; 12px cell padding applied
+  const colMod    = x + cellPadX;
+  const colKey    = x + (110 + 12) * S;
+  const colColorC = x + (110 + 80 + 30) * S;   // centre of 60px color col
+  const colAct    = x + (110 + 80 + 60 + 12) * S;
+  const maxActW   = availW - (colAct - x) - cellPadX;
+
+  // ── Header ──────────────────────────────────────────────────────────
+  ctx.font      = `bold ${headerSize}px ${FONT}`;
+  ctx.fillStyle = '#888';   // --text-dim
+  ctx.fillText(t('colModifier').toUpperCase(),           colMod, y + headerH * 0.78);
+  ctx.fillText((keyHeader ?? t('colKey')).toUpperCase(), colKey, y + headerH * 0.78);
+  if (keyColors !== null) {
+    ctx.save();
+    ctx.textAlign = 'center';
+    ctx.fillText(t('colColor').toUpperCase(), colColorC, y + headerH * 0.78);
+    ctx.restore();
+  }
+  ctx.fillText(t('colAction').toUpperCase(), colAct, y + headerH * 0.78);
+
+  // Header bottom border — #3a3a3a (--border), matches th border-bottom
+  ctx.strokeStyle = '#3a3a3a';
   ctx.lineWidth   = S;
   ctx.beginPath();
   ctx.moveTo(x, y + headerH);
   ctx.lineTo(x + availW, y + headerH);
   ctx.stroke();
 
+  // ── Rows ─────────────────────────────────────────────────────────────
   for (let i = 0; i < bindings.length; i++) {
     const b    = bindings[i];
     const rowY = y + headerH + i * rowH;
     const ty   = rowY + rowH * 0.68;
 
-    if (i % 2 === 0) {
-      ctx.fillStyle = '#1f1f1f';
-      ctx.fillRect(x, rowY, availW, rowH);
-    }
+    // Row bottom separator — #2a2a2a, matches td border-bottom
+    ctx.strokeStyle = '#2a2a2a';
+    ctx.lineWidth   = S * 0.5;
+    ctx.beginPath();
+    ctx.moveTo(x, rowY + rowH);
+    ctx.lineTo(x + availW, rowY + rowH);
+    ctx.stroke();
 
+    // Modifier tags — .mod-tag: border 1px solid [color], border-radius 3px, padding 1px 5px
     if (b.modifiers.length > 0) {
-      let mx = x + modPad;
-      ctx.font = `${9 * S}px ${FONT}`;
+      let mx = colMod;
+      ctx.font = `${tagSize}px ${FONT}`;
       for (const m of b.modifiers) {
         const color = MOD_COLORS[m] || '#888';
-        const tw    = ctx.measureText(m).width + 8 * S;
-        const tagH  = rowH * 0.55;
+        const pad   = 5 * S;
+        const tw    = ctx.measureText(m).width + pad * 2;
+        const tagH  = Math.round(rowH * 0.52);
         const tagY  = rowY + (rowH - tagH) / 2;
         ctx.save();
-        strokeRoundRect(ctx, mx, tagY, tw, tagH, 2 * S, color, S * 0.7);
+        strokeRoundRect(ctx, mx, tagY, tw, tagH, 3 * S, color, S * 0.7);
         ctx.fillStyle = color;
-        ctx.fillText(m, mx + 4 * S, ty);
+        ctx.fillText(m, mx + pad, ty);
         ctx.restore();
         mx += tw + 3 * S;
       }
     } else {
-      ctx.font      = `${12 * S}px ${FONT}`;
-      ctx.fillStyle = '#444';
-      ctx.fillText('—', x + modPad, ty);
+      ctx.font      = `${fontSize}px ${FONT}`;
+      ctx.fillStyle = '#888';   // --text-dim, matches .mod-none
+      ctx.fillText('—', colMod, ty);
     }
 
-    ctx.font      = `bold ${12 * S}px ${FONT}`;
+    // Key — bold, --accent2 (#f0c060), matches .cell-key
+    ctx.font      = `bold ${fontSize}px ${FONT}`;
     ctx.fillStyle = '#f0c060';
     const keyText = resolveKeyLabel ? resolveKeyLabel(b) : resolveLabel(b[keyField], ALL_KEY_MAP[b[keyField]], language);
     ctx.fillText(keyText, colKey, ty);
 
-    ctx.font      = `${12 * S}px ${FONT}`;
-    ctx.fillStyle = '#ccc';
+    // Color swatch — only for keyboard bindings, centred in color col
+    // Matches .binding-color-swatch: 18×18, border-radius 3px, border #3a3a3a
+    if (keyColors !== null && b.key) {
+      const swatchColor = keyColors[b.key] || KEY_BOUND;
+      const swatchX     = colColorC - swatchSz / 2;
+      const swatchY     = rowY + (rowH - swatchSz) / 2;
+      fillRoundRect  (ctx, swatchX, swatchY, swatchSz, swatchSz, 3 * S, swatchColor);
+      strokeRoundRect(ctx, swatchX, swatchY, swatchSz, swatchSz, 3 * S, '#3a3a3a', S * 0.7);
+    }
+
+    // Action — --text (#d0d0d0), matches .cell-action
+    ctx.font      = `${fontSize}px ${FONT}`;
+    ctx.fillStyle = '#d0d0d0';
     ctx.fillText(clampText(ctx, resolveAction(b.action, t) || '', maxActW), colAct, ty);
   }
 }
@@ -291,8 +328,8 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   // Binding table container
   const tblInset     = 16 * S;
   const tblInnerW    = contentW - 2 * tblInset;
-  const tblRowH      = 26 * S;
-  const tblHeaderH   = 32 * S;
+  const tblRowH      = 28 * S;   // font-size 13 + padding 7*2
+  const tblHeaderH   = 26 * S;   // font-size 11 + padding 6*2
   const tblContentH  = bindings.length > 0 ? tblHeaderH + bindings.length * tblRowH : 0;
   const tblBoxH      = bindings.length > 0 ? tblContentH + 2 * tblInset : 0;
 
@@ -304,24 +341,27 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   const sMGapAfter   = mouseBindings.length > 0 ? 16 * S : 0;
 
   // Section heights (already in canvas px)
-  const sTopPad = 24 * S;
-  const sTitle  = 28 * S;
-  const sGap1   = 10 * S;
-  const sSub    = 18 * S;
-  const sGap2   = 16 * S;
-  const sLegend = 10 * S;
-  const sGap3   = 16 * S;
-  const sKbBox  = kbBoxH;
-  const sGap4   = 20 * S;
-  const sSep    =  2 * S;
-  const sGap5   = 16 * S;
-  const sTblBox = tblBoxH;
-  const sGap6   = bindings.length > 0 ? 20 * S : 0;
-  const sFooter = 14 * S;
-  const sBotPad = 24 * S;
+  const sTopPad  = 24 * S;
+  const sTitle   = 28 * S;
+  const sGap1    = 10 * S;
+  const sSub     = 18 * S;
+  const sGap2    = 16 * S;
+  const sLegend  = 10 * S;
+  const sGap3    = 16 * S;
+  const sKbBox   = kbBoxH;
+  const sGap4    = 20 * S;
+  const sSep     =  2 * S;
+  const sGap5    = 16 * S;
+  const sKbTitle = bindings.length > 0 ? 22 * S : 0;
+  const sKbTitleGap = bindings.length > 0 ? 10 * S : 0;
+  const sTblBox  = tblBoxH;
+  const sGap6    = bindings.length > 0 ? 20 * S : 0;
+  const sFooter  = 14 * S;
+  const sBotPad  = 24 * S;
 
   const totalH = sTopPad + sTitle + sGap1 + sSub + sGap2 + sLegend + sGap3 +
-                 sKbBox + sGap4 + sSep + sGap5 + sTblBox + sGap6 +
+                 sKbBox + sGap4 + sSep + sGap5 +
+                 sKbTitle + sKbTitleGap + sTblBox + sGap6 +
                  sMTitle + sMGap + sMTblBox + sMGapAfter +
                  sFooter + sBotPad;
 
@@ -372,11 +412,16 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   ctx.stroke();
   y += sSep + sGap5;
 
-  // Binding table container box
+  // Keyboard bindings section title + table
   if (bindings.length > 0) {
+    ctx.font      = `bold ${14 * S}px ${FONT}`;
+    ctx.fillStyle = '#e0a84b';
+    y += sKbTitle;
+    ctx.fillText(makeT(settings.uiLanguage || settings.language || 'en-US')('bindingsTitle').toUpperCase(), pad, y);
+    y += sKbTitleGap;
     fillRoundRect  (ctx, pad, y, contentW, tblBoxH, 8 * S, '#1a1a1a');
     strokeRoundRect(ctx, pad, y, contentW, tblBoxH, 8 * S, '#3a3a3a', S);
-    drawBindingTable(ctx, bindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US');
+    drawBindingTable(ctx, bindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', null, 'key', null, kc);
     y += sTblBox + sGap6;
   }
 
@@ -389,7 +434,13 @@ async function renderFormatToCanvas(format, layoutName, settings) {
     y += sMGap;
     fillRoundRect  (ctx, pad, y, contentW, mTblBoxH, 8 * S, '#1a1a1a');
     strokeRoundRect(ctx, pad, y, contentW, mTblBoxH, 8 * S, '#3a3a3a', S);
-    drawBindingTable(ctx, mouseBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', makeT(settings.uiLanguage || settings.language || 'en-US')('colButton'), 'button', b => b.button);
+    drawBindingTable(ctx, mouseBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', makeT(settings.uiLanguage || settings.language || 'en-US')('colButton'), 'button', b => {
+      if (!b.keyboardKey) return b.button;
+      const k     = b.keyboardKey;
+      const lang  = settings.language ?? 'en-US';
+      const label = /^Numpad\d$/.test(k) ? `Num${k.slice(-1)}` : resolveLabel(k, ALL_KEY_MAP[k], lang);
+      return `${b.button} → ${label}`;
+    });
     y += sMTblBox + sMGapAfter;
   }
 
@@ -419,9 +470,10 @@ export function exportJSON(formats, layoutName, settings = {}) {
       })),
       keyColors: f.keyColors,
       mouseBindings: (Array.isArray(f.mouseBindings) ? f.mouseBindings : []).map(b => ({
-        button:    b.button,
-        modifiers: b.modifiers,
-        action:    resolveAction(b.action, t),
+        button:      b.button,
+        modifiers:   b.modifiers,
+        action:      resolveAction(b.action, t),
+        keyboardKey: b.keyboardKey || '',
       })),
     })),
   };
@@ -483,9 +535,10 @@ function parseBindingsArray(arr) {
 
 function parseMouseBindingsArray(arr) {
   return (Array.isArray(arr) ? arr : []).map(b => ({
-    button:    String(b.button ?? ''),
-    modifiers: (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
-    action:    String(b.action ?? ''),
+    button:      String(b.button ?? ''),
+    modifiers:   (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
+    action:      String(b.action ?? ''),
+    keyboardKey: String(b.keyboardKey ?? ''),
   })).filter(b => b.button);
 }
 

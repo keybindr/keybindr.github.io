@@ -390,9 +390,27 @@ html, body {
   justify-content: flex-start;
 }
 
+.mouse-remap-tag {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 10px;
+  color: #b0c8ff;
+  opacity: 0.8;
+}
+
+.tooltip-mouse-icon {
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+.tooltip-mouse-row {
+  color: #b0c8ff;
+}
+
 .binding-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   font-size: 13px;
   font-family: var(--font-ui);
 }
@@ -449,8 +467,8 @@ html, body {
   width: 80px;
 }
 .cell-mod { width: 110px; }
-.cell-color { width: 44px; text-align: center; }
-.cell-color-head { width: 44px; text-align: center; }
+.cell-color { width: 60px; text-align: center; }
+.cell-color-head { width: 60px; text-align: center; }
 .cell-action { color: var(--text); }
 .cell-del { width: 40px; text-align: center; }
 
