@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
 import { TRANSLATIONS, LANG_FALLBACK } from './translations';
+import { GAME_ACTION_LABELS } from './gamePresets';
 
 export const TranslationContext = createContext(key => key);
 
@@ -9,6 +10,7 @@ export function useT() {
 
 export function resolveAction(action, t) {
   if (typeof action === 'string' && action.startsWith('__t:')) return t(action.slice(4));
+  if (typeof action === 'string' && action in GAME_ACTION_LABELS) return GAME_ACTION_LABELS[action];
   return action ?? '';
 }
 

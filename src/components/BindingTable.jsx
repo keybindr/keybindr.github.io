@@ -37,13 +37,12 @@ function detectModifierConflicts(bindings) {
   return conflicts;
 }
 
-export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal, settings = {} }) {
+export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal, settings = {}, locked = false, onToggleLocked }) {
   const t = useT();
   const language = settings.language ?? 'en-US';
   const [editingId, setEditingId]         = useState(null);
   const [editValue, setEditValue]         = useState('');
   const [dragOverIndex, setDragOverIndex] = useState(null);
-  const [locked, setLocked]              = useState(false);
   const dragIndex = useRef(null);
   const conflictIds = detectModifierConflicts(bindings);
 
@@ -95,7 +94,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
             <th className="cell-color-head">{t('colColor')}</th>
             <th>{t('colAction')}</th>
             <th className="cell-del-head">
-              <button className="btn-lock" onClick={e => { e.stopPropagation(); setLocked(v => !v); }} title={locked ? t('unlockDelete') : t('lockDelete')}>
+              <button className="btn-lock" onClick={e => { e.stopPropagation(); onToggleLocked?.(v => !v); }} title={locked ? t('unlockDelete') : t('lockDelete')}>
                 <span style={{ position: 'relative', left: '6px', color: 'var(--accent)', lineHeight: 1 }}>
                   {locked ? (
                     <svg width="11" height="13" viewBox="0 0 11 13" fill="none" xmlns="http://www.w3.org/2000/svg">

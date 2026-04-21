@@ -103,6 +103,9 @@ html, body {
 .btn-export:hover {
   background: #3a3010;
 }
+.btn-presets {
+  min-width: 11.5ch;
+}
 
 /* Dropdown */
 .dropdown {
@@ -127,6 +130,7 @@ html, body {
   width: 100%;
   background: none;
   border: none;
+  white-space: nowrap;
   color: var(--text);
   font-family: var(--font);
   font-size: 13px;
@@ -138,6 +142,9 @@ html, body {
 }
 .dropdown-item:hover {
   background: var(--surface);
+  color: var(--accent);
+}
+.dropdown-item-active {
   color: var(--accent);
 }
 

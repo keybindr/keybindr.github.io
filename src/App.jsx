@@ -10,6 +10,7 @@ import { bindingId } from './useBindings';
 import { useFormats, MAX_FORMATS } from './useFormats';
 import { useSettings } from './useSettings';
 import { exportJSON, exportPNG, importFile } from './export';
+import { GAME_PRESETS } from './gamePresets';
 import OrphanWarningModal from './components/OrphanWarningModal';
 import { encodeShareUrl, decodeShareHash } from './share';
 import { DEFAULT_BINDINGS, DEFAULT_VEHICLE_BINDINGS } from './defaultBindings';
@@ -192,11 +193,16 @@ export default function App() {
   const [pendingLayout, setPendingLayout]     = useState(null); // { id, name, orphans }
   const modalOriginalColor = useRef(undefined);
 
-  const fileInputRef    = useRef(null);
+  const fileInputRef        = useRef(null);
+  const gameImportRef       = useRef(null);
   const menuRef         = useRef(null);
+  const presetsRef      = useRef(null);
   const hamburgerRef    = useRef(null);
   const [showMenu, setShowMenu]           = useState(false);
+  const [showPresets, setShowPresets]     = useState(false);
   const [showHamburger, setShowHamburger] = useState(false);
+  const [activePreset, setActivePreset]   = useState(null);
+  const [deleteLocked, setDeleteLocked]   = useState(false);
 
   const [showMobileWarning, setShowMobileWarning] = useState(() => {
     return window.innerWidth <= 768 && !localStorage.getItem(MOBILE_WARNED_KEY);
@@ -237,6 +243,15 @@ export default function App() {
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [showHamburger]);
 
+  useEffect(() => {
+    if (!showPresets) return;
+    function onMouseDown(e) {
+      if (!presetsRef.current?.contains(e.target)) setShowPresets(false);
+    }
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [showPresets]);
+
   function handleLayoutNameChange(name) {
     setLayoutNameState(name);
     if (name) localStorage.setItem(LAYOUT_NAME_KEY, name);
@@ -270,6 +285,8 @@ export default function App() {
     resetSettings();
     resetFormats();
     setSelectedId(null);
+    setActivePreset(null);
+    setDeleteLocked(false);
     localStorage.removeItem(LAYOUT_NAME_KEY);
     setLayoutNameState('');
   }
@@ -290,8 +307,24 @@ export default function App() {
           replaceActiveBindings(result.data);
         }
         setSelectedId(null);
+        setActivePreset(null);
       })
       .catch(err => alert(err.message));
+    e.target.value = '';
+  }
+
+  function handleGameImport(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const preset = GAME_PRESETS.find(p => p.id === activePreset);
+    if (!preset?.importFn) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const bindings = preset.importFn(ev.target.result);
+      replaceActiveBindings(bindings);
+      setSelectedId(null);
+    };
+    reader.readAsText(file);
     e.target.value = '';
   }
 
@@ -330,6 +363,14 @@ export default function App() {
   function handleColorChange(keyId, color) {
     if (color) setKeyColor(keyId, color);
     else clearKeyColor(keyId);
+  }
+
+  function handleLoadPreset(preset) {
+    replaceFormats(preset.formats.map(f => ({ name: f.name, bindings: f.bindings, keyColors: f.keyColors ?? {} })));
+    if (preset.layoutName) handleLayoutNameChange(preset.layoutName);
+    setActivePreset(preset.id);
+    setDeleteLocked(true);
+    setSelectedId(null);
   }
 
   function handleSelect(id) {
@@ -425,6 +466,31 @@ export default function App() {
             style={{ display: 'none' }}
             onChange={handleImport}
           />
+          <input
+            ref={gameImportRef}
+            type="file"
+            accept={GAME_PRESETS.find(p => p.id === activePreset)?.importAccept ?? ''}
+            style={{ display: 'none' }}
+            onChange={handleGameImport}
+          />
+          <div className="dropdown" ref={presetsRef}>
+            <button className="btn-export btn-presets" onClick={() => setShowPresets(v => !v)}>
+              {activePreset ? GAME_PRESETS.find(p => p.id === activePreset)?.label : 'Game Layouts'}
+            </button>
+            {showPresets && (
+              <div className="dropdown-menu">
+                {GAME_PRESETS.map(p => (
+                  <button
+                    key={p.id}
+                    className={`dropdown-item${activePreset === p.id ? ' dropdown-item-active' : ''}`}
+                    onClick={() => { setShowPresets(false); handleLoadPreset(p); }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="dropdown" ref={menuRef}>
             <button className="btn-export" onClick={() => setShowMenu(v => !v)}>
               {t('importExport')}
@@ -441,6 +507,25 @@ export default function App() {
                 <button className="dropdown-item" onClick={() => menuAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
                   {t('exportPng')}
                 </button>
+                {(() => {
+                  const ap = GAME_PRESETS.find(p => p.id === activePreset);
+                  if (!ap?.importFn && !ap?.exportFn) return null;
+                  return (
+                    <>
+                      <div className="dropdown-sep" />
+                      {ap.importFn && (
+                        <button className="dropdown-item" onClick={() => menuAction(() => gameImportRef.current?.click())}>
+                          {ap.importLabel}
+                        </button>
+                      )}
+                      {ap.exportFn && (
+                        <button className="dropdown-item" onClick={() => menuAction(() => ap.exportFn(formats))}>
+                          {ap.exportLabel}
+                        </button>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -464,6 +549,16 @@ export default function App() {
           </button>
           {showHamburger && (
             <div className="hamburger-menu">
+              {GAME_PRESETS.map(p => (
+                <button
+                  key={p.id}
+                  className="hamburger-item"
+                  onClick={() => { hamburgerAction(() => handleLoadPreset(p)); }}
+                >
+                  {p.label}
+                </button>
+              ))}
+              <div className="hamburger-sep" />
               <button className="hamburger-item" onClick={() => hamburgerAction(() => fileInputRef.current?.click())}>
                 {t('importJson')}
               </button>
@@ -474,6 +569,24 @@ export default function App() {
               <button className="hamburger-item" onClick={() => hamburgerAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
                 {t('exportPng')}
               </button>
+              {(() => {
+                const ap = GAME_PRESETS.find(p => p.id === activePreset);
+                if (!ap?.importFn && !ap?.exportFn) return null;
+                return (
+                  <>
+                    {ap.importFn && (
+                      <button className="hamburger-item" onClick={() => hamburgerAction(() => gameImportRef.current?.click())}>
+                        {ap.importLabel}
+                      </button>
+                    )}
+                    {ap.exportFn && (
+                      <button className="hamburger-item" onClick={() => hamburgerAction(() => ap.exportFn(formats))}>
+                        {ap.exportLabel}
+                      </button>
+                    )}
+                  </>
+                );
+              })()}
               <div className="hamburger-sep" />
               <button className="hamburger-item" onClick={() => hamburgerAction(handleShare)}>
                 {t('shareLayout')}
@@ -543,6 +656,8 @@ export default function App() {
           onReorder={reorderBindings}
           onOpenModal={handleKeyClick}
           settings={settings}
+          locked={deleteLocked}
+          onToggleLocked={setDeleteLocked}
         />
       </div>
 
