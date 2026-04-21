@@ -3,6 +3,7 @@ import { useT, resolveAction } from '../useTranslation';
 import { bindingId } from '../useBindings';
 import { MOD_COLORS, MOD_FAMILY, buildModDefs } from '../modifierConstants';
 import { MOUSE_BUTTONS } from '../useFormats';
+import { getMouseProfile } from '../mouseProfiles';
 import { resolveDisplayLabel } from '../keylabels';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 
@@ -25,20 +26,29 @@ export default function MouseBindModal({
   bindings = [],
   onSave, onCancel, settings, layoutKeys = [],
 }) {
-  const t       = useT();
-  const modDefs = buildModDefs(settings);
-  const language = settings.language ?? 'en-US';
+  const t            = useT();
+  const modDefs      = buildModDefs(settings);
+  const language     = settings.language ?? 'en-US';
+  const mouseProfile = getMouseProfile(settings.mouseModel ?? 'custom');
 
-  const [button, setButton]           = useState(initialButton ?? MOUSE_BUTTONS[0]);
+  // Profile buttons (with friendly labels); null = custom (show full master list)
+  const profileButtons = mouseProfile.buttons;
+  const firstButton = profileButtons?.[0]?.id ?? MOUSE_BUTTONS[0];
+
+  const [button, setButton]           = useState(initialButton ?? firstButton);
   const [modifiers, setModifiers]     = useState(normalizeModifiers(initialModifiers ?? [], settings.splitModifiers));
   const [action, setAction]           = useState('');
   const [keyboardKey, setKeyboardKey] = useState(initialKeyboardKey ?? '');
 
-  const inputRef        = useRef(null);
-  const modalRef        = useRef(null);
-  const isFirstRender   = useRef(true);
+  const inputRef      = useRef(null);
+  const modalRef      = useRef(null);
+  const isFirstRender = useRef(true);
 
   const newId = bindingId(button, modifiers);
+
+  function defaultActionFor(btnId) {
+    return profileButtons?.find(b => b.id === btnId)?.defaultAction ?? '';
+  }
 
   useEffect(() => {
     if (inputRef.current && !('ontouchstart' in window)) inputRef.current.focus();
@@ -46,14 +56,20 @@ export default function MouseBindModal({
     if (existing) {
       setAction(resolveAction(existing.action, t));
       setKeyboardKey(existing.keyboardKey ?? '');
+    } else {
+      const def = defaultActionFor(button);
+      if (def) setAction(def);
     }
   }, []);
 
   useEffect(() => {
     const existing = existingBindings.find(b => bindingId(b.button, b.modifiers) === newId);
-    if (existing && action === '') {
+    if (existing) {
       setAction(resolveAction(existing.action, t));
       setKeyboardKey(existing.keyboardKey ?? '');
+    } else if (action === '') {
+      const def = defaultActionFor(button);
+      if (def) setAction(def);
     }
   }, [button, modifiers.join(',')]);
 
@@ -82,8 +98,9 @@ export default function MouseBindModal({
     onSave(button, modifiers, action.trim(), keyboardKey);
   }
 
-  const modLabels  = modifiers.map(m => modDefs.find(d => d.value === m)?.label ?? m);
-  const titleCombo = [...modLabels, button].join('+');
+  const modLabels   = modifiers.map(m => modDefs.find(d => d.value === m)?.label ?? m);
+  const buttonLabel = profileButtons?.find(b => b.id === button)?.label ?? button;
+  const titleCombo  = [...modLabels, buttonLabel].join('+');
 
   // In unified mode, collapse L/R modifier pairs: keep only the Left variant, label it plainly.
   const UNIFIED_MOD_LABEL = {
@@ -146,9 +163,17 @@ export default function MouseBindModal({
               value={button}
               onChange={e => setButton(e.target.value)}
             >
-              {MOUSE_BUTTONS.map(b => (
-                <option key={b} value={b}>{b}</option>
-              ))}
+              {profileButtons ? (
+                <optgroup label={mouseProfile.label}>
+                  {profileButtons.map(b => (
+                    <option key={b.id} value={b.id}>{b.label}</option>
+                  ))}
+                </optgroup>
+              ) : (
+                MOUSE_BUTTONS.map(b => (
+                  <option key={b} value={b}>{b}</option>
+                ))
+              )}
             </select>
           </div>
 

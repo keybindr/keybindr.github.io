@@ -2,6 +2,7 @@ import React from 'react';
 import { LAYOUTS } from '../keyboardLayouts';
 import { LOCALES } from '../keylabels';
 import { useT } from '../useTranslation';
+import { MOUSE_PROFILES } from '../mouseProfiles';
 
 function stripKeyboardHints(name) {
   return name
@@ -11,9 +12,9 @@ function stripKeyboardHints(name) {
     .trim();
 }
 
-export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onChangeUiLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onToggleHotasBindings, onChangeJoystickButtonCount, onChangeThrottleButtonCount, onChangePedalsButtonCount, onClearKeys, onClose }) {
+export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onChangeUiLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onChangeMouseModel, onToggleHotasBindings, onChangeJoystickButtonCount, onChangeThrottleButtonCount, onChangePedalsButtonCount, onClearKeys, onClose }) {
   const t = useT();
-  const { splitModifiers, physicalLayout, language, uiLanguage, warnCrossFormatConflicts, showMouseBindings, showHotasBindings, joystickButtonCount, throttleButtonCount, pedalsButtonCount } = settings;
+  const { splitModifiers, physicalLayout, language, uiLanguage, warnCrossFormatConflicts, showMouseBindings, mouseModel, showHotasBindings, joystickButtonCount, throttleButtonCount, pedalsButtonCount } = settings;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -106,8 +107,8 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
 
         <div className="settings-section">
           <div className="settings-section-title">{t('showMouseBindings')}</div>
-          <div className="settings-row">
-            <div className="toggle-group">
+          <div className="settings-row" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="toggle-group" style={{ flexShrink: 0 }}>
               <button
                 className={`toggle-btn${!showMouseBindings ? ' active' : ''}`}
                 onClick={() => onToggleMouseBindings(false)}
@@ -121,6 +122,18 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
                 {t('on')}
               </button>
             </div>
+            {showMouseBindings && (
+              <select
+                className="settings-select"
+                value={mouseModel}
+                onChange={e => onChangeMouseModel(e.target.value)}
+                style={{ flex: 1, minWidth: 0 }}
+              >
+                {MOUSE_PROFILES.map(p => (
+                  <option key={p.id} value={p.id}>{p.label}</option>
+                ))}
+              </select>
+            )}
           </div>
         </div>
 

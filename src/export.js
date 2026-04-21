@@ -558,6 +558,7 @@ export function exportJSON(formats, layoutName, settings = {}) {
     layoutName:      layoutName || '',
     physicalLayout:  settings.physicalLayout ?? 'ansi-104',
     language:        settings.language       ?? 'en-US',
+    mouseModel:      settings.mouseModel     ?? 'custom',
     formats: formats.map(f => ({
       name: f.name,
       bindings: f.bindings.map(b => ({
@@ -675,6 +676,7 @@ function parseJSON(text) {
           layoutName:     String(data.layoutName),
           physicalLayout: data.physicalLayout ?? null,
           language:       data.language       ?? null,
+          mouseModel:     data.mouseModel     ?? null,
           formats,
         },
       };

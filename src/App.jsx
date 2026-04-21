@@ -13,6 +13,7 @@ import ShareImportModal from './components/ShareImportModal';
 import { bindingId } from './useBindings';
 import { useFormats, MAX_FORMATS, MOUSE_BUTTONS } from './useFormats';
 import { getAllHotasInputs, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from './hotasConstants';
+import { getMouseProfile, getProfileButtonSet, MOUSE_PROFILES } from './mouseProfiles';
 import { useSettings } from './useSettings';
 import { exportJSON, exportPNG, importFile } from './export';
 import { GAME_PRESETS } from './gamePresets';
@@ -179,7 +180,7 @@ export default function App() {
     formats, activeIndex, switchTo, addFormat, setFormatName, removeFormat,
     bindings, keyColors, mouseBindings, hotasBindings, recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
-    replaceActiveBindings, replaceFormats, removeOrphanBindings,
+    replaceActiveBindings, replaceFormats, removeOrphanBindings, removeOrphanMouseBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, addRecentColor,
     addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
     addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction,
@@ -187,9 +188,10 @@ export default function App() {
     undo, redo,
   } = useFormats();
 
-  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, setShowHotasBindings, setJoystickButtonCount, setThrottleButtonCount, setPedalsButtonCount, resetSettings } = useSettings();
-  const [mouseModal, setMouseModal] = useState(null);
-  const [hotasModal, setHotasModal] = useState(null);
+  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, setMouseModel, setShowHotasBindings, setJoystickButtonCount, setThrottleButtonCount, setPedalsButtonCount, resetSettings } = useSettings();
+  const [mouseModal,       setMouseModal]       = useState(null);
+  const [hotasModal,       setHotasModal]       = useState(null);
+  const [pendingMouseModel, setPendingMouseModel] = useState(null); // { id, name, orphans }
 
   const [layoutName, setLayoutNameState] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
   const [selectedId, setSelectedId]     = useState(null);
@@ -286,6 +288,7 @@ export default function App() {
     if (result.layoutName !== undefined) handleLayoutNameChange(result.layoutName);
     if (result.physicalLayout) setPhysicalLayout(result.physicalLayout);
     if (result.language)       setLanguage(result.language);
+    if (result.mouseModel)     setMouseModel(result.mouseModel);
     if (result.formats?.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
     if (result.formats?.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
     setSelectedId(null);
@@ -314,6 +317,7 @@ export default function App() {
           handleLayoutNameChange(result.data.layoutName || '');
           if (result.data.physicalLayout) setPhysicalLayout(result.data.physicalLayout);
           if (result.data.language)       setLanguage(result.data.language);
+          if (result.data.mouseModel)     setMouseModel(result.data.mouseModel);
           if (result.data.formats?.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
           if (result.data.formats?.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
         } else if (result.type === 'formats') {
@@ -466,6 +470,32 @@ export default function App() {
 
   function handleUiLocaleChange(newLocaleId) {
     setUiLanguage(newLocaleId);
+  }
+
+  function handleMouseModelChange(newModelId) {
+    const newProfile   = getMouseProfile(newModelId);
+    const validButtons = getProfileButtonSet(newProfile); // null = custom (all valid)
+    if (validButtons) {
+      const orphans = formats.flatMap(f =>
+        (Array.isArray(f.mouseBindings) ? f.mouseBindings : [])
+          .filter(b => !validButtons.has(b.button))
+          .map(b => ({ ...b, _format: f.name }))
+      );
+      if (orphans.length > 0) {
+        setPendingMouseModel({ id: newModelId, name: newProfile.label, orphans });
+        return;
+      }
+    }
+    setMouseModel(newModelId);
+  }
+
+  function confirmMouseModelChange() {
+    if (!pendingMouseModel) return;
+    const newProfile   = getMouseProfile(pendingMouseModel.id);
+    const validButtons = getProfileButtonSet(newProfile);
+    if (validButtons) removeOrphanMouseBindings(validButtons);
+    setMouseModel(pendingMouseModel.id);
+    setPendingMouseModel(null);
   }
 
   function confirmLayoutChange() {
@@ -710,8 +740,11 @@ export default function App() {
             onRemove={removeMouseBinding}
             onOpenModal={(button, modifiers) => {
               const resolvedButton = button ?? (() => {
-                const used = new Set(mouseBindings.map(b => b.button));
-                return MOUSE_BUTTONS.find(b => !used.has(b)) ?? MOUSE_BUTTONS[0];
+                const used    = new Set(mouseBindings.map(b => b.button));
+                const profile = getMouseProfile(settings.mouseModel ?? 'custom');
+                const profileIds = profile.buttons?.map(b => b.id) ?? [];
+                const ordered = [...profileIds, ...MOUSE_BUTTONS.filter(id => !profileIds.includes(id))];
+                return ordered.find(id => !used.has(id)) ?? ordered[0];
               })();
               const existing = mouseBindings.find(b => b.button === resolvedButton && JSON.stringify(b.modifiers) === JSON.stringify(modifiers ?? []));
               setMouseModal({ button: resolvedButton, modifiers: modifiers ?? [], keyboardKey: existing?.keyboardKey ?? '' });
@@ -837,6 +870,7 @@ export default function App() {
           onChangeUiLocale={handleUiLocaleChange}
           onToggleCrossFormatWarnings={setWarnCrossFormatConflicts}
           onToggleMouseBindings={setShowMouseBindings}
+          onChangeMouseModel={handleMouseModelChange}
           onToggleHotasBindings={setShowHotasBindings}
           onChangeJoystickButtonCount={setJoystickButtonCount}
           onChangeThrottleButtonCount={setThrottleButtonCount}
@@ -852,6 +886,24 @@ export default function App() {
           newLayoutName={pendingLayout.name}
           onConfirm={confirmLayoutChange}
           onCancel={() => setPendingLayout(null)}
+        />
+      )}
+
+      {pendingMouseModel && (
+        <OrphanWarningModal
+          orphans={pendingMouseModel.orphans}
+          newLayoutName={pendingMouseModel.name}
+          bodyKeyOverride={pendingMouseModel.orphans.length === 1 ? 'mouseOrphanBodySingular' : 'mouseOrphanBodyPlural'}
+          renderItem={(b, i) => (
+            <div key={i} className="orphan-item">
+              <span className="orphan-combo">{b.button}</span>
+              <span className="orphan-arrow">→</span>
+              <span className="orphan-action">{b.action}</span>
+              {b._format && <span className="orphan-format">{b._format}</span>}
+            </div>
+          )}
+          onConfirm={confirmMouseModelChange}
+          onCancel={() => setPendingMouseModel(null)}
         />
       )}
 

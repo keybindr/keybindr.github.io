@@ -293,6 +293,17 @@ export function useFormats() {
     }));
   }
 
+  function removeOrphanMouseBindings(validButtonSet) {
+    mutate(s => ({
+      ...s,
+      formats: s.formats.map(f => ({
+        ...f,
+        mouseBindings: (Array.isArray(f.mouseBindings) ? f.mouseBindings : [])
+          .filter(b => validButtonSet.has(b.button)),
+      })),
+    }));
+  }
+
   // ── Key colors ────────────────────────────────────────────────────────
   function setKeyColor(keyId, color) {
     mutateActiveFormat(f => ({ ...f, keyColors: { ...f.keyColors, [keyId]: color } }));
@@ -351,7 +362,7 @@ export function useFormats() {
     hotasBindings: Array.isArray(activeFormat?.hotasBindings) ? activeFormat.hotasBindings : [],
     recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
-    replaceActiveBindings, replaceFormats, removeOrphanBindings,
+    replaceActiveBindings, replaceFormats, removeOrphanBindings, removeOrphanMouseBindings,
     addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
     addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction, reorderHotasBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors, addRecentColor,

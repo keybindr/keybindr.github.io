@@ -25,6 +25,7 @@ const DEFAULTS = {
   uiLanguage: detectedLocale,
   warnCrossFormatConflicts: false,
   showMouseBindings: true,
+  mouseModel: 'custom',
   showHotasBindings: false,
   joystickButtonCount: 32,
   throttleButtonCount: 32,
@@ -43,6 +44,7 @@ function load() {
       uiLanguage:                saved.uiLanguage                ?? detectedLocale,
       warnCrossFormatConflicts:  !!saved.warnCrossFormatConflicts,
       showMouseBindings:         saved.showMouseBindings ?? true,
+      mouseModel:                saved.mouseModel        ?? 'custom',
       showHotasBindings:         saved.showHotasBindings ?? false,
       joystickButtonCount:       saved.joystickButtonCount ?? 32,
       throttleButtonCount:       saved.throttleButtonCount ?? 32,
@@ -84,6 +86,10 @@ export function useSettings() {
     setSettings(prev => { const next = { ...prev, showMouseBindings: val }; persist(next); return next; });
   }
 
+  function setMouseModel(val) {
+    setSettings(prev => { const next = { ...prev, mouseModel: val }; persist(next); return next; });
+  }
+
   function setShowHotasBindings(val) {
     setSettings(prev => { const next = { ...prev, showHotasBindings: val }; persist(next); return next; });
   }
@@ -104,5 +110,5 @@ export function useSettings() {
     setSettings(() => { persist(DEFAULTS); return DEFAULTS; });
   }
 
-  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, setShowHotasBindings, setJoystickButtonCount, setThrottleButtonCount, setPedalsButtonCount, resetSettings };
+  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, setMouseModel, setShowHotasBindings, setJoystickButtonCount, setThrottleButtonCount, setPedalsButtonCount, resetSettings };
 }
