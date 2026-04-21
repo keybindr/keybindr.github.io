@@ -348,7 +348,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   y += sSub;
   ctx.font      = `${14 * S}px ${FONT}`;
   ctx.fillStyle = '#777';
-  ctx.fillText(format.name || 'Format', pad, y);
+  ctx.fillText(resolveAction(format.name, makeT(settings.language ?? 'en-US')) || 'Format', pad, y);
   y += sGap2;
 
   // Legend
@@ -429,10 +429,11 @@ export function exportJSON(formats, layoutName, settings = {}) {
 }
 
 export async function exportPNG(formats, layoutName, settings) {
+  const t = makeT(settings.language ?? 'en-US');
   if (formats.length === 1) {
     const canvas = await renderFormatToCanvas(formats[0], layoutName, settings);
     const blob   = await new Promise(res => canvas.toBlob(res, 'image/png'));
-    const name   = sanitizeFilename(formats[0].name || layoutName || 'keybindings') + '.png';
+    const name   = sanitizeFilename(resolveAction(formats[0].name, t) || layoutName || 'keybindings') + '.png';
     download(blob, name);
     return;
   }
@@ -443,7 +444,7 @@ export async function exportPNG(formats, layoutName, settings) {
   for (const format of formats) {
     const canvas = await renderFormatToCanvas(format, layoutName, settings);
     const blob   = await new Promise(res => canvas.toBlob(res, 'image/png'));
-    zip.file(`${sanitizeFilename(format.name || 'format')}.png`, blob);
+    zip.file(`${sanitizeFilename(resolveAction(format.name, t) || 'format')}.png`, blob);
   }
 
   const zipBlob = await zip.generateAsync({ type: 'blob' });
