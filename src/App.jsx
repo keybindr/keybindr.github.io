@@ -4,7 +4,6 @@ import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
 import MouseBindingTable from './components/MouseBindingTable';
 import MouseBindModal from './components/MouseBindModal';
-import MouseDiagram from './components/MouseDiagram';
 import HOTASBindingTable from './components/HOTASBindingTable';
 import HOTASBindModal from './components/HOTASBindModal';
 import HelpModal from './components/HelpModal';
@@ -774,8 +773,6 @@ export default function App() {
       {settings.showMouseBindings && (
         <div className="panel" style={{ marginTop: 10 }}>
           <h2 className="panel-title">{t('mouseBindingsTitle')} <span className="count-badge">{mouseBindings.length}</span></h2>
-          <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
-          <div style={{ flex: 1, minWidth: 0 }}>
           <MouseBindingTable
             mouseBindings={mouseBindings}
             settings={settings}
@@ -794,9 +791,6 @@ export default function App() {
               setMouseModal({ button: resolvedButton, modifiers: modifiers ?? [], keyboardKey: existing?.keyboardKey ?? '' });
             }}
           />
-          </div>
-          <MouseDiagram profile={mouseProfile} mouseBindings={mouseBindings} />
-          </div>
         </div>
       )}
 
