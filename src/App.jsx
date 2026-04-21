@@ -13,20 +13,20 @@ import { exportJSON, exportPNG, importFile } from './export';
 import { GAME_PRESETS } from './gamePresets';
 import OrphanWarningModal from './components/OrphanWarningModal';
 import { encodeShareUrl, decodeShareHash } from './share';
-import { DEFAULT_BINDINGS, DEFAULT_VEHICLE_BINDINGS } from './defaultBindings';
+import { DEFAULT_BINDINGS } from './defaultBindings';
 import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 import { localeUsesISO } from './keylabels';
 import { TranslationContext, makeT, resolveAction } from './useTranslation';
 
 
-const DEFAULT_FORMAT_NAMES = ['__t:formatOnFoot', '__t:formatInVehicle'];
-const LEGACY_FORMAT_NAMES  = ['On Foot', 'In Vehicle'];
-const DEFAULT_BINDING_COUNTS = [DEFAULT_BINDINGS.length, DEFAULT_VEHICLE_BINDINGS.length];
+const DEFAULT_FORMAT_NAMES   = ['__t:formatOnFoot'];
+const LEGACY_FORMAT_NAMES    = ['On Foot', 'In Vehicle'];
+const DEFAULT_BINDING_COUNTS = [DEFAULT_BINDINGS.length];
 
 function hasCustomSession(formats, layoutName) {
   if (layoutName) return true;
-  if (formats.length !== 2) return true;
-  if (formats.some((f, i) => f.name !== DEFAULT_FORMAT_NAMES[i] && f.name !== LEGACY_FORMAT_NAMES[i])) return true;
+  if (formats.length !== 1) return true;
+  if (formats.some((f, i) => f.name !== DEFAULT_FORMAT_NAMES[i] && !LEGACY_FORMAT_NAMES.includes(f.name))) return true;
   if (formats.some(f => Object.keys(f.keyColors).length > 0)) return true;
   if (formats.some((f, i) => f.bindings.length !== DEFAULT_BINDING_COUNTS[i])) return true;
   return false;
