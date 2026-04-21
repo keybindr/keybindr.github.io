@@ -22,6 +22,7 @@ const DEFAULTS = {
   splitModifiers: false,
   physicalLayout: isTouchDevice ? 'layout-60' : localeUsesISO(detectedLocale) ? 'iso-105' : 'ansi-104',
   language: detectedLocale,
+  uiLanguage: null,
   warnCrossFormatConflicts: false,
   showMouseBindings: true,
 };
@@ -35,6 +36,7 @@ function load() {
       splitModifiers:            !!saved.splitModifiers,
       physicalLayout:            saved.physicalLayout            ?? DEFAULTS.physicalLayout,
       language:                  saved.language                  ?? DEFAULTS.language,
+      uiLanguage:                saved.uiLanguage                ?? null,
       warnCrossFormatConflicts:  !!saved.warnCrossFormatConflicts,
       showMouseBindings:         saved.showMouseBindings ?? true,
     };
@@ -62,6 +64,10 @@ export function useSettings() {
     setSettings(prev => { const next = { ...prev, language: val }; persist(next); return next; });
   }
 
+  function setUiLanguage(val) {
+    setSettings(prev => { const next = { ...prev, uiLanguage: val }; persist(next); return next; });
+  }
+
   function setWarnCrossFormatConflicts(val) {
     setSettings(prev => { const next = { ...prev, warnCrossFormatConflicts: val }; persist(next); return next; });
   }
@@ -74,5 +80,5 @@ export function useSettings() {
     setSettings(() => { persist(DEFAULTS); return DEFAULTS; });
   }
 
-  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, resetSettings };
+  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, resetSettings };
 }

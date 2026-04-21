@@ -183,7 +183,7 @@ export default function App() {
     undo, redo,
   } = useFormats();
 
-  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, resetSettings } = useSettings();
+  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, resetSettings } = useSettings();
   const [mouseModal, setMouseModal] = useState(null);
 
   const [layoutName, setLayoutNameState] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
@@ -442,7 +442,7 @@ export default function App() {
   }
 
   const { splitModifiers } = settings;
-  const t = makeT(settings.language);
+  const t = makeT(settings.uiLanguage || settings.language);
 
   // Legend colors follow modifier key custom colors, falling back to defaults
   const legShift  = keyColors['ShiftLeft']   || keyColors['ShiftRight']   || '#7b9ee0';
@@ -719,6 +719,7 @@ export default function App() {
           onToggleSplit={setSplitModifiers}
           onChangeLayout={handleLayoutChange}
           onChangeLocale={handleLocaleChange}
+          onChangeUiLocale={setUiLanguage}
           onToggleCrossFormatWarnings={setWarnCrossFormatConflicts}
           onToggleMouseBindings={setShowMouseBindings}
           onClearKeys={resetAll}

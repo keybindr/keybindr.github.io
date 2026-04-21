@@ -3,9 +3,9 @@ import { LAYOUTS } from '../keyboardLayouts';
 import { LOCALES } from '../keylabels';
 import { useT } from '../useTranslation';
 
-export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onClearKeys, onClose }) {
+export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onChangeUiLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onClearKeys, onClose }) {
   const t = useT();
-  const { splitModifiers, physicalLayout, language, warnCrossFormatConflicts, showMouseBindings } = settings;
+  const { splitModifiers, physicalLayout, language, uiLanguage, warnCrossFormatConflicts, showMouseBindings } = settings;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -36,6 +36,19 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
               value={language}
               onChange={e => onChangeLocale(e.target.value)}
             >
+              {Object.entries(LOCALES).map(([id, locale]) => (
+                <option key={id} value={id}>{locale.name}</option>
+              ))}
+            </select>
+          </div>
+          <div className="settings-row settings-row-labeled">
+            <label className="settings-label">{t('interfaceLanguage')}</label>
+            <select
+              className="settings-select"
+              value={uiLanguage ?? ''}
+              onChange={e => onChangeUiLocale(e.target.value || null)}
+            >
+              <option value="">{t('matchKeyboard')}</option>
               {Object.entries(LOCALES).map(([id, locale]) => (
                 <option key={id} value={id}>{locale.name}</option>
               ))}

@@ -38,6 +38,8 @@ const en = {
   keyboardSection:    'Keyboard',
   physicalLayout:     'Physical Layout',
   languageRegion:     'Language / Region',
+  interfaceLanguage:  'Interface Language',
+  matchKeyboard:      'Match Keyboard',
   modifierDisplay:    'Modifier key display',
   unified:            'Unified',
   leftRight:          'Left / Right',
