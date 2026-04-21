@@ -23,7 +23,7 @@ const DEFAULTS = {
   physicalLayout: isTouchDevice ? 'layout-60' : localeUsesISO(detectedLocale) ? 'iso-105' : 'ansi-104',
   language: detectedLocale,
   warnCrossFormatConflicts: false,
-  showMouseBindings: false,
+  showMouseBindings: true,
 };
 
 function load() {
@@ -36,7 +36,7 @@ function load() {
       physicalLayout:            saved.physicalLayout            ?? DEFAULTS.physicalLayout,
       language:                  saved.language                  ?? DEFAULTS.language,
       warnCrossFormatConflicts:  !!saved.warnCrossFormatConflicts,
-      showMouseBindings:         !!saved.showMouseBindings,
+      showMouseBindings:         saved.showMouseBindings ?? true,
     };
   } catch {
     return DEFAULTS;

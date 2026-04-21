@@ -286,7 +286,9 @@ export default function App() {
   }
 
   function resetAll() {
+    const keepMouseBindings = settings.showMouseBindings;
     resetSettings();
+    if (keepMouseBindings) setShowMouseBindings(true);
     resetFormats();
     setSelectedId(null);
     setActivePreset(null);
@@ -375,6 +377,7 @@ export default function App() {
     setActivePreset(preset.id);
     setDeleteLocked(true);
     setSelectedId(null);
+    setShowMouseBindings(true);
   }
 
   function handleSelect(id) {
@@ -658,7 +661,7 @@ export default function App() {
       </div>
 
       {settings.showMouseBindings && (
-        <div className="panel">
+        <div className="panel" style={{ marginTop: 10 }}>
           <h2 className="panel-title">{t('mouseBindingsTitle')} <span className="count-badge">{mouseBindings.length}</span></h2>
           <MouseBindingTable
             mouseBindings={mouseBindings}

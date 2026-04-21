@@ -8,7 +8,7 @@ const en = {
   help:               'Help',
   settings:           'Settings',
   layoutNameDefault:  'Keybind Layout Name',
-  bindingsTitle:      'Bindings',
+  bindingsTitle:      'Keyboard Bindings',
   noBindings:         'No bindings yet. Click a key to add one.',
   tabClickRename:     'Click to rename',
   tabRemove:          'Remove format',
