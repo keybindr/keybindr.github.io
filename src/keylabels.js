@@ -608,7 +608,7 @@ export function localeUsesISO(localeId) {
 }
 
 // Returns the locale-specific label for a key, or null if no override exists.
-export function getLocaleLabel(keyId, localeId) {
+function getLocaleLabel(keyId, localeId) {
   return LOCALES[localeId]?.overrides?.[keyId] ?? null;
 }
 

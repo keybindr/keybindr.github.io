@@ -2,7 +2,7 @@ import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
 import { resolveLabel } from './keylabels';
 import { makeT, resolveAction } from './useTranslation';
 import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from './modifierConstants';
-import { getHotasLabel } from './hotasConstants';
+import { getHotasLabel, getHotasModInfo } from './hotasConstants';
 
 // Reverse map: US-English label → key ID, built from the union of all layouts.
 // Used for JSON import to map human-readable labels back to key IDs.
@@ -354,7 +354,7 @@ function drawHotasTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
     ctx.font      = `bold ${fontSize}px ${FONT}`;
     ctx.fillStyle = '#f0c060';
     const modPrefix = [
-      ...(b.hotasMod    ? [`[${getHotasLabel(b.hotasMod).split(' ').pop()}]+`] : []),
+      ...(b.hotasMod ? [`[${getHotasModInfo(b.hotasMod, bindings)?.label ?? getHotasLabel(b.hotasMod)}]+`] : []),
       ...((b.modifiers ?? []).map(m => `${m}+`)),
     ].join('');
     const baseLabel = b.keyboardKey

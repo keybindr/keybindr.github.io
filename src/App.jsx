@@ -180,7 +180,7 @@ export default function App() {
     bindings, keyColors, mouseBindings, hotasBindings, recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats, removeOrphanBindings,
-    setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors, addRecentColor,
+    setKeyColor, clearKeyColor, restoreKeyColor, addRecentColor,
     addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
     addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction,
     resetFormats,

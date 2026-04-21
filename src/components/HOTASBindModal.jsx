@@ -3,26 +3,7 @@ import { useT, resolveAction } from '../useTranslation';
 import { buildHotasGroups, getHotasLabel, hotasBindingId, getHotasModInfo, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from '../hotasConstants';
 import { resolveDisplayLabel } from '../keylabels';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
-import { MOD_COLORS, MOD_FAMILY } from '../modifierConstants';
-
-// Keyboard modifier definitions (same subset as MouseBindModal)
-function buildModDefs(settings) {
-  if (settings.splitModifiers) {
-    return [
-      { value: 'ShiftLeft',  label: 'LShift', color: MOD_COLORS.ShiftLeft  },
-      { value: 'ShiftRight', label: 'RShift', color: MOD_COLORS.ShiftRight },
-      { value: 'AltLeft',    label: 'LAlt',   color: MOD_COLORS.AltLeft    },
-      { value: 'AltRight',   label: 'RAlt',   color: MOD_COLORS.AltRight   },
-      { value: 'CtrlLeft',   label: 'LCtrl',  color: MOD_COLORS.CtrlLeft   },
-      { value: 'CtrlRight',  label: 'RCtrl',  color: MOD_COLORS.CtrlRight  },
-    ];
-  }
-  return [
-    { value: 'Ctrl',  label: 'Ctrl',  color: MOD_COLORS.Ctrl  },
-    { value: 'Shift', label: 'Shift', color: MOD_COLORS.Shift },
-    { value: 'Alt',   label: 'Alt',   color: MOD_COLORS.Alt   },
-  ];
-}
+import { MOD_COLORS, MOD_FAMILY, buildModDefs } from '../modifierConstants';
 
 const SPLIT_TO_UNIFIED = {
   ShiftLeft: 'Shift', ShiftRight: 'Shift',

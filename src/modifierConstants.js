@@ -46,6 +46,25 @@ export const SPLIT_LABELS = {
   AltLeft:      'LAlt',   AltRight:      'RAlt',
 };
 
+// Builds the modifier button definitions for modals, respecting split-modifier setting
+export function buildModDefs(settings) {
+  if (settings.splitModifiers) {
+    return [
+      { value: 'ShiftLeft',  label: 'LShift', color: MOD_COLORS.ShiftLeft  },
+      { value: 'ShiftRight', label: 'RShift', color: MOD_COLORS.ShiftRight },
+      { value: 'AltLeft',    label: 'LAlt',   color: MOD_COLORS.AltLeft    },
+      { value: 'AltRight',   label: 'RAlt',   color: MOD_COLORS.AltRight   },
+      { value: 'CtrlLeft',   label: 'LCtrl',  color: MOD_COLORS.CtrlLeft   },
+      { value: 'CtrlRight',  label: 'RCtrl',  color: MOD_COLORS.CtrlRight  },
+    ];
+  }
+  return [
+    { value: 'Ctrl',  label: 'Ctrl',  color: MOD_COLORS.Ctrl  },
+    { value: 'Shift', label: 'Shift', color: MOD_COLORS.Shift },
+    { value: 'Alt',   label: 'Alt',   color: MOD_COLORS.Alt   },
+  ];
+}
+
 // Blends an accent hex color at 25% over the #1a1a1a background
 export function modFill(hex) {
   if (!hex || hex.length < 7) return KEY_DEFAULT;

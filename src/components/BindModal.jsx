@@ -4,7 +4,7 @@ import { resolveDisplayLabel } from '../keylabels';
 import { useT, resolveAction } from '../useTranslation';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
-import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_FAMILY, modFill } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_FAMILY, modFill, buildModDefs } from '../modifierConstants';
 
 const PICKER_WIDTH = 252;
 const PICKER_GAP   = 12;
@@ -19,25 +19,6 @@ const MOD_KEY_FAMILY = {
   ControlLeft: 'Ctrl', ControlRight: 'Ctrl',
   AltLeft: 'Alt', AltRight: 'Alt',
 };
-
-function buildModDefs(settings) {
-  const { splitModifiers } = settings;
-  if (splitModifiers) {
-    return [
-      { value: 'ShiftLeft',  label: 'LShift', color: MOD_COLORS.ShiftLeft  },
-      { value: 'ShiftRight', label: 'RShift', color: MOD_COLORS.ShiftRight },
-      { value: 'AltLeft',    label: 'LAlt',   color: MOD_COLORS.AltLeft    },
-      { value: 'AltRight',   label: 'RAlt',   color: MOD_COLORS.AltRight   },
-      { value: 'CtrlLeft',   label: 'LCtrl',  color: MOD_COLORS.CtrlLeft   },
-      { value: 'CtrlRight',  label: 'RCtrl',  color: MOD_COLORS.CtrlRight  },
-    ];
-  }
-  return [
-    { value: 'Ctrl',  label: 'Ctrl',  color: MOD_COLORS.Ctrl  },
-    { value: 'Shift', label: 'Shift', color: MOD_COLORS.Shift },
-    { value: 'Alt',   label: 'Alt',   color: MOD_COLORS.Alt   },
-  ];
-}
 
 export default function BindModal({
   keyId, existingBindings,
