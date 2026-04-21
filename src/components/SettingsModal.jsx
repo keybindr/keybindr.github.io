@@ -49,7 +49,7 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
               ))}
             </select>
           </div>
-          <div className="dropdown-sep" style={{ margin: '8px 0' }} />
+          <div className="dropdown-sep" />
           <div className="settings-row settings-row-labeled">
             <label className="settings-label">{t('interfaceLanguage')}</label>
             <select
