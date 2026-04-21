@@ -53,10 +53,9 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
             <label className="settings-label">{t('interfaceLanguage')}</label>
             <select
               className="settings-select"
-              value={uiLanguage ?? ''}
-              onChange={e => onChangeUiLocale(e.target.value || null)}
+              value={uiLanguage}
+              onChange={e => onChangeUiLocale(e.target.value)}
             >
-              <option value="">{t('matchKeyboard')}</option>
               {Object.entries(LOCALES).map(([id, locale]) => (
                 <option key={id} value={id}>{stripKeyboardHints(locale.name)}</option>
               ))}
