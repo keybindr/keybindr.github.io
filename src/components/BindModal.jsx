@@ -75,7 +75,8 @@ export default function BindModal({
     formats.forEach((f, i) => {
       if (i === activeIndex) return;
       if (f.bindings.some(x => bindingId(x.key, x.modifiers) === newId)) {
-        others.push(f.name);
+        const label = resolveAction(f.name, t) || t('formatFallback', { n: String(i + 1) });
+        others.push(label);
       }
     });
     return others;
@@ -252,7 +253,7 @@ export default function BindModal({
           )}
 
           {crossFormatTabs.length > 0 && (
-            <p className="conflict-warn">⚠ {t('crossFormatConflict', { names: crossFormatTabs.map(n => `"${resolveAction(n, t)}"`).join(', ') })}</p>
+            <p className="conflict-warn">⚠ {t('crossFormatConflict', { names: crossFormatTabs.map(n => `"${n}"`).join(', ') })}</p>
           )}
 
           <div className="modal-actions">

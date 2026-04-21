@@ -46,12 +46,16 @@ function findCrossFormatConflicts(activeBindings, formats, activeIndex) {
     formats.forEach((f, i) => {
       if (i === activeIndex) return;
       if (f.bindings.some(x => bindingId(x.key, x.modifiers) === id)) {
-        others.push(f.name);
+        others.push({ index: i, name: f.name });
       }
     });
     if (others.length > 0) result.set(id, others);
   }
   return result;
+}
+
+function formatTabName(f, i, t) {
+  return resolveAction(f.name, t) || t('formatFallback', { n: String(i + 1) });
 }
 
 export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal, settings = {}, locked = false, onToggleLocked, formats, activeIndex }) {
@@ -141,9 +145,9 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
             const isDragOver = dragOverIndex === index;
             const keyColor   = keyColors[b.key];
             const isConflict = conflictIds.has(id);
-            const crossNames = crossConflicts.get(id);
-            const crossTitle = crossNames
-              ? t('crossFormatConflict', { names: crossNames.map(n => `"${resolveAction(n, t)}"`).join(', ') })
+            const crossEntries = crossConflicts.get(id);
+            const crossTitle = crossEntries
+              ? t('crossFormatConflict', { names: crossEntries.map(({ index, name }) => `"${formatTabName({ name }, index, t)}"`).join(', ') })
               : null;
 
             return (
