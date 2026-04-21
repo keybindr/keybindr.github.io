@@ -37,7 +37,24 @@ function detectModifierConflicts(bindings) {
   return conflicts;
 }
 
-export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal, settings = {}, locked = false, onToggleLocked }) {
+function findCrossFormatConflicts(activeBindings, formats, activeIndex) {
+  const result = new Map();
+  if (!formats || formats.length < 2) return result;
+  for (const b of activeBindings) {
+    const id = bindingId(b.key, b.modifiers);
+    const others = [];
+    formats.forEach((f, i) => {
+      if (i === activeIndex) return;
+      if (f.bindings.some(x => bindingId(x.key, x.modifiers) === id)) {
+        others.push(f.name);
+      }
+    });
+    if (others.length > 0) result.set(id, others);
+  }
+  return result;
+}
+
+export default function BindingTable({ bindings, keyColors = {}, selectedId, onSelect, onUpdateAction, onRemove, onReorder, onOpenModal, settings = {}, locked = false, onToggleLocked, formats, activeIndex }) {
   const t = useT();
   const language = settings.language ?? 'en-US';
   const [editingId, setEditingId]         = useState(null);
@@ -45,6 +62,9 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const dragIndex = useRef(null);
   const conflictIds = detectModifierConflicts(bindings);
+  const crossConflicts = settings.warnCrossFormatConflicts
+    ? findCrossFormatConflicts(bindings, formats, activeIndex)
+    : new Map();
 
   function startEdit(b) {
     setEditingId(bindingId(b.key, b.modifiers));
@@ -121,6 +141,10 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
             const isDragOver = dragOverIndex === index;
             const keyColor   = keyColors[b.key];
             const isConflict = conflictIds.has(id);
+            const crossNames = crossConflicts.get(id);
+            const crossTitle = crossNames
+              ? t('crossFormatConflict', { names: crossNames.map(n => `"${resolveAction(n, t)}"`).join(', ') })
+              : null;
 
             return (
               <tr
@@ -128,7 +152,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                 className={[
                   isSelected  ? 'row-selected'  : '',
                   isDragOver  ? 'row-drag-over' : '',
-                  isConflict  ? 'row-conflict'  : '',
+                  (isConflict || crossTitle) ? 'row-conflict' : '',
                 ].filter(Boolean).join(' ')}
                 onClick={() => onSelect(id)}
                 onDragOver={e => handleDragOver(e, index)}
@@ -187,6 +211,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                     <>
                       <span className="action-text" title={t('clickToEdit')}>{resolveAction(b.action, t)}</span>
                       {isConflict && <span className="conflict-icon" title={t('modifierConflict')}>⚠</span>}
+                      {crossTitle && <span className="conflict-icon" title={crossTitle}>⚠</span>}
                     </>
                   )}
                 </td>

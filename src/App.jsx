@@ -19,31 +19,6 @@ import { localeUsesISO } from './keylabels';
 import { TranslationContext, makeT, resolveAction } from './useTranslation';
 
 
-function detectCrossFormatConflicts(formats) {
-  const results = [];
-  for (let i = 0; i < formats.length; i++) {
-    for (let j = i + 1; j < formats.length; j++) {
-      const aMap = new Map();
-      for (const b of formats[i].bindings) aMap.set(bindingId(b.key, b.modifiers), b);
-
-      const shared = [];
-      for (const b of formats[j].bindings) {
-        const id = bindingId(b.key, b.modifiers);
-        if (aMap.has(id)) shared.push({ a: aMap.get(id), b });
-      }
-
-      if (shared.length > 0) {
-        results.push({ a: i, b: j, shared });
-      }
-    }
-  }
-  return results;
-}
-
-function bindingLabel(b) {
-  return b.modifiers.length === 0 ? b.key : [...b.modifiers, b.key].join('+');
-}
-
 const DEFAULT_FORMAT_NAMES   = ['__t:formatOnFoot'];
 const LEGACY_FORMAT_NAMES    = ['On Foot', 'In Vehicle'];
 const DEFAULT_BINDING_COUNTS = [DEFAULT_BINDINGS.length];
@@ -649,28 +624,6 @@ export default function App() {
         />
       </div>
 
-      {settings.warnCrossFormatConflicts && (() => {
-        const crossConflicts = detectCrossFormatConflicts(formats);
-        if (crossConflicts.length === 0) return null;
-        return (
-          <div className="cross-format-warnings">
-            {crossConflicts.map(({ a, b, shared }) => {
-              const nameA = resolveAction(formats[a].name, t) || t('formatFallback', { n: String(a + 1) });
-              const nameB = resolveAction(formats[b].name, t) || t('formatFallback', { n: String(b + 1) });
-              const labels = shared.map(({ a: ba }) => bindingLabel(ba)).join(', ');
-              return (
-                <div key={`${a}-${b}`} className="cross-format-warning-item">
-                  <span className="conflict-icon">⚠</span>
-                  {' '}
-                  <strong>"{nameA}"</strong> × <strong>"{nameB}"</strong>
-                  <span className="cross-format-binding-list"> — {labels}</span>
-                </div>
-              );
-            })}
-          </div>
-        );
-      })()}
-
       <div className="keyboard-container">
         <Keyboard
           bindings={bindings}
@@ -695,6 +648,8 @@ export default function App() {
           settings={settings}
           locked={deleteLocked}
           onToggleLocked={setDeleteLocked}
+          formats={formats}
+          activeIndex={activeIndex}
         />
       </div>
 
@@ -708,6 +663,8 @@ export default function App() {
           onSave={handleSave}
           onCancel={handleModalCancel}
           settings={settings}
+          formats={formats}
+          activeIndex={activeIndex}
         />
       )}
 

@@ -45,6 +45,7 @@ export default function BindModal({
   onColorChange,
   onSave, onCancel,
   settings,
+  formats, activeIndex,
 }) {
   const t           = useT();
   const keyDef      = ALL_KEY_MAP[keyId];
@@ -67,6 +68,18 @@ export default function BindModal({
   const modalRef = useRef(null);
 
   const newId = bindingId(keyId, modifiers);
+
+  const crossFormatTabs = (() => {
+    if (!settings?.warnCrossFormatConflicts || !formats) return [];
+    const others = [];
+    formats.forEach((f, i) => {
+      if (i === activeIndex) return;
+      if (f.bindings.some(x => bindingId(x.key, x.modifiers) === newId)) {
+        others.push(f.name);
+      }
+    });
+    return others;
+  })();
 
   const currentFamily = MOD_KEY_FAMILY[keyId];
   const hasConflict = (() => {
@@ -236,6 +249,10 @@ export default function BindModal({
 
           {hasConflict && (
             <p className="conflict-warn">⚠ {t('modifierConflict')}</p>
+          )}
+
+          {crossFormatTabs.length > 0 && (
+            <p className="conflict-warn">⚠ {t('crossFormatConflict', { names: crossFormatTabs.map(n => `"${resolveAction(n, t)}"`).join(', ') })}</p>
           )}
 
           <div className="modal-actions">
