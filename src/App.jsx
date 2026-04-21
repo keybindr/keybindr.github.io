@@ -300,7 +300,7 @@ export default function App() {
   function handleImport(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    importFile(file)
+    importFile(file, settings.uiLanguage || settings.language)
       .then(result => {
         if (result.type === 'full') {
           replaceFormats(result.data.formats);

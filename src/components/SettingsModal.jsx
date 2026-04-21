@@ -3,6 +3,14 @@ import { LAYOUTS } from '../keyboardLayouts';
 import { LOCALES } from '../keylabels';
 import { useT } from '../useTranslation';
 
+function stripKeyboardHints(name) {
+  return name
+    .replace(/,?\s*(AZERTY|QWERTZ|QWERTY)/gi, '')
+    .replace(/\(\s*\)/, '')
+    .replace(/\s+\)/g, ')')
+    .trim();
+}
+
 export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onChangeUiLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onClearKeys, onClose }) {
   const t = useT();
   const { splitModifiers, physicalLayout, language, uiLanguage, warnCrossFormatConflicts, showMouseBindings } = settings;
@@ -50,7 +58,7 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
             >
               <option value="">{t('matchKeyboard')}</option>
               {Object.entries(LOCALES).map(([id, locale]) => (
-                <option key={id} value={id}>{locale.name}</option>
+                <option key={id} value={id}>{stripKeyboardHints(locale.name)}</option>
               ))}
             </select>
           </div>

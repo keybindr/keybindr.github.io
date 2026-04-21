@@ -202,7 +202,7 @@ function clampText(ctx, text, maxW) {
   return text + '…';
 }
 
-function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US', keyHeader = 'KEY', keyField = 'key', resolveKeyLabel = null) {
+function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US', keyHeader = null, keyField = 'key', resolveKeyLabel = null) {
   const t = makeT(language);
   const FONT    = `'Courier New', monospace`;
   const rowH    = 26 * S;
@@ -214,9 +214,9 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US', ke
   const modPad  = 10 * S;
   ctx.font      = `bold ${10 * S}px ${FONT}`;
   ctx.fillStyle = '#555';
-  ctx.fillText('MODIFIER',  x + modPad, y + headerH * 0.7);
-  ctx.fillText(keyHeader,   colKey,     y + headerH * 0.7);
-  ctx.fillText('ACTION',    colAct,     y + headerH * 0.7);
+  ctx.fillText(t('colModifier').toUpperCase(),               x + modPad, y + headerH * 0.7);
+  ctx.fillText((keyHeader ?? t('colKey')).toUpperCase(),     colKey,     y + headerH * 0.7);
+  ctx.fillText(t('colAction').toUpperCase(),                 colAct,     y + headerH * 0.7);
 
   ctx.strokeStyle = '#2a2a2a';
   ctx.lineWidth   = S;
@@ -340,7 +340,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   ctx.font      = `bold ${22 * S}px ${FONT}`;
   ctx.fillStyle = '#e0a84b';
   if ('letterSpacing' in ctx) ctx.letterSpacing = `${Math.round(0.05 * 22 * S)}px`;
-  ctx.fillText((layoutName || 'Keybind Layout').toUpperCase(), pad, y);
+  ctx.fillText((layoutName || makeT(settings.uiLanguage || settings.language || 'en-US')('layoutNameDefault')).toUpperCase(), pad, y);
   if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
   y += sGap1;
 
@@ -348,7 +348,8 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   y += sSub;
   ctx.font      = `${14 * S}px ${FONT}`;
   ctx.fillStyle = '#777';
-  ctx.fillText(resolveAction(format.name, makeT(settings.uiLanguage || settings.language || 'en-US')) || 'Format', pad, y);
+  const tFmt = makeT(settings.uiLanguage || settings.language || 'en-US');
+  ctx.fillText(resolveAction(format.name, tFmt) || tFmt('exportFormatFallback'), pad, y);
   y += sGap2;
 
   // Legend
@@ -384,18 +385,18 @@ async function renderFormatToCanvas(format, layoutName, settings) {
     ctx.font      = `bold ${14 * S}px ${FONT}`;
     ctx.fillStyle = '#e0a84b';
     y += sMTitle;
-    ctx.fillText('MOUSE BINDINGS', pad, y);
+    ctx.fillText(makeT(settings.uiLanguage || settings.language || 'en-US')('mouseBindingsTitle').toUpperCase(), pad, y);
     y += sMGap;
     fillRoundRect  (ctx, pad, y, contentW, mTblBoxH, 8 * S, '#1a1a1a');
     strokeRoundRect(ctx, pad, y, contentW, mTblBoxH, 8 * S, '#3a3a3a', S);
-    drawBindingTable(ctx, mouseBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', 'BUTTON', 'button', b => b.button);
+    drawBindingTable(ctx, mouseBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', makeT(settings.uiLanguage || settings.language || 'en-US')('colButton'), 'button', b => b.button);
     y += sMTblBox + sMGapAfter;
   }
 
   // Footer
   ctx.font      = `${10 * S}px ${FONT}`;
   ctx.fillStyle = '#f0c060';
-  ctx.fillText('Generated @ keybindr.github.io', pad, totalH - sBotPad);
+  ctx.fillText(makeT(settings.uiLanguage || settings.language || 'en-US')('exportFooter'), pad, totalH - sBotPad);
 
   return canvas;
 }
@@ -451,17 +452,18 @@ export async function exportPNG(formats, layoutName, settings) {
   download(zipBlob, 'keybind layouts.zip');
 }
 
-export function importFile(file) {
+export function importFile(file, language = 'en-US') {
+  const t = makeT(language);
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = e => {
       try {
         const ext = file.name.split('.').pop().toLowerCase();
-        if (ext !== 'json') { reject(new Error('Unsupported file type — use .json')); return; }
+        if (ext !== 'json') { reject(new Error(t('importErrUnsupported'))); return; }
         resolve(parseJSON(e.target.result));
       } catch (err) { reject(err); }
     };
-    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.onerror = () => reject(new Error(t('importErrRead')));
     reader.readAsText(file);
   });
 }
