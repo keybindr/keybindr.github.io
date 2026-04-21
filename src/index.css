@@ -694,8 +694,15 @@ html, body {
   padding: 5px 8px;
   border-radius: 4px;
   cursor: pointer;
-  width: 200px;
+  min-width: 128px;
   transition: border-color 0.15s;
+}
+
+.settings-row-labeled .settings-select {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .settings-select:focus {
