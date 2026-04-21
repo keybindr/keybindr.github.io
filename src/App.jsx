@@ -281,6 +281,7 @@ export default function App() {
     if (result.layoutName !== undefined) handleLayoutNameChange(result.layoutName);
     if (result.physicalLayout) setPhysicalLayout(result.physicalLayout);
     if (result.language)       setLanguage(result.language);
+    if (result.formats?.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
     setSelectedId(null);
     setPendingImport(null);
   }
@@ -307,8 +308,10 @@ export default function App() {
           handleLayoutNameChange(result.data.layoutName || '');
           if (result.data.physicalLayout) setPhysicalLayout(result.data.physicalLayout);
           if (result.data.language)       setLanguage(result.data.language);
+          if (result.data.formats?.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
         } else if (result.type === 'formats') {
           replaceFormats(result.data);
+          if (result.data.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
         } else {
           replaceActiveBindings(result.data);
         }
