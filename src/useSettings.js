@@ -22,6 +22,7 @@ const DEFAULTS = {
   splitModifiers: false,
   physicalLayout: isTouchDevice ? 'layout-60' : localeUsesISO(detectedLocale) ? 'iso-105' : 'ansi-104',
   language: detectedLocale,
+  warnCrossFormatConflicts: false,
 };
 
 function load() {
@@ -30,9 +31,10 @@ function load() {
     if (!saved) return DEFAULTS;
     return {
       ...DEFAULTS,
-      splitModifiers: !!saved.splitModifiers,
-      physicalLayout: saved.physicalLayout ?? DEFAULTS.physicalLayout,
-      language:       saved.language       ?? DEFAULTS.language,
+      splitModifiers:            !!saved.splitModifiers,
+      physicalLayout:            saved.physicalLayout            ?? DEFAULTS.physicalLayout,
+      language:                  saved.language                  ?? DEFAULTS.language,
+      warnCrossFormatConflicts:  !!saved.warnCrossFormatConflicts,
     };
   } catch {
     return DEFAULTS;
@@ -58,9 +60,13 @@ export function useSettings() {
     setSettings(prev => { const next = { ...prev, language: val }; persist(next); return next; });
   }
 
+  function setWarnCrossFormatConflicts(val) {
+    setSettings(prev => { const next = { ...prev, warnCrossFormatConflicts: val }; persist(next); return next; });
+  }
+
   function resetSettings() {
     setSettings(() => { persist(DEFAULTS); return DEFAULTS; });
   }
 
-  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, resetSettings };
+  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setWarnCrossFormatConflicts, resetSettings };
 }
