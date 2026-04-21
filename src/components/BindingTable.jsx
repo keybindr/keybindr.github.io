@@ -43,6 +43,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
   const [editingId, setEditingId]         = useState(null);
   const [editValue, setEditValue]         = useState('');
   const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [locked, setLocked]              = useState(false);
   const dragIndex = useRef(null);
   const conflictIds = detectModifierConflicts(bindings);
 
@@ -93,7 +94,11 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
             <th>{t('colKey')}</th>
             <th className="cell-color-head">{t('colColor')}</th>
             <th>{t('colAction')}</th>
-            <th></th>
+            <th className="cell-del-head">
+              <button className="btn-lock" onClick={e => { e.stopPropagation(); setLocked(v => !v); }} title={locked ? t('unlockDelete') : t('lockDelete')}>
+                <span style={locked ? {} : { position: 'relative', left: '4px' }}>{locked ? '🔒' : '🔓'}</span>
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -175,11 +180,13 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                   )}
                 </td>
                 <td className="cell-del">
-                  <button
-                    className="btn-del"
-                    title={t('removeBinding')}
-                    onClick={e => { e.stopPropagation(); onRemove(b.key, b.modifiers); }}
-                  >✕</button>
+                  {!locked && (
+                    <button
+                      className="btn-del"
+                      title={t('removeBinding')}
+                      onClick={e => { e.stopPropagation(); onRemove(b.key, b.modifiers); }}
+                    >✕</button>
+                  )}
                 </td>
               </tr>
             );

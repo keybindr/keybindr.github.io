@@ -505,6 +505,18 @@ html, body {
   border-color: var(--danger);
 }
 
+.btn-lock {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.btn-lock:hover { opacity: 1; }
+
 .table-empty {
   color: var(--text-dim);
   text-align: center;
