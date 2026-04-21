@@ -202,7 +202,7 @@ function clampText(ctx, text, maxW) {
   return text + '…';
 }
 
-function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
+function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US', keyHeader = 'KEY', keyField = 'key', resolveKeyLabel = null) {
   const t = makeT(language);
   const FONT    = `'Courier New', monospace`;
   const rowH    = 26 * S;
@@ -214,9 +214,9 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
   const modPad  = 10 * S;
   ctx.font      = `bold ${10 * S}px ${FONT}`;
   ctx.fillStyle = '#555';
-  ctx.fillText('MODIFIER', x + modPad, y + headerH * 0.7);
-  ctx.fillText('KEY',      colKey,     y + headerH * 0.7);
-  ctx.fillText('ACTION',   colAct,     y + headerH * 0.7);
+  ctx.fillText('MODIFIER',  x + modPad, y + headerH * 0.7);
+  ctx.fillText(keyHeader,   colKey,     y + headerH * 0.7);
+  ctx.fillText('ACTION',    colAct,     y + headerH * 0.7);
 
   ctx.strokeStyle = '#2a2a2a';
   ctx.lineWidth   = S;
@@ -258,7 +258,8 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
 
     ctx.font      = `bold ${12 * S}px ${FONT}`;
     ctx.fillStyle = '#f0c060';
-    ctx.fillText(resolveLabel(b.key, ALL_KEY_MAP[b.key], language), colKey, ty);
+    const keyText = resolveKeyLabel ? resolveKeyLabel(b) : resolveLabel(b[keyField], ALL_KEY_MAP[b[keyField]], language);
+    ctx.fillText(keyText, colKey, ty);
 
     ctx.font      = `${12 * S}px ${FONT}`;
     ctx.fillStyle = '#ccc';
@@ -271,8 +272,9 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   const FONT = `'Fira Code', 'Courier New', monospace`;
   const pad  = 32 * S;
 
-  const bindings = format.bindings || [];
-  const kc       = format.keyColors || {};
+  const bindings      = format.bindings || [];
+  const mouseBindings = Array.isArray(format.mouseBindings) ? format.mouseBindings : [];
+  const kc            = format.keyColors || {};
 
   const { width: KB_W, height: KB_H } = getLayout(settings.physicalLayout ?? 'ansi-104');
 
@@ -294,6 +296,13 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   const tblContentH  = bindings.length > 0 ? tblHeaderH + bindings.length * tblRowH : 0;
   const tblBoxH      = bindings.length > 0 ? tblContentH + 2 * tblInset : 0;
 
+  const mTblContentH = mouseBindings.length > 0 ? tblHeaderH + mouseBindings.length * tblRowH : 0;
+  const mTblBoxH     = mouseBindings.length > 0 ? mTblContentH + 2 * tblInset : 0;
+  const sMTitle      = mouseBindings.length > 0 ? 22 * S : 0;
+  const sMGap        = mouseBindings.length > 0 ? 10 * S : 0;
+  const sMTblBox     = mTblBoxH;
+  const sMGapAfter   = mouseBindings.length > 0 ? 16 * S : 0;
+
   // Section heights (already in canvas px)
   const sTopPad = 24 * S;
   const sTitle  = 28 * S;
@@ -312,7 +321,9 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   const sBotPad = 24 * S;
 
   const totalH = sTopPad + sTitle + sGap1 + sSub + sGap2 + sLegend + sGap3 +
-                 sKbBox + sGap4 + sSep + sGap5 + sTblBox + sGap6 + sFooter + sBotPad;
+                 sKbBox + sGap4 + sSep + sGap5 + sTblBox + sGap6 +
+                 sMTitle + sMGap + sMTblBox + sMGapAfter +
+                 sFooter + sBotPad;
 
   const canvas = document.createElement('canvas');
   canvas.width  = totalW;
@@ -368,6 +379,19 @@ async function renderFormatToCanvas(format, layoutName, settings) {
     y += sTblBox + sGap6;
   }
 
+  // Mouse bindings section
+  if (mouseBindings.length > 0) {
+    ctx.font      = `bold ${14 * S}px ${FONT}`;
+    ctx.fillStyle = '#e0a84b';
+    y += sMTitle;
+    ctx.fillText('MOUSE BINDINGS', pad, y);
+    y += sMGap;
+    fillRoundRect  (ctx, pad, y, contentW, mTblBoxH, 8 * S, '#1a1a1a');
+    strokeRoundRect(ctx, pad, y, contentW, mTblBoxH, 8 * S, '#3a3a3a', S);
+    drawBindingTable(ctx, mouseBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.language ?? 'en-US', 'BUTTON', 'button', b => b.button);
+    y += sMTblBox + sMGapAfter;
+  }
+
   // Footer
   ctx.font      = `${10 * S}px ${FONT}`;
   ctx.fillStyle = '#f0c060';
@@ -381,7 +405,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
 export function exportJSON(formats, layoutName, settings = {}) {
   const t = makeT(settings.language ?? 'en-US');
   const data = {
-    version: 4,
+    version: 5,
     layoutName:      layoutName || '',
     physicalLayout:  settings.physicalLayout ?? 'ansi-104',
     language:        settings.language       ?? 'en-US',
@@ -393,6 +417,11 @@ export function exportJSON(formats, layoutName, settings = {}) {
         action:    resolveAction(b.action, t),
       })),
       keyColors: f.keyColors,
+      mouseBindings: (Array.isArray(f.mouseBindings) ? f.mouseBindings : []).map(b => ({
+        button:    b.button,
+        modifiers: b.modifiers,
+        action:    resolveAction(b.action, t),
+      })),
     })),
   };
   const filename = sanitizeFilename(layoutName || 'keybindings') + '.json';
@@ -449,6 +478,14 @@ function parseBindingsArray(arr) {
   });
 }
 
+function parseMouseBindingsArray(arr) {
+  return (Array.isArray(arr) ? arr : []).map(b => ({
+    button:    String(b.button ?? ''),
+    modifiers: (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
+    action:    String(b.action ?? ''),
+  })).filter(b => b.button);
+}
+
 function parseJSON(text) {
   const data = JSON.parse(text);
   if (data.formats && Array.isArray(data.formats)) {
@@ -456,6 +493,7 @@ function parseJSON(text) {
       name:      String(f.name ?? ''),
       bindings:  parseBindingsArray(f.bindings),
       keyColors: (f.keyColors && typeof f.keyColors === 'object') ? f.keyColors : {},
+      mouseBindings: parseMouseBindingsArray(f.mouseBindings),
     }));
     if (data.version >= 3 && data.layoutName !== undefined) {
       return {
