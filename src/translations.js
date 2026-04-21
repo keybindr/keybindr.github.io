@@ -1,6 +1,6 @@
 const en = {
   tagline:            'A Keybinding Visualizer',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'Import JSON',
   exportJson:         'Export JSON',
   exportPng:          'Export PNG',
@@ -110,7 +110,7 @@ const en = {
 
 const de = {
   tagline:            'Ein Keybinding-Visualizer',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'JSON importieren',
   exportJson:         'JSON exportieren',
   exportPng:          'PNG exportieren',
@@ -219,7 +219,7 @@ const de = {
 
 const fr = {
   tagline:            'Un visualiseur de raccourcis clavier',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'Importer JSON',
   exportJson:         'Exporter JSON',
   exportPng:          'Exporter PNG',
@@ -328,7 +328,7 @@ const fr = {
 
 const es = {
   tagline:            'Un visualizador de atajos de teclado',
-  importExport:       'Importar / Exportar ▾',
+  importExport:       'Importar / Exportar',
   importJson:         'Importar JSON',
   exportJson:         'Exportar JSON',
   exportPng:          'Exportar PNG',
@@ -437,7 +437,7 @@ const es = {
 
 const sv = {
   tagline:            'En tangentbindningsvisualiserare',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'Importera JSON',
   exportJson:         'Exportera JSON',
   exportPng:          'Exportera PNG',
@@ -546,7 +546,7 @@ const sv = {
 
 const nb = {
   tagline:            'En tastebindingsvisualiser',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'Importer JSON',
   exportJson:         'Eksporter JSON',
   exportPng:          'Eksporter PNG',
@@ -655,7 +655,7 @@ const nb = {
 
 const da = {
   tagline:            'En tastaturbindingsvisualisering',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'Importer JSON',
   exportJson:         'Eksporter JSON',
   exportPng:          'Eksporter PNG',
@@ -764,7 +764,7 @@ const da = {
 
 const fi = {
   tagline:            'Näppäinmääritysvisualisoija',
-  importExport:       'Tuo / Vie ▾',
+  importExport:       'Tuo / Vie',
   importJson:         'Tuo JSON',
   exportJson:         'Vie JSON',
   exportPng:          'Vie PNG',
@@ -873,7 +873,7 @@ const fi = {
 
 const nl = {
   tagline:            'Een toetsenbindingsvisualisator',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'JSON importeren',
   exportJson:         'JSON exporteren',
   exportPng:          'PNG exporteren',
@@ -982,7 +982,7 @@ const nl = {
 
 const pl = {
   tagline:            'Wizualizator powiązań klawiszy',
-  importExport:       'Import / Eksport ▾',
+  importExport:       'Import / Eksport',
   importJson:         'Importuj JSON',
   exportJson:         'Eksportuj JSON',
   exportPng:          'Eksportuj PNG',
@@ -1091,7 +1091,7 @@ const pl = {
 
 const cs = {
   tagline:            'Vizualizátor klávesových zkratek',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'Importovat JSON',
   exportJson:         'Exportovat JSON',
   exportPng:          'Exportovat PNG',
@@ -1200,7 +1200,7 @@ const cs = {
 
 const sk = {
   tagline:            'Vizualizátor klávesových skratiek',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'Importovať JSON',
   exportJson:         'Exportovať JSON',
   exportPng:          'Exportovať PNG',
@@ -1309,7 +1309,7 @@ const sk = {
 
 const hu = {
   tagline:            'Billentyűkötés-vizualizáló',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'JSON importálása',
   exportJson:         'JSON exportálása',
   exportPng:          'PNG exportálása',
@@ -1418,7 +1418,7 @@ const hu = {
 
 const ro = {
   tagline:            'Un vizualizator de scurtături de tastatură',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'Importă JSON',
   exportJson:         'Exportă JSON',
   exportPng:          'Exportă PNG',
@@ -1527,7 +1527,7 @@ const ro = {
 
 const ptBR = {
   tagline:            'Um visualizador de atalhos de teclado',
-  importExport:       'Importar / Exportar ▾',
+  importExport:       'Importar / Exportar',
   importJson:         'Importar JSON',
   exportJson:         'Exportar JSON',
   exportPng:          'Exportar PNG',
@@ -1636,7 +1636,7 @@ const ptBR = {
 
 const ptPT = {
   ...ptBR,
-  importExport:       'Importar / Exportar ▾',
+  importExport:       'Importar / Exportar',
   shareLayout:        'Partilhar layout',
   noBindings:         'Sem atalhos. Clique numa tecla para adicionar.',
   actionPlaceholder:  'ex. Mover para a frente',
@@ -1663,7 +1663,7 @@ const ptPT = {
 
 const it = {
   tagline:            'Un visualizzatore di associazioni di tasti',
-  importExport:       'Import / Export ▾',
+  importExport:       'Import / Export',
   importJson:         'Importa JSON',
   exportJson:         'Esporta JSON',
   exportPng:          'Esporta PNG',
@@ -1772,7 +1772,7 @@ const it = {
 
 const tr = {
   tagline:            'Bir tuş atama görselleştiricisi',
-  importExport:       'İçe / Dışa Aktar ▾',
+  importExport:       'İçe / Dışa Aktar',
   importJson:         'JSON İçe Aktar',
   exportJson:         'JSON Dışa Aktar',
   exportPng:          'PNG Dışa Aktar',
@@ -1881,7 +1881,7 @@ const tr = {
 
 const el = {
   tagline:            'Ένα εργαλείο οπτικοποίησης πλήκτρων',
-  importExport:       'Εισαγωγή / Εξαγωγή ▾',
+  importExport:       'Εισαγωγή / Εξαγωγή',
   importJson:         'Εισαγωγή JSON',
   exportJson:         'Εξαγωγή JSON',
   exportPng:          'Εξαγωγή PNG',
@@ -1990,7 +1990,7 @@ const el = {
 
 const vi = {
   tagline:            'Công cụ hiển thị phím tắt',
-  importExport:       'Nhập / Xuất ▾',
+  importExport:       'Nhập / Xuất',
   importJson:         'Nhập JSON',
   exportJson:         'Xuất JSON',
   exportPng:          'Xuất PNG',
@@ -2099,7 +2099,7 @@ const vi = {
 
 const bg = {
   tagline:            'Визуализатор на клавишни комбинации',
-  importExport:       'Импорт / Експорт ▾',
+  importExport:       'Импорт / Експорт',
   importJson:         'Импорт JSON',
   exportJson:         'Експорт JSON',
   exportPng:          'Експорт PNG',
@@ -2208,7 +2208,7 @@ const bg = {
 
 const sr = {
   tagline:            'Визуализатор пречица на тастатури',
-  importExport:       'Увоз / Извоз ▾',
+  importExport:       'Увоз / Извоз',
   importJson:         'Увоз JSON',
   exportJson:         'Извоз JSON',
   exportPng:          'Извоз PNG',
@@ -2317,7 +2317,7 @@ const sr = {
 
 const hr = {
   tagline:            'Vizualizator prečaca tipkovnice',
-  importExport:       'Uvoz / Izvoz ▾',
+  importExport:       'Uvoz / Izvoz',
   importJson:         'Uvoz JSON',
   exportJson:         'Izvoz JSON',
   exportPng:          'Izvoz PNG',
@@ -2426,7 +2426,7 @@ const hr = {
 
 const ru = {
   tagline:            'Визуализатор привязок клавиш',
-  importExport:       'Импорт / Экспорт ▾',
+  importExport:       'Импорт / Экспорт',
   importJson:         'Импорт JSON',
   exportJson:         'Экспорт JSON',
   exportPng:          'Экспорт PNG',
@@ -2535,7 +2535,7 @@ const ru = {
 
 const uk = {
   tagline:            'Візуалізатор прив\u02BCязок клавіш',
-  importExport:       'Імпорт / Експорт ▾',
+  importExport:       'Імпорт / Експорт',
   importJson:         'Імпорт JSON',
   exportJson:         'Експорт JSON',
   exportPng:          'Експорт PNG',
@@ -2645,7 +2645,7 @@ const uk = {
 
 const ko = {
   tagline:            '키 바인딩 시각화 도구',
-  importExport:       '가져오기 / 내보내기 ▾',
+  importExport:       '가져오기 / 내보내기',
   importJson:         'JSON 가져오기',
   exportJson:         'JSON 내보내기',
   exportPng:          'PNG 내보내기',
@@ -2754,7 +2754,7 @@ const ko = {
 
 const zhCN = {
   tagline:            '键位绑定可视化工具',
-  importExport:       '导入 / 导出 ▾',
+  importExport:       '导入 / 导出',
   importJson:         '导入 JSON',
   exportJson:         '导出 JSON',
   exportPng:          '导出 PNG',
@@ -2863,7 +2863,7 @@ const zhCN = {
 
 const ja = {
   tagline:            'キーバインド ビジュアライザー',
-  importExport:       'インポート / エクスポート ▾',
+  importExport:       'インポート / エクスポート',
   importJson:         'JSON インポート',
   exportJson:         'JSON エクスポート',
   exportPng:          'PNG エクスポート',
@@ -2972,7 +2972,7 @@ const ja = {
 
 const id = {
   tagline:            'Visualisasi key binding',
-  importExport:       'Impor / Ekspor ▾',
+  importExport:       'Impor / Ekspor',
   importJson:         'Impor JSON',
   exportJson:         'Ekspor JSON',
   exportPng:          'Ekspor PNG',
