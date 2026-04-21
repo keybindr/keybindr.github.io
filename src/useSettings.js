@@ -23,6 +23,7 @@ const DEFAULTS = {
   physicalLayout: isTouchDevice ? 'layout-60' : localeUsesISO(detectedLocale) ? 'iso-105' : 'ansi-104',
   language: detectedLocale,
   warnCrossFormatConflicts: false,
+  showMouseBindings: false,
 };
 
 function load() {
@@ -35,6 +36,7 @@ function load() {
       physicalLayout:            saved.physicalLayout            ?? DEFAULTS.physicalLayout,
       language:                  saved.language                  ?? DEFAULTS.language,
       warnCrossFormatConflicts:  !!saved.warnCrossFormatConflicts,
+      showMouseBindings:         !!saved.showMouseBindings,
     };
   } catch {
     return DEFAULTS;
@@ -64,9 +66,13 @@ export function useSettings() {
     setSettings(prev => { const next = { ...prev, warnCrossFormatConflicts: val }; persist(next); return next; });
   }
 
+  function setShowMouseBindings(val) {
+    setSettings(prev => { const next = { ...prev, showMouseBindings: val }; persist(next); return next; });
+  }
+
   function resetSettings() {
     setSettings(() => { persist(DEFAULTS); return DEFAULTS; });
   }
 
-  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setWarnCrossFormatConflicts, resetSettings };
+  return { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, resetSettings };
 }

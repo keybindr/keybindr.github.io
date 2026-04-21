@@ -384,6 +384,12 @@ html, body {
   overflow-x: auto;
 }
 
+.mouse-add-row {
+  padding: 10px 0 4px;
+  display: flex;
+  justify-content: flex-start;
+}
+
 .binding-table {
   width: 100%;
   border-collapse: collapse;

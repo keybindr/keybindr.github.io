@@ -3,9 +3,9 @@ import { LAYOUTS } from '../keyboardLayouts';
 import { LOCALES } from '../keylabels';
 import { useT } from '../useTranslation';
 
-export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onToggleCrossFormatWarnings, onClearKeys, onClose }) {
+export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onClearKeys, onClose }) {
   const t = useT();
-  const { splitModifiers, physicalLayout, language, warnCrossFormatConflicts } = settings;
+  const { splitModifiers, physicalLayout, language, warnCrossFormatConflicts, showMouseBindings } = settings;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -76,6 +76,26 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
               <button
                 className={`toggle-btn${warnCrossFormatConflicts ? ' active' : ''}`}
                 onClick={() => onToggleCrossFormatWarnings(true)}
+              >
+                {t('on')}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-section-title">{t('showMouseBindings')}</div>
+          <div className="settings-row">
+            <div className="toggle-group">
+              <button
+                className={`toggle-btn${!showMouseBindings ? ' active' : ''}`}
+                onClick={() => onToggleMouseBindings(false)}
+              >
+                {t('off')}
+              </button>
+              <button
+                className={`toggle-btn${showMouseBindings ? ' active' : ''}`}
+                onClick={() => onToggleMouseBindings(true)}
               >
                 {t('on')}
               </button>

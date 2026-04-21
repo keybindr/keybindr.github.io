@@ -8,11 +8,14 @@ const RECENT_KEY  = 'keybindr_recent_colors';
 
 export const MAX_FORMATS = 5;
 
+export const MOUSE_BUTTONS = ['Mouse1', 'Mouse2', 'Mouse3', 'Mouse4', 'Mouse5', 'WheelUp', 'WheelDown'];
+
 function makeFormat(name = '', empty = false) {
   return {
     name,
-    bindings:  empty ? [] : [...DEFAULT_BINDINGS],
-    keyColors: {},
+    bindings:      empty ? [] : [...DEFAULT_BINDINGS],
+    keyColors:     {},
+    mouseBindings: [],
   };
 }
 
@@ -176,6 +179,43 @@ export function useFormats() {
     mutateActiveFormat(f => ({ ...f, bindings }));
   }
 
+  function addOrUpdateMouseBinding(button, modifiers, action) {
+    const id = bindingId(button, modifiers);
+    mutateActiveFormat(f => {
+      const current = Array.isArray(f.mouseBindings) ? f.mouseBindings : [];
+      const exists = current.some(b => bindingId(b.button, b.modifiers) === id);
+      if (exists) {
+        return {
+          ...f,
+          mouseBindings: current.map(b =>
+            bindingId(b.button, b.modifiers) === id
+              ? { ...b, button, modifiers: modifiers.slice().sort(), action }
+              : b
+          ),
+        };
+      }
+      return { ...f, mouseBindings: [...current, { button, modifiers: modifiers.slice().sort(), action }] };
+    });
+  }
+
+  function removeMouseBinding(button, modifiers) {
+    const id = bindingId(button, modifiers);
+    mutateActiveFormat(f => ({
+      ...f,
+      mouseBindings: (Array.isArray(f.mouseBindings) ? f.mouseBindings : []).filter(b => bindingId(b.button, b.modifiers) !== id),
+    }));
+  }
+
+  function updateMouseAction(button, modifiers, action) {
+    const id = bindingId(button, modifiers);
+    mutateActiveFormat(f => ({
+      ...f,
+      mouseBindings: (Array.isArray(f.mouseBindings) ? f.mouseBindings : []).map(b =>
+        bindingId(b.button, b.modifiers) === id ? { ...b, action } : b
+      ),
+    }));
+  }
+
   function replaceFormats(newFormats) {
     mutate(() => ({ formats: newFormats.slice(0, MAX_FORMATS), active: 0 }));
   }
@@ -242,11 +282,13 @@ export function useFormats() {
   return {
     formats, activeIndex,
     switchTo, addFormat, setFormatName, removeFormat,
-    bindings:  activeFormat?.bindings  ?? [],
-    keyColors: activeFormat?.keyColors ?? {},
+    bindings:      activeFormat?.bindings      ?? [],
+    keyColors:     activeFormat?.keyColors     ?? {},
+    mouseBindings: Array.isArray(activeFormat?.mouseBindings) ? activeFormat.mouseBindings : [],
     recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats, removeOrphanBindings,
+    addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors, addRecentColor,
     resetFormats,
     undo, redo,

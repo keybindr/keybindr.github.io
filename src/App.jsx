@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import Keyboard from './components/Keyboard';
 import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
+import MouseBindingTable from './components/MouseBindingTable';
+import MouseBindModal from './components/MouseBindModal';
 import HelpModal from './components/HelpModal';
 import SettingsModal from './components/SettingsModal';
 import ShareModal from './components/ShareModal';
@@ -172,15 +174,17 @@ function MobileWarningModal({ onClose }) {
 export default function App() {
   const {
     formats, activeIndex, switchTo, addFormat, setFormatName, removeFormat,
-    bindings, keyColors, recentColors,
+    bindings, keyColors, mouseBindings, recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats, removeOrphanBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors, addRecentColor,
+    addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
     resetFormats,
     undo, redo,
   } = useFormats();
 
-  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setWarnCrossFormatConflicts, resetSettings } = useSettings();
+  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, resetSettings } = useSettings();
+  const [mouseModal, setMouseModal] = useState(null);
 
   const [layoutName, setLayoutNameState] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
   const [selectedId, setSelectedId]     = useState(null);
@@ -653,6 +657,32 @@ export default function App() {
         />
       </div>
 
+      {settings.showMouseBindings && (
+        <div className="panel">
+          <h2 className="panel-title">{t('mouseBindingsTitle')} <span className="count-badge">{mouseBindings.length}</span></h2>
+          <MouseBindingTable
+            mouseBindings={mouseBindings}
+            onUpdateAction={updateMouseAction}
+            onRemove={removeMouseBinding}
+            onOpenModal={(button, modifiers) => setMouseModal({ button: button ?? null, modifiers: modifiers ?? [] })}
+          />
+        </div>
+      )}
+
+      {mouseModal && (
+        <MouseBindModal
+          initialButton={mouseModal.button}
+          initialModifiers={mouseModal.modifiers}
+          existingBindings={mouseBindings}
+          settings={settings}
+          onSave={(button, modifiers, action) => {
+            addOrUpdateMouseBinding(button, modifiers, action);
+            setMouseModal(null);
+          }}
+          onCancel={() => setMouseModal(null)}
+        />
+      )}
+
       {modalKey && (
         <BindModal
           keyId={modalKey}
@@ -687,6 +717,7 @@ export default function App() {
           onChangeLayout={handleLayoutChange}
           onChangeLocale={handleLocaleChange}
           onToggleCrossFormatWarnings={setWarnCrossFormatConflicts}
+          onToggleMouseBindings={setShowMouseBindings}
           onClearKeys={resetAll}
           onClose={() => setShowSettings(false)}
         />
