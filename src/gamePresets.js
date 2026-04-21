@@ -27,10 +27,6 @@ const WOW_TO_BROWSER = {
   NUMLOCK:'NumLock',PAUSE:'Pause',
 };
 
-const BROWSER_TO_WOW = Object.fromEntries(
-  Object.entries(WOW_TO_BROWSER).map(([wow, br]) => [br, wow])
-);
-
 const WOW_MOD_MAP = { CTRL:'Ctrl', SHIFT:'Shift', ALT:'Alt' };
 
 function parseWowKey(wowStr) {
@@ -44,20 +40,6 @@ function parseWowKey(wowStr) {
   }
   const keyName = parts.slice(i).join('-');
   return { key: WOW_TO_BROWSER[keyName] ?? keyName, modifiers: modifiers.sort() };
-}
-
-const MOD_TO_WOW = {
-  Ctrl:'CTRL', Shift:'SHIFT', Alt:'ALT',
-  CtrlLeft:'CTRL', CtrlRight:'CTRL',
-  ShiftLeft:'SHIFT', ShiftRight:'SHIFT',
-  AltLeft:'ALT', AltRight:'ALT',
-};
-
-function buildWowKeyStr(keyId, modifiers) {
-  const wowKey = BROWSER_TO_WOW[keyId];
-  if (!wowKey) return null;
-  const uniqueMods = [...new Set(modifiers.map(m => MOD_TO_WOW[m]).filter(Boolean))];
-  return uniqueMods.length ? `${uniqueMods.join('-')}-${wowKey}` : wowKey;
 }
 
 // ── WoW bindings ──────────────────────────────────────────────────────────────
@@ -126,39 +108,6 @@ const WOW_DEFAULTS = [
 const WOW_BINDINGS = WOW_DEFAULTS.map(([id, key]) => ({
   ...parseWowKey(key), action: `__wow:${id}`,
 }));
-
-export function parseWTF(text) {
-  const bindings = [];
-  for (const line of text.split('\n')) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('//') || trimmed.startsWith('--')) continue;
-    const match = trimmed.match(/^BINDING_KEY_(\w+)\s+"([^"]*)"$/);
-    if (!match) continue;
-    const [, actionName, wowKeyStr] = match;
-    if (!wowKeyStr || wowKeyStr === 'UNBOUND') continue;
-    const { key, modifiers } = parseWowKey(wowKeyStr);
-    if (!key) continue;
-    bindings.push({ key, modifiers, action: `__wow:${actionName}` });
-  }
-  return bindings;
-}
-
-function exportWTF(formats) {
-  const lines = ['// exported from keybindr.github.io', ''];
-  for (const format of formats) {
-    for (const b of format.bindings) {
-      if (!b.action?.startsWith('__wow:')) continue;
-      const wowKey = buildWowKeyStr(b.key, b.modifiers);
-      if (wowKey) lines.push(`BINDING_KEY_${b.action.slice(6)} "${wowKey}"`);
-    }
-  }
-  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'bindings-cache.wtf';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
 
 // ── FFXIV bindings ────────────────────────────────────────────────────────────
 
@@ -603,11 +552,6 @@ export const GAME_PRESETS = [
     label: 'World of Warcraft',
     layoutName: 'World of Warcraft Default Layout',
     formats: [{ name: '__t:formatDefault', bindings: WOW_BINDINGS, keyColors: computeKeyColors(WOW_BINDINGS, WOW_ACTION_COLORS) }],
-    importLabel: 'importWtf',
-    importAccept: '.wtf',
-    importFn: parseWTF,
-    exportLabel: 'exportWtf',
-    exportFn: exportWTF,
   },
   {
     id: 'ffxiv',
