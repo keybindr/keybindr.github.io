@@ -4,6 +4,7 @@ import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
 import MouseBindingTable from './components/MouseBindingTable';
 import MouseBindModal from './components/MouseBindModal';
+import MouseDiagram from './components/MouseDiagram';
 import HOTASBindingTable from './components/HOTASBindingTable';
 import HOTASBindModal from './components/HOTASBindModal';
 import HelpModal from './components/HelpModal';
@@ -543,6 +544,8 @@ export default function App() {
   const { splitModifiers } = settings;
   const t = makeT(settings.uiLanguage || settings.language);
 
+  const mouseProfile = getMouseProfile(settings.mouseModel ?? 'custom');
+
   // For named HOTAS profiles, override the three button counts so all HOTAS
   // components (modal dropdown, "first unused" logic) reflect the device's spec.
   const hotasCounts = getEffectiveHotasCounts(settings);
@@ -771,6 +774,8 @@ export default function App() {
       {settings.showMouseBindings && (
         <div className="panel" style={{ marginTop: 10 }}>
           <h2 className="panel-title">{t('mouseBindingsTitle')} <span className="count-badge">{mouseBindings.length}</span></h2>
+          <div style={{ display: 'flex', gap: 20, alignItems: 'flex-start' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
           <MouseBindingTable
             mouseBindings={mouseBindings}
             settings={settings}
@@ -781,8 +786,7 @@ export default function App() {
             onOpenModal={(button, modifiers) => {
               const resolvedButton = button ?? (() => {
                 const used    = new Set(mouseBindings.map(b => b.button));
-                const profile = getMouseProfile(settings.mouseModel ?? 'custom');
-                const profileIds = profile.buttons?.map(b => b.id) ?? [];
+                const profileIds = mouseProfile.buttons?.map(b => b.id) ?? [];
                 const ordered = [...profileIds, ...MOUSE_BUTTONS.filter(id => !profileIds.includes(id))];
                 return ordered.find(id => !used.has(id)) ?? ordered[0];
               })();
@@ -790,6 +794,9 @@ export default function App() {
               setMouseModal({ button: resolvedButton, modifiers: modifiers ?? [], keyboardKey: existing?.keyboardKey ?? '' });
             }}
           />
+          </div>
+          <MouseDiagram profile={mouseProfile} mouseBindings={mouseBindings} />
+          </div>
         </div>
       )}
 
