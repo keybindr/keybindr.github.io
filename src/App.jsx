@@ -549,16 +549,6 @@ export default function App() {
           </button>
           {showHamburger && (
             <div className="hamburger-menu">
-              {GAME_PRESETS.map(p => (
-                <button
-                  key={p.id}
-                  className="hamburger-item"
-                  onClick={() => { hamburgerAction(() => handleLoadPreset(p)); }}
-                >
-                  {p.label}
-                </button>
-              ))}
-              <div className="hamburger-sep" />
               <button className="hamburger-item" onClick={() => hamburgerAction(() => fileInputRef.current?.click())}>
                 {t('importJson')}
               </button>
