@@ -883,6 +883,33 @@ html, body {
   padding: 6px 10px;
 }
 
+.cross-format-warnings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #2a1e0a;
+  border-bottom: 1px solid #5a3a00;
+}
+
+.cross-format-warning-item {
+  font-size: 12px;
+  color: #e0a040;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.cross-format-binding-list {
+  color: #c08830;
+}
+
+.cross-format-tab-name {
+  color: #8a6020;
+  font-style: italic;
+}
+
 .modal-combo {
   font-size: 12px;
   color: var(--text-dim);

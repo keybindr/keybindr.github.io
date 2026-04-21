@@ -3,9 +3,9 @@ import { LAYOUTS } from '../keyboardLayouts';
 import { LOCALES } from '../keylabels';
 import { useT } from '../useTranslation';
 
-export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onClearKeys, onClose }) {
+export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onToggleCrossFormatWarnings, onClearKeys, onClose }) {
   const t = useT();
-  const { splitModifiers, physicalLayout, language } = settings;
+  const { splitModifiers, physicalLayout, language, warnCrossFormatConflicts } = settings;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -58,6 +58,26 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
                 onClick={() => onToggleSplit(true)}
               >
                 {t('leftRight')}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-section-title">{t('crossFormatWarnings')}</div>
+          <div className="settings-row">
+            <div className="toggle-group">
+              <button
+                className={`toggle-btn${!warnCrossFormatConflicts ? ' active' : ''}`}
+                onClick={() => onToggleCrossFormatWarnings(false)}
+              >
+                {t('off')}
+              </button>
+              <button
+                className={`toggle-btn${warnCrossFormatConflicts ? ' active' : ''}`}
+                onClick={() => onToggleCrossFormatWarnings(true)}
+              >
+                {t('on')}
               </button>
             </div>
           </div>
