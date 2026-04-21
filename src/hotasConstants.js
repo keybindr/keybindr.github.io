@@ -88,11 +88,11 @@ export function buildHotasGroups(
   throttleButtonCount = DEFAULT_THROTTLE_BUTTONS,
   pedalsButtonCount   = DEFAULT_PEDALS_BUTTONS,
 ) {
-  return [
-    { label: 'Joystick', inputs: buildJoystickInputs(joystickButtonCount) },
-    { label: 'Throttle', inputs: buildThrottleInputs(throttleButtonCount) },
-    { label: 'Pedals',   inputs: buildPedalsInputs(pedalsButtonCount) },
-  ];
+  const groups = [];
+  if (joystickButtonCount != null) groups.push({ label: 'Joystick', inputs: buildJoystickInputs(joystickButtonCount) });
+  if (throttleButtonCount != null) groups.push({ label: 'Throttle', inputs: buildThrottleInputs(throttleButtonCount) });
+  if (pedalsButtonCount   != null) groups.push({ label: 'Pedals',   inputs: buildPedalsInputs(pedalsButtonCount) });
+  return groups;
 }
 
 // ── HOTAS modifier colors ─────────────────────────────────────────────────────

@@ -60,6 +60,8 @@ const en = {
   switchDelete:             'Switch & Delete',
   mouseOrphanBodySingular:  'The following binding uses a button not on this mouse and will be removed:',
   mouseOrphanBodyPlural:    'The following {count} bindings use buttons not on this mouse and will be removed:',
+  hotasOrphanBodySingular:  'The following binding uses an input not on this HOTAS and will be removed:',
+  hotasOrphanBodyPlural:    'The following {count} bindings use inputs not on this HOTAS and will be removed:',
   additionalButtons:        'Additional Buttons',
   mouseModel:               'Mouse Model',
   helpTitle:          'How to use Keybindr',

@@ -14,6 +14,7 @@ import { bindingId } from './useBindings';
 import { useFormats, MAX_FORMATS, MOUSE_BUTTONS } from './useFormats';
 import { getAllHotasInputs, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from './hotasConstants';
 import { getMouseProfile, getProfileButtonSet, MOUSE_PROFILES } from './mouseProfiles';
+import { getHotasProfile, getEffectiveHotasCounts, getHotasProfileInputSet, HOTAS_PROFILES } from './hotasProfiles';
 import { useSettings } from './useSettings';
 import { exportJSON, exportPNG, importFile } from './export';
 import { GAME_PRESETS } from './gamePresets';
@@ -184,14 +185,16 @@ export default function App() {
     setKeyColor, clearKeyColor, restoreKeyColor, addRecentColor,
     addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
     addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction,
+    removeOrphanHotasBindings,
     resetFormats,
     undo, redo,
   } = useFormats();
 
-  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, setMouseModel, setShowHotasBindings, setJoystickButtonCount, setThrottleButtonCount, setPedalsButtonCount, resetSettings } = useSettings();
+  const { settings, setSplitModifiers, setPhysicalLayout, setLanguage, setUiLanguage, setWarnCrossFormatConflicts, setShowMouseBindings, setMouseModel, setShowHotasBindings, setHotasModel, setJoystickButtonCount, setThrottleButtonCount, setPedalsButtonCount, resetSettings } = useSettings();
   const [mouseModal,       setMouseModal]       = useState(null);
   const [hotasModal,       setHotasModal]       = useState(null);
   const [pendingMouseModel, setPendingMouseModel] = useState(null); // { id, name, orphans }
+  const [pendingHotasModel, setPendingHotasModel] = useState(null); // { id, name, orphans }
 
   const [layoutName, setLayoutNameState] = useState(() => localStorage.getItem(LAYOUT_NAME_KEY) || '');
   const [selectedId, setSelectedId]     = useState(null);
@@ -289,6 +292,7 @@ export default function App() {
     if (result.physicalLayout) setPhysicalLayout(result.physicalLayout);
     if (result.language)       setLanguage(result.language);
     if (result.mouseModel)     setMouseModel(result.mouseModel);
+    if (result.hotasModel)     setHotasModel(result.hotasModel);
     if (result.formats?.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
     if (result.formats?.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
     setSelectedId(null);
@@ -318,6 +322,7 @@ export default function App() {
           if (result.data.physicalLayout) setPhysicalLayout(result.data.physicalLayout);
           if (result.data.language)       setLanguage(result.data.language);
           if (result.data.mouseModel)     setMouseModel(result.data.mouseModel);
+          if (result.data.hotasModel)     setHotasModel(result.data.hotasModel);
           if (result.data.formats?.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
           if (result.data.formats?.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
         } else if (result.type === 'formats') {
@@ -498,6 +503,32 @@ export default function App() {
     setPendingMouseModel(null);
   }
 
+  function handleHotasModelChange(newModelId) {
+    const newProfile = getHotasProfile(newModelId);
+    const validSet   = getHotasProfileInputSet(newProfile); // null = custom (all valid)
+    if (validSet) {
+      const orphans = formats.flatMap(f =>
+        (Array.isArray(f.hotasBindings) ? f.hotasBindings : [])
+          .filter(b => !validSet.has(b.input))
+          .map(b => ({ ...b, _format: f.name }))
+      );
+      if (orphans.length > 0) {
+        setPendingHotasModel({ id: newModelId, name: newProfile.label, orphans });
+        return;
+      }
+    }
+    setHotasModel(newModelId);
+  }
+
+  function confirmHotasModelChange() {
+    if (!pendingHotasModel) return;
+    const newProfile = getHotasProfile(pendingHotasModel.id);
+    const validSet   = getHotasProfileInputSet(newProfile);
+    if (validSet) removeOrphanHotasBindings(validSet);
+    setHotasModel(pendingHotasModel.id);
+    setPendingHotasModel(null);
+  }
+
   function confirmLayoutChange() {
     if (!pendingLayout) return;
     const newKeySet = new Set(getKeys(pendingLayout.id).map(k => k.id));
@@ -509,6 +540,13 @@ export default function App() {
 
   const { splitModifiers } = settings;
   const t = makeT(settings.uiLanguage || settings.language);
+
+  // For named HOTAS profiles, override the three button counts so all HOTAS
+  // components (modal dropdown, "first unused" logic) reflect the device's spec.
+  const hotasCounts = getEffectiveHotasCounts(settings);
+  const effectiveHotasSettings = (settings.hotasModel && settings.hotasModel !== 'custom')
+    ? { ...settings, joystickButtonCount: hotasCounts.joystick, throttleButtonCount: hotasCounts.throttle, pedalsButtonCount: hotasCounts.pedals }
+    : settings;
 
   // Legend colors follow modifier key custom colors, falling back to defaults
   const legShift  = keyColors['ShiftLeft']   || keyColors['ShiftRight']   || '#7b9ee0';
@@ -767,9 +805,9 @@ export default function App() {
               const resolvedInput = input ?? (() => {
                 const used = new Set(hotasBindings.map(b => b.input));
                 const all  = getAllHotasInputs(
-                  settings.joystickButtonCount ?? DEFAULT_JOYSTICK_BUTTONS,
-                  settings.throttleButtonCount ?? DEFAULT_THROTTLE_BUTTONS,
-                  settings.pedalsButtonCount   ?? DEFAULT_PEDALS_BUTTONS,
+                  hotasCounts.joystick ?? DEFAULT_JOYSTICK_BUTTONS,
+                  hotasCounts.throttle ?? DEFAULT_THROTTLE_BUTTONS,
+                  hotasCounts.pedals   ?? DEFAULT_PEDALS_BUTTONS,
                 );
                 return all.find(id => !used.has(id)) ?? all[0];
               })();
@@ -801,7 +839,7 @@ export default function App() {
           initialIsHotasMod={hotasModal.isHotasMod ?? false}
           existingBindings={hotasBindings}
           bindings={bindings}
-          settings={settings}
+          settings={effectiveHotasSettings}
           layoutKeys={getKeys(settings.physicalLayout)}
           onSave={(input, modifiers, action, keyboardKey, hotasMod, isHotasMod) => {
             addOrUpdateHotasBinding(input, modifiers, action, keyboardKey, hotasMod, isHotasMod);
@@ -872,6 +910,7 @@ export default function App() {
           onToggleMouseBindings={setShowMouseBindings}
           onChangeMouseModel={handleMouseModelChange}
           onToggleHotasBindings={setShowHotasBindings}
+          onChangeHotasModel={handleHotasModelChange}
           onChangeJoystickButtonCount={setJoystickButtonCount}
           onChangeThrottleButtonCount={setThrottleButtonCount}
           onChangePedalsButtonCount={setPedalsButtonCount}
@@ -904,6 +943,24 @@ export default function App() {
           )}
           onConfirm={confirmMouseModelChange}
           onCancel={() => setPendingMouseModel(null)}
+        />
+      )}
+
+      {pendingHotasModel && (
+        <OrphanWarningModal
+          orphans={pendingHotasModel.orphans}
+          newLayoutName={pendingHotasModel.name}
+          bodyKeyOverride={pendingHotasModel.orphans.length === 1 ? 'hotasOrphanBodySingular' : 'hotasOrphanBodyPlural'}
+          renderItem={(b, i) => (
+            <div key={i} className="orphan-item">
+              <span className="orphan-combo">{b.input}</span>
+              <span className="orphan-arrow">→</span>
+              <span className="orphan-action">{b.isHotasMod ? '[MODIFIER]' : b.action}</span>
+              {b._format && <span className="orphan-format">{b._format}</span>}
+            </div>
+          )}
+          onConfirm={confirmHotasModelChange}
+          onCancel={() => setPendingHotasModel(null)}
         />
       )}
 

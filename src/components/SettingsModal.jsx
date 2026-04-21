@@ -3,6 +3,7 @@ import { LAYOUTS } from '../keyboardLayouts';
 import { LOCALES } from '../keylabels';
 import { useT } from '../useTranslation';
 import { MOUSE_PROFILES } from '../mouseProfiles';
+import { HOTAS_PROFILES } from '../hotasProfiles';
 
 function stripKeyboardHints(name) {
   return name
@@ -12,9 +13,9 @@ function stripKeyboardHints(name) {
     .trim();
 }
 
-export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onChangeUiLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onChangeMouseModel, onToggleHotasBindings, onChangeJoystickButtonCount, onChangeThrottleButtonCount, onChangePedalsButtonCount, onClearKeys, onClose }) {
+export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onChangeUiLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onChangeMouseModel, onToggleHotasBindings, onChangeHotasModel, onChangeJoystickButtonCount, onChangeThrottleButtonCount, onChangePedalsButtonCount, onClearKeys, onClose }) {
   const t = useT();
-  const { splitModifiers, physicalLayout, language, uiLanguage, warnCrossFormatConflicts, showMouseBindings, mouseModel, showHotasBindings, joystickButtonCount, throttleButtonCount, pedalsButtonCount } = settings;
+  const { splitModifiers, physicalLayout, language, uiLanguage, warnCrossFormatConflicts, showMouseBindings, mouseModel, showHotasBindings, hotasModel, joystickButtonCount, throttleButtonCount, pedalsButtonCount } = settings;
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -139,8 +140,8 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
 
         <div className="settings-section">
           <div className="settings-section-title">{t('showHotasBindings')}</div>
-          <div className="settings-row">
-            <div className="toggle-group">
+          <div className="settings-row" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="toggle-group" style={{ flexShrink: 0 }}>
               <button
                 className={`toggle-btn${!showHotasBindings ? ' active' : ''}`}
                 onClick={() => onToggleHotasBindings(false)}
@@ -154,8 +155,20 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
                 {t('on')}
               </button>
             </div>
+            {showHotasBindings && (
+              <select
+                className="settings-select"
+                value={hotasModel}
+                onChange={e => onChangeHotasModel(e.target.value)}
+                style={{ flex: 1, minWidth: 0 }}
+              >
+                {HOTAS_PROFILES.map(p => (
+                  <option key={p.id} value={p.id}>{p.label}</option>
+                ))}
+              </select>
+            )}
           </div>
-          {showHotasBindings && (
+          {showHotasBindings && hotasModel === 'custom' && (
             <div style={{ marginTop: 10 }}>
               <div className="settings-row settings-row-labeled" style={{ marginTop: 6 }}>
                 <label className="settings-label">{t('joystickButtonCount')}</label>
