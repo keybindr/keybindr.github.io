@@ -38,7 +38,7 @@ const en = {
   keyboardSection:    'Keyboard',
   physicalLayout:     'Physical Layout',
   languageRegion:     'Language / Region',
-  interfaceLanguage:  'Interface Language',
+  languageLayout:     'Language Layout',
   matchKeyboard:      'Match Keyboard',
   modifierDisplay:    'Modifier key display',
   unified:            'Unified',

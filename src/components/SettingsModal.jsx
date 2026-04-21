@@ -42,7 +42,7 @@ export default function SettingsModal({ settings, onToggleSplit, onChangeLayout,
             </select>
           </div>
           <div className="settings-row settings-row-labeled">
-            <label className="settings-label">{t('interfaceLanguage')}</label>
+            <label className="settings-label">{t('languageLayout')}</label>
             <select
               className="settings-select"
               value={uiLanguage ?? ''}

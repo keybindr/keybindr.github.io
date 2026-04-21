@@ -432,6 +432,11 @@ export default function App() {
     }
   }
 
+  function handleUiLocaleChange(newLocaleId) {
+    setUiLanguage(newLocaleId);
+    if (newLocaleId) handleLocaleChange(newLocaleId);
+  }
+
   function confirmLayoutChange() {
     if (!pendingLayout) return;
     const newKeySet = new Set(getKeys(pendingLayout.id).map(k => k.id));
@@ -719,7 +724,7 @@ export default function App() {
           onToggleSplit={setSplitModifiers}
           onChangeLayout={handleLayoutChange}
           onChangeLocale={handleLocaleChange}
-          onChangeUiLocale={setUiLanguage}
+          onChangeUiLocale={handleUiLocaleChange}
           onToggleCrossFormatWarnings={setWarnCrossFormatConflicts}
           onToggleMouseBindings={setShowMouseBindings}
           onClearKeys={resetAll}
