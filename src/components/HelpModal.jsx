@@ -24,7 +24,9 @@ export default function HelpModal({ onClose }) {
           <p>
             <strong>{t('languageRegion')}</strong> {t('helpLangBody')}
           </p>
-          <p>{t('helpMouseHotasBody')}</p>
+          <p>
+            <strong>{t('helpMouseHotasLabel')}</strong> {t('helpMouseHotasBody')}
+          </p>
           <p>
             <strong>{t('helpConflictsLabel')}</strong> {t('helpConflictsBody')}
           </p>
@@ -33,11 +35,11 @@ export default function HelpModal({ onClose }) {
           </p>
 
           <p className="help-credit">
-            Built by Andrew{' — '}
+            {t('helpCreditBy')}{' — '}
             <a href="mailto:andrew@keybinds.help">andrew@keybinds.help</a>
           </p>
           <p className="help-credit-note">
-            (I speak English and a small amount of French and German, but we both always have computer translation to help our communication if you have questions, feature requests, or bug reports.)
+            {t('helpCreditNote')}
           </p>
         </div>
         <div className="modal-actions">
