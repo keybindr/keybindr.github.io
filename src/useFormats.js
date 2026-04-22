@@ -11,12 +11,17 @@ export const MAX_FORMATS = 5;
 
 export const MOUSE_BUTTONS = ['Mouse1', 'Mouse2', 'Mouse3', 'Mouse4', 'Mouse5', 'WheelUp', 'WheelDown', 'Mouse6', 'Mouse7', 'Mouse8', 'Mouse9', 'Mouse10', 'Mouse11', 'Mouse12', 'Mouse13', 'Mouse14', 'Mouse15', 'Mouse16', 'Mouse17', 'Mouse18', 'Mouse19', 'Mouse20'];
 
+const DEFAULT_MOUSE_BINDINGS = [
+  { button: 'Mouse1', modifiers: [], action: 'Attack',    keyboardKey: '' },
+  { button: 'Mouse2', modifiers: [], action: 'Aim',       keyboardKey: '' },
+];
+
 function makeFormat(name = '', empty = false) {
   return {
     name,
     bindings:      empty ? [] : [...DEFAULT_BINDINGS],
     keyColors:     {},
-    mouseBindings: [],
+    mouseBindings: empty ? [] : [...DEFAULT_MOUSE_BINDINGS],
     hotasBindings: [],
   };
 }
