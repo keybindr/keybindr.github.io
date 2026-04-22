@@ -1114,7 +1114,71 @@ html, body {
 
   .legend { display: none; }
 
-  .cell-drag { display: none; }
+  /* ── Binding tables: switch from CSS-table to flex rows ────────────────
+     This avoids all <col> / table-layout:fixed width fights.
+     Each <tr> becomes a flex row; cells are flex items.              ── */
+
+  /* Bleed the table wrapper to the panel edges so row rules span full width */
+  .table-wrapper {
+    margin-left: -20px;
+    margin-right: -20px;
+    width: calc(100% + 40px);
+  }
+
+  .binding-table,
+  .binding-table thead,
+  .binding-table tbody { display: block; width: 100%; }
+
+  .binding-table tr {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .binding-table th,
+  .binding-table td {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    overflow: hidden;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+
+  /* Hide drag handle and lock/delete columns on mobile.
+     !important needed to beat .binding-table th/td { display: flex } above. */
+  .cell-drag { display: none !important; }
+  .cell-del, .cell-del-head { display: none !important; }
+
+  /* Drag column: indent from panel edge */
+  .cell-drag { padding-left: 8px !important; }
+
+  /* Modifier column: fixed width, padded left to align with section headers */
+  .cell-mod { width: 90px; padding-left: 20px !important; }
+
+  /* Key / button / input column: fixed width, clip long labels */
+  .cell-key {
+    width: 80px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Mouse and HOTAS have no color column, so their key cell absorbs the
+     60 px that the color column occupies in the keyboard table — keeping
+     all three action columns starting at the same x position. */
+  .mouse-binding-table .cell-key,
+  .hotas-binding-table .cell-key { width: 140px; }
+
+  /* Action column: takes all remaining space */
+  .cell-action {
+    flex: 1;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .mouse-add-row { padding-left: 20px; }
 
   .legend-row { justify-content: flex-start; }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { bindingId } from '../useBindings';
 import { useT, resolveAction } from '../useTranslation';
 import { MOD_COLORS } from '../modifierConstants';
@@ -11,11 +11,13 @@ function compactKeyLabel(keyId, keyDef, language) {
   return resolveDisplayLabel(keyId, keyDef, language);
 }
 
-export default function MouseBindingTable({ mouseBindings = [], onUpdateAction, onRemove, onOpenModal, settings = {}, locked = false, onToggleLocked }) {
+export default function MouseBindingTable({ mouseBindings = [], onUpdateAction, onRemove, onReorder, onOpenModal, settings = {}, locked = false, onToggleLocked }) {
   const t = useT();
   const language = settings.language ?? 'en-US';
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const dragIndex = useRef(null);
 
   function startEdit(b) {
     setEditingId(bindingId(b.button, b.modifiers));
@@ -27,22 +29,49 @@ export default function MouseBindingTable({ mouseBindings = [], onUpdateAction, 
     setEditingId(null);
   }
 
+  function handleDragStart(e, index) {
+    dragIndex.current = index;
+    e.dataTransfer.effectAllowed = 'move';
+    e.currentTarget.closest('tr').classList.add('row-dragging');
+  }
+
+  function handleDragEnd(e) {
+    e.currentTarget.closest('tr')?.classList.remove('row-dragging');
+    dragIndex.current = null;
+    setDragOverIndex(null);
+  }
+
+  function handleDragOver(e, index) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  }
+
+  function handleDrop(e, index) {
+    e.preventDefault();
+    if (dragIndex.current !== null && dragIndex.current !== index) {
+      onReorder(dragIndex.current, index);
+    }
+    dragIndex.current = null;
+    setDragOverIndex(null);
+  }
+
   return (
     <div className="table-wrapper">
-      <table className="binding-table">
+      <table className="binding-table mouse-binding-table">
         <colgroup>
-          <col style={{ width: 20 }} />
-          <col style={{ width: 110 }} />
-          <col style={{ width: 95 }} />
-          <col />
-          <col style={{ width: 40 }} />
+          <col className="col-drag"              style={{ width: 20 }} />
+          <col className="col-mod"               style={{ width: 110 }} />
+          <col className="col-key col-key-mouse" style={{ width: 140 }} />
+          <col className="col-action" />
+          <col className="col-del"               style={{ width: 40 }} />
         </colgroup>
         <thead>
           <tr>
             <th className="cell-drag" />
-            <th>{t('colModifier')}</th>
-            <th>{t('colButton')}</th>
-            <th>{t('colAction')}</th>
+            <th className="cell-mod">{t('colModifier')}</th>
+            <th className="cell-key">{t('colButton')}</th>
+            <th className="cell-action">{t('colAction')}</th>
             <th className="cell-del-head">
               <button className="btn-lock" onClick={e => { e.stopPropagation(); onToggleLocked?.(v => !v); }} title={locked ? t('unlockDelete') : t('lockDelete')}>
                 <span style={{ position: 'relative', left: '6px', color: 'var(--accent)', lineHeight: 1 }}>
@@ -63,13 +92,29 @@ export default function MouseBindingTable({ mouseBindings = [], onUpdateAction, 
           </tr>
         </thead>
         <tbody>
-          {mouseBindings.map(b => {
+          {mouseBindings.map((b, index) => {
             const id = bindingId(b.button, b.modifiers);
             const isEditing = editingId === id;
+            const isDragOver = dragOverIndex === index;
 
             return (
-              <tr key={id}>
-                <td className="cell-drag" />
+              <tr
+                key={id}
+                className={isDragOver ? 'row-drag-over' : ''}
+                onDragOver={e => handleDragOver(e, index)}
+                onDrop={e => handleDrop(e, index)}
+                onDragLeave={() => setDragOverIndex(null)}
+              >
+                <td className="cell-drag">
+                  <span
+                    className="drag-handle"
+                    draggable
+                    onDragStart={e => handleDragStart(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onClick={e => e.stopPropagation()}
+                    title={t('dragToReorder')}
+                  >⠿</span>
+                </td>
                 <td className="cell-mod">
                   {b.modifiers.length > 0 ? (
                     <div className="mod-tags">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useT, resolveAction } from '../useTranslation';
 import { getHotasLabel, hotasBindingId, getHotasModInfo } from '../hotasConstants';
 import { resolveDisplayLabel } from '../keylabels';
@@ -14,6 +14,7 @@ export default function HOTASBindingTable({
   hotasBindings = [],
   onUpdateAction,
   onRemove,
+  onReorder,
   onOpenModal,
   settings = {},
   locked = false,
@@ -23,13 +24,15 @@ export default function HOTASBindingTable({
   const language = settings.language ?? 'en-US';
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const dragIndex = useRef(null);
 
   function getBid(b) {
     return hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '');
   }
 
   function startEdit(b) {
-    if (b.isHotasMod) return; // modifier-only buttons have no action to edit
+    if (b.isHotasMod) return;
     setEditingId(getBid(b));
     setEditValue(resolveAction(b.action, t));
   }
@@ -39,22 +42,49 @@ export default function HOTASBindingTable({
     setEditingId(null);
   }
 
+  function handleDragStart(e, index) {
+    dragIndex.current = index;
+    e.dataTransfer.effectAllowed = 'move';
+    e.currentTarget.closest('tr').classList.add('row-dragging');
+  }
+
+  function handleDragEnd(e) {
+    e.currentTarget.closest('tr')?.classList.remove('row-dragging');
+    dragIndex.current = null;
+    setDragOverIndex(null);
+  }
+
+  function handleDragOver(e, index) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverIndex(index);
+  }
+
+  function handleDrop(e, index) {
+    e.preventDefault();
+    if (dragIndex.current !== null && dragIndex.current !== index) {
+      onReorder(dragIndex.current, index);
+    }
+    dragIndex.current = null;
+    setDragOverIndex(null);
+  }
+
   return (
     <div className="table-wrapper">
-      <table className="binding-table">
+      <table className="binding-table hotas-binding-table">
         <colgroup>
-          <col style={{ width: 20 }} />
-          <col style={{ width: 110 }} />
-          <col style={{ width: 170 }} />
-          <col />
-          <col style={{ width: 40 }} />
+          <col className="col-drag"              style={{ width: 20 }} />
+          <col className="col-mod"              style={{ width: 110 }} />
+          <col className="col-key col-key-hotas" style={{ width: 140 }} />
+          <col className="col-action" />
+          <col className="col-del"              style={{ width: 40 }} />
         </colgroup>
         <thead>
           <tr>
             <th className="cell-drag" />
-            <th>{t('colModifier')}</th>
-            <th>{t('hotasColInput')}</th>
-            <th>{t('colAction')}</th>
+            <th className="cell-mod">{t('colModifier')}</th>
+            <th className="cell-key">{t('hotasColInput')}</th>
+            <th className="cell-action">{t('colAction')}</th>
             <th className="cell-del-head">
               <button
                 className="btn-lock"
@@ -79,22 +109,36 @@ export default function HOTASBindingTable({
           </tr>
         </thead>
         <tbody>
-          {hotasBindings.map(b => {
+          {hotasBindings.map((b, index) => {
             const bid       = getBid(b);
             const isEditing = editingId === bid;
+            const isDragOver = dragOverIndex === index;
             const mods      = b.modifiers ?? [];
             const hotasMod  = b.hotasMod  ?? '';
 
-            // Resolve numbered modifier info for this row's hotasMod reference
             const hotasModInfo = hotasMod ? getHotasModInfo(hotasMod, hotasBindings) : null;
-            // Resolve numbered modifier info if THIS row is a modifier button
             const selfModInfo  = b.isHotasMod ? getHotasModInfo(b.input, hotasBindings) : null;
 
             return (
-              <tr key={bid}>
-                <td className="cell-drag" />
+              <tr
+                key={bid}
+                className={isDragOver ? 'row-drag-over' : ''}
+                onDragOver={e => handleDragOver(e, index)}
+                onDrop={e => handleDrop(e, index)}
+                onDragLeave={() => setDragOverIndex(null)}
+              >
+                <td className="cell-drag">
+                  <span
+                    className="drag-handle"
+                    draggable
+                    onDragStart={e => handleDragStart(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onClick={e => e.stopPropagation()}
+                    title={t('dragToReorder')}
+                  >⠿</span>
+                </td>
 
-                {/* Modifier column — HOTAS mod chip (numbered+colored) + keyboard mods */}
+                {/* Modifier column */}
                 <td className="cell-mod">
                   {(mods.length > 0 || hotasMod) ? (
                     <div className="mod-tags">

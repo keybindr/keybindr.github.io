@@ -183,8 +183,8 @@ export default function App() {
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats, removeOrphanBindings, removeOrphanMouseBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, addRecentColor,
-    addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
-    addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction,
+    addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction, reorderMouseBindings,
+    addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction, reorderHotasBindings,
     removeOrphanHotasBindings,
     resetFormats,
     undo, redo,
@@ -780,6 +780,7 @@ export default function App() {
             onToggleLocked={setDeleteLocked}
             onUpdateAction={updateMouseAction}
             onRemove={removeMouseBinding}
+            onReorder={reorderMouseBindings}
             onOpenModal={(button, modifiers) => {
               const resolvedButton = button ?? (() => {
                 const used    = new Set(mouseBindings.map(b => b.button));
@@ -804,6 +805,7 @@ export default function App() {
             onToggleLocked={setDeleteLocked}
             onUpdateAction={updateHotasAction}
             onRemove={removeHotasBinding}
+            onReorder={reorderHotasBindings}
             onOpenModal={(input, modifiers, hotasMod, isHotasMod) => {
               const resolvedInput = input ?? (() => {
                 const used = new Set(hotasBindings.map(b => b.input));

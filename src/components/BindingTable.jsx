@@ -111,20 +111,20 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
     <div className="table-wrapper">
       <table className="binding-table">
         <colgroup>
-          <col style={{ width: 20 }} />
-          <col style={{ width: 110 }} />
-          <col style={{ width: 80 }} />
-          <col style={{ width: 60 }} />
-          <col />
-          <col style={{ width: 40 }} />
+          <col className="col-drag"  style={{ width: 20 }} />
+          <col className="col-mod"   style={{ width: 110 }} />
+          <col className="col-key"   style={{ width: 80 }} />
+          <col className="col-color" style={{ width: 60 }} />
+          <col className="col-action" />
+          <col className="col-del"   style={{ width: 40 }} />
         </colgroup>
         <thead>
           <tr>
             <th className="cell-drag" />
-            <th>{t('colModifier')}</th>
-            <th>{t('colKey')}</th>
+            <th className="cell-mod">{t('colModifier')}</th>
+            <th className="cell-key">{t('colKey')}</th>
             <th className="cell-color-head">{t('colColor')}</th>
-            <th>{t('colAction')}</th>
+            <th className="cell-action">{t('colAction')}</th>
             <th className="cell-del-head">
               <button className="btn-lock" onClick={e => { e.stopPropagation(); onToggleLocked?.(v => !v); }} title={locked ? t('unlockDelete') : t('lockDelete')}>
                 <span style={{ position: 'relative', left: '6px', color: 'var(--accent)', lineHeight: 1 }}>

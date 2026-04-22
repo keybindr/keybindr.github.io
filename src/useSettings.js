@@ -16,11 +16,11 @@ function detectLocale() {
 
 const detectedLocale = detectLocale();
 
-const isTouchDevice = 'ontouchstart' in window;
+const isMobile = window.innerWidth <= 768;
 
 const DEFAULTS = {
   splitModifiers: false,
-  physicalLayout: isTouchDevice ? 'layout-60' : localeUsesISO(detectedLocale) ? 'iso-105' : 'ansi-104',
+  physicalLayout: isMobile ? 'layout-60' : localeUsesISO(detectedLocale) ? 'iso-105' : 'ansi-104',
   language: detectedLocale,
   uiLanguage: detectedLocale,
   warnCrossFormatConflicts: false,
@@ -40,7 +40,7 @@ function load() {
     return {
       ...DEFAULTS,
       splitModifiers:            !!saved.splitModifiers,
-      physicalLayout:            saved.physicalLayout            ?? DEFAULTS.physicalLayout,
+      physicalLayout:            isMobile ? 'layout-60' : (saved.physicalLayout ?? DEFAULTS.physicalLayout),
       language:                  saved.language                  ?? DEFAULTS.language,
       uiLanguage:                saved.uiLanguage                ?? detectedLocale,
       warnCrossFormatConflicts:  !!saved.warnCrossFormatConflicts,

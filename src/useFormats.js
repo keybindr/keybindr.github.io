@@ -208,6 +208,15 @@ export function useFormats() {
     }));
   }
 
+  function reorderMouseBindings(fromIndex, toIndex) {
+    mutateActiveFormat(f => {
+      const bs = [...(Array.isArray(f.mouseBindings) ? f.mouseBindings : [])];
+      const [moved] = bs.splice(fromIndex, 1);
+      bs.splice(toIndex, 0, moved);
+      return { ...f, mouseBindings: bs };
+    });
+  }
+
   function updateMouseAction(button, modifiers, action) {
     const id = bindingId(button, modifiers);
     mutateActiveFormat(f => ({
@@ -374,7 +383,7 @@ export function useFormats() {
     recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
     replaceActiveBindings, replaceFormats, removeOrphanBindings, removeOrphanMouseBindings,
-    addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction,
+    addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction, reorderMouseBindings,
     addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction, reorderHotasBindings,
     removeOrphanHotasBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, clearAllKeyColors, addRecentColor,
