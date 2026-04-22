@@ -33,6 +33,9 @@ export default function HelpModal({ onClose }) {
           <p>
             <strong>{t('helpResetLabel')}</strong> {t('helpResetBody')}
           </p>
+          <p>
+            <strong>{t('helpUndoLabel')}</strong> {t('helpUndoBody')}
+          </p>
 
           <p className="help-credit">
             {t('helpCreditBy')}{' — '}

@@ -87,6 +87,8 @@ const en = {
   helpConflictsBody:  'shows conflicts between format tabs (e.g. "On Foot" and "In Vehicle"). Off by default.',
   helpResetLabel:     'Return to Defaults',
   helpResetBody:      'clears all bindings, colors, formats and layout name.',
+  helpUndoLabel:      'Undo / Redo',
+  helpUndoBody:       'Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z) step through your recent changes.',
   helpCreditBy:       'Built by Andrew',
   helpCreditNote:     '(I speak English and a small amount of French and German, but we both always have computer translation to help our communication if you have questions, feature requests, or bug reports.)',
   modifierConflict:    'This modifier key is bound standalone and also used in a combo — these bindings may conflict',

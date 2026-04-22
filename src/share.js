@@ -1,6 +1,6 @@
 const B64_PREFIX = 'b64:';
 const GZ_PREFIX  = 'gz:';
-const THRESHOLD  = 8000;
+const THRESHOLD  = 2000;
 
 function toB64url(str) {
   return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');

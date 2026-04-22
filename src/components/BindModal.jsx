@@ -4,7 +4,7 @@ import { resolveDisplayLabel } from '../keylabels';
 import { useT, resolveAction } from '../useTranslation';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
-import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_FAMILY, modFill, buildModDefs } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs } from '../modifierConstants';
 
 const PICKER_WIDTH = 252;
 const PICKER_GAP   = 12;
@@ -13,12 +13,6 @@ const MODIFIER_KEY_IDS = new Set([
   'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight',
   'AltLeft', 'AltRight', 'MetaLeft', 'MetaRight', 'ContextMenu',
 ]);
-
-const MOD_KEY_FAMILY = {
-  ShiftLeft: 'Shift', ShiftRight: 'Shift',
-  ControlLeft: 'Ctrl', ControlRight: 'Ctrl',
-  AltLeft: 'Alt', AltRight: 'Alt',
-};
 
 export default function BindModal({
   keyId, existingBindings,

@@ -3,16 +3,9 @@ import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveDisplayLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 import { useT, resolveAction } from '../useTranslation';
-import { KEY_BOUND, MOD_COLORS, MOD_FAMILY } from '../modifierConstants';
+import { KEY_BOUND, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY } from '../modifierConstants';
 
 const KEY_BOUND_COLOR = KEY_BOUND;
-
-// Maps physical modifier key IDs to their logical family (unique to conflict detection)
-const MOD_KEY_FAMILY = {
-  ShiftLeft: 'Shift', ShiftRight: 'Shift',
-  ControlLeft: 'Ctrl', ControlRight: 'Ctrl',
-  AltLeft: 'Alt',   AltRight: 'Alt',
-};
 
 function detectModifierConflicts(bindings) {
   const standalone = new Map();

@@ -32,6 +32,13 @@ export const MOD_CORNER = {
   Ctrl:  'ctrl',  CtrlLeft:  'ctrl',  CtrlRight:  'ctrl',
 };
 
+// Maps split modifier key IDs → unified family name (used for conflict detection)
+export const MOD_KEY_FAMILY = {
+  ShiftLeft: 'Shift', ShiftRight: 'Shift',
+  ControlLeft: 'Ctrl', ControlRight: 'Ctrl',
+  AltLeft: 'Alt', AltRight: 'Alt',
+};
+
 // Maps modifier value → family name (prevents L+R same-family combos; used in conflict detection)
 export const MOD_FAMILY = {
   Shift: 'Shift', ShiftLeft: 'Shift', ShiftRight: 'Shift',
