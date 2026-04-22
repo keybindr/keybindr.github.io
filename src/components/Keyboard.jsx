@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { getKeys, getLayout } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
@@ -92,37 +92,44 @@ function trianglePoints(mod, k) {
   return `${cx},${cy} ${cx},${cy-SIZE} ${cx+SIZE},${cy}`;
 }
 
-export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = {}, mouseBindings = [], hotasBindings = [] }) {
+function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings = {}, mouseBindings = [], hotasBindings = [] }) {
   const { splitModifiers, physicalLayout = 'ansi-104', language = 'en-US' } = settings;
   const t = useT();
   const [tooltip, setTooltip] = useState(null);
 
-  const layout = getLayout(physicalLayout);
+  const layout = useMemo(() => getLayout(physicalLayout), [physicalLayout]);
   const KEYS   = layout.keys;
 
-  const boundMap = {};
-  for (const b of bindings) {
-    if (!boundMap[b.key]) boundMap[b.key] = [];
-    boundMap[b.key].push(b);
-  }
-
-  // Build map of keyboard keys that are remapped from mouse buttons
-  const mouseRemapMap = {};
-  for (const mb of mouseBindings) {
-    if (mb.mouseKey) {
-      if (!mouseRemapMap[mb.mouseKey]) mouseRemapMap[mb.mouseKey] = [];
-      mouseRemapMap[mb.mouseKey].push(mb);
+  const boundMap = useMemo(() => {
+    const map = {};
+    for (const b of bindings) {
+      if (!map[b.key]) map[b.key] = [];
+      map[b.key].push(b);
     }
-  }
+    return map;
+  }, [bindings]);
 
-  // Build map of keyboard keys that are remapped from HOTAS buttons
-  const hotasRemapMap = {};
-  for (const hb of hotasBindings) {
-    if (hb.hotasKey) {
-      if (!hotasRemapMap[hb.hotasKey]) hotasRemapMap[hb.hotasKey] = [];
-      hotasRemapMap[hb.hotasKey].push(hb);
+  const mouseRemapMap = useMemo(() => {
+    const map = {};
+    for (const mb of mouseBindings) {
+      if (mb.mouseKey) {
+        if (!map[mb.mouseKey]) map[mb.mouseKey] = [];
+        map[mb.mouseKey].push(mb);
+      }
     }
-  }
+    return map;
+  }, [mouseBindings]);
+
+  const hotasRemapMap = useMemo(() => {
+    const map = {};
+    for (const hb of hotasBindings) {
+      if (hb.hotasKey) {
+        if (!map[hb.hotasKey]) map[hb.hotasKey] = [];
+        map[hb.hotasKey].push(hb);
+      }
+    }
+    return map;
+  }, [hotasBindings]);
 
   function handleMouseEnter(e, keyId) {
     if ((boundMap[keyId] || []).length === 0 && (mouseRemapMap[keyId] || []).length === 0 && (hotasRemapMap[keyId] || []).length === 0) return;
@@ -348,3 +355,5 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
     </>
   );
 }
+
+export default React.memo(Keyboard);

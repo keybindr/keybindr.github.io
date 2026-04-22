@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Keyboard from './components/Keyboard';
 import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
@@ -376,10 +376,10 @@ export default function App() {
     return !settings.splitModifiers ? (UNIFIED_MOD_PAIRS[keyId] ?? null) : null;
   }
 
-  function handleKeyClick(keyId) {
+  const handleKeyClick = useCallback((keyId) => {
     modalOriginalColor.current = keyColors[keyId];
     setModalKey(keyId);
-  }
+  }, [keyColors]);
 
   function handleSave(key, mods, action) {
     if (action) {
@@ -423,26 +423,26 @@ export default function App() {
     setShowHotasBindings(preset.formats.some(f => f.hotasBindings?.length > 0));
   }
 
-  function handleSelect(id) {
+  const handleSelect = useCallback((id) => {
     setSelectedId(prev => prev === id ? null : id);
-  }
+  }, []);
 
-  function handleSwitchFormat(i) {
+  const handleSwitchFormat = useCallback((i) => {
     switchTo(i);
     setSelectedId(null);
-  }
+  }, [switchTo]);
 
   function closeMobileWarning() {
     localStorage.setItem(MOBILE_WARNED_KEY, '1');
     setShowMobileWarning(false);
   }
 
-  function handleShare() {
+  const handleShare = useCallback(() => {
     encodeShareUrl(formats, layoutName, settings).then(url => {
       setShareUrl(url);
       setShowShare(true);
     });
-  }
+  }, [formats, layoutName, settings]);
 
   function handleLayoutChange(newId) {
     const newKeySet = new Set(getKeys(newId).map(k => k.id));

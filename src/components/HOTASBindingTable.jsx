@@ -45,11 +45,11 @@ export default function HOTASBindingTable({
   function handleDragStart(e, index) {
     dragIndex.current = index;
     e.dataTransfer.effectAllowed = 'move';
-    e.currentTarget.closest('tr').classList.add('row-dragging');
+    e.currentTarget.parentElement.parentElement.classList.add('row-dragging');
   }
 
   function handleDragEnd(e) {
-    e.currentTarget.closest('tr')?.classList.remove('row-dragging');
+    e.currentTarget.parentElement?.parentElement?.classList.remove('row-dragging');
     dragIndex.current = null;
     setDragOverIndex(null);
   }

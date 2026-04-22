@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveDisplayLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
@@ -58,10 +58,12 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
   const [editValue, setEditValue]         = useState('');
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const dragIndex = useRef(null);
-  const conflictIds = detectModifierConflicts(bindings);
-  const crossConflicts = settings.warnCrossFormatConflicts
-    ? findCrossFormatConflicts(bindings, formats, activeIndex)
-    : new Map();
+  const conflictIds = useMemo(() => detectModifierConflicts(bindings), [bindings]);
+  const crossConflicts = useMemo(() =>
+    settings.warnCrossFormatConflicts
+      ? findCrossFormatConflicts(bindings, formats, activeIndex)
+      : new Map(),
+  [bindings, formats, activeIndex, settings.warnCrossFormatConflicts]);
 
   function startEdit(b) {
     setEditingId(bindingId(b.key, b.modifiers));
@@ -76,11 +78,11 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
   function handleDragStart(e, index) {
     dragIndex.current = index;
     e.dataTransfer.effectAllowed = 'move';
-    e.currentTarget.closest('tr').classList.add('row-dragging');
+    e.currentTarget.parentElement.parentElement.classList.add('row-dragging');
   }
 
   function handleDragEnd(e) {
-    e.currentTarget.closest('tr')?.classList.remove('row-dragging');
+    e.currentTarget.parentElement?.parentElement?.classList.remove('row-dragging');
     dragIndex.current = null;
     setDragOverIndex(null);
   }
