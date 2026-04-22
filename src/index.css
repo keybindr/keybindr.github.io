@@ -652,6 +652,21 @@ html, body {
   margin-top: 6px;
 }
 .help-body strong { color: var(--accent2); }
+.help-credit {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.help-credit a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.help-credit a:hover { text-decoration: underline; }
+.help-credit-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-style: italic;
+}
 
 /* Settings modal */
 .modal-settings { width: 400px; }

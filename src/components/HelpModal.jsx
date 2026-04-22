@@ -10,25 +10,34 @@ export default function HelpModal({ onClose }) {
         <div className="help-body">
           <p className="mobile-only mobile-notice">{t('mobileWarning')}</p>
 
-          <p><strong>Keybindr</strong> {t('helpIntro1')}</p>
           <p>{t('helpIntro2')}</p>
           <p>{t('helpIntro3')}</p>
 
-          <h4>{t('settingsTitle')}</h4>
+          <h4>{t('helpSettingsTitle')}</h4>
           <p>
             <strong>{t('helpSplitLabel')}</strong> {t('helpSplitBody')}
           </p>
           <p>
             <strong>{t('physicalLayout')}</strong> {t('helpPhysBody1')}
           </p>
-          <p>{t('helpPhysBody2')}</p>
           <p>
             <strong>{t('languageRegion')}</strong> {t('helpLangBody')}
+          </p>
+          <p>{t('helpMouseHotasBody')}</p>
+          <p>
+            <strong>{t('helpConflictsLabel')}</strong> {t('helpConflictsBody')}
           </p>
           <p>
             <strong>{t('helpResetLabel')}</strong> {t('helpResetBody')}
           </p>
-          {t('helpOutro') && <p>{t('helpOutro')}</p>}
+
+          <p className="help-credit">
+            Built by Andrew{' — '}
+            <a href="mailto:andrew@keybinds.help">andrew@keybinds.help</a>
+          </p>
+          <p className="help-credit-note">
+            (I speak English and a small amount of French and German, but we both always have computer translation to help our communication if you have questions, feature requests, or bug reports.)
+          </p>
         </div>
         <div className="modal-actions">
           <button className="btn-primary" onClick={onClose}>{t('gotIt')}</button>
