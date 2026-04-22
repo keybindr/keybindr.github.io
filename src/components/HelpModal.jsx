@@ -12,6 +12,7 @@ export default function HelpModal({ onClose }) {
 
           <p>{t('helpIntro2')}</p>
           <p>{t('helpIntro3')}</p>
+          <p>{t('helpIntro4')}</p>
 
           <h4>{t('helpSettingsTitle')}</h4>
           <p>
