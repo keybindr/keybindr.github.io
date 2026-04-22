@@ -1055,6 +1055,9 @@ html, body {
 .mobile-only { display: none; }
 
 @media (max-width: 768px) {
+  .layout-name,
+  .layout-name-input { font-size: 20px; }
+
   .desktop-nav { display: none; }
 
   .header-mobile {
