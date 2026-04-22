@@ -664,16 +664,6 @@ export default function App() {
           </button>
           {showHamburger && (
             <div className="hamburger-menu">
-              <button className="hamburger-item" onClick={() => hamburgerAction(() => fileInputRef.current?.click())}>
-                {t('importJson')}
-              </button>
-              <div className="hamburger-sep" />
-              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportJSON(formats, layoutName, settings))}>
-                {t('exportJson')}
-              </button>
-              <button className="hamburger-item" onClick={() => hamburgerAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
-                {t('exportPng')}
-              </button>
               {(() => {
                 const ap = GAME_PRESETS.find(p => p.id === activePreset);
                 if (!ap?.importFn && !ap?.exportFn) return null;
@@ -689,10 +679,10 @@ export default function App() {
                         {ap.exportLabel}
                       </button>
                     )}
+                    <div className="hamburger-sep" />
                   </>
                 );
               })()}
-              <div className="hamburger-sep" />
               <button className="hamburger-item" onClick={() => hamburgerAction(handleShare)}>
                 {t('shareLayout')}
               </button>
