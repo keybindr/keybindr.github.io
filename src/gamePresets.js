@@ -412,63 +412,63 @@ const FFXIV_CONTROLS_BINDINGS = [
 // ── WoW mouse bindings ────────────────────────────────────────────────────────
 
 const WOW_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [],        action: 'Interact / Move',   keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [],        action: 'Turn Camera / Move', keyboardKey: '' },
-  { button: 'Mouse1',    modifiers: ['Shift'], action: 'Loot All',           keyboardKey: '' },
-  { button: 'Mouse1',    modifiers: ['Ctrl'],  action: 'Split Stack',        keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [],        action: 'Zoom In',            keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [],        action: 'Zoom Out',           keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [],        action: 'Interact / Move',   mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [],        action: 'Turn Camera / Move', mouseKey: '' },
+  { button: 'Mouse1',    modifiers: ['Shift'], action: 'Loot All',           mouseKey: '' },
+  { button: 'Mouse1',    modifiers: ['Ctrl'],  action: 'Split Stack',        mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [],        action: 'Zoom In',            mouseKey: '' },
+  { button: 'WheelDown', modifiers: [],        action: 'Zoom Out',           mouseKey: '' },
 ];
 
 // ── FFXIV mouse bindings ──────────────────────────────────────────────────────
 
 const FFXIV_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Confirm / Select Target',  keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Cancel / Rotate Camera',   keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',                  keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',                 keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Confirm / Select Target',  mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Cancel / Rotate Camera',   mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',                  mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',                 mouseKey: '' },
 ];
 
 // ── ESO mouse bindings ────────────────────────────────────────────────────────
 
 const ESO_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Light Attack / Interact',  keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Block / Rotate Camera',    keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',                  keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',                 keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Light Attack / Interact',  mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Block / Rotate Camera',    mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',                  mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',                 mouseKey: '' },
 ];
 
 // ── Arma 3 mouse bindings ─────────────────────────────────────────────────────
 
 const ARMA_FOOT_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Fire',              keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Aim Down Sights',   keyboardKey: '' },
-  { button: 'Mouse3',    modifiers: [], action: 'Hold Breath / Zoom',keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',           keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',          keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Fire',              mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim Down Sights',   mouseKey: '' },
+  { button: 'Mouse3',    modifiers: [], action: 'Hold Breath / Zoom',mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',           mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',          mouseKey: '' },
 ];
 
 const ARMA_VEHICLE_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Fire',     keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Aim',      keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',  keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out', keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Fire',     mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim',      mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',  mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out', mouseKey: '' },
 ];
 
 const ARMA_AIRCRAFT_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Fire Weapons', keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Aim',          keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',      keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',     keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Fire Weapons', mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim',          mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',      mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',     mouseKey: '' },
 ];
 
 // ── GW2 mouse bindings ────────────────────────────────────────────────────────
 
 const GW2_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Attack / Interact',        keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Rotate Camera / Move',     keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',                  keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',                 keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Attack / Interact',        mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Rotate Camera / Move',     mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',                  mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',                 mouseKey: '' },
 ];
 
 // ── Preset key colors ─────────────────────────────────────────────────────────
@@ -676,11 +676,11 @@ const EVE_BINDINGS = [
 ];
 
 const EVE_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [],       action: 'Select / Interact',  keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [],       action: 'Open Context Menu',  keyboardKey: '' },
-  { button: 'Mouse1',    modifiers: ['Ctrl'], action: 'Lock Target',        keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [],       action: 'Zoom In',            keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [],       action: 'Zoom Out',           keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [],       action: 'Select / Interact',  mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [],       action: 'Open Context Menu',  mouseKey: '' },
+  { button: 'Mouse1',    modifiers: ['Ctrl'], action: 'Lock Target',        mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [],       action: 'Zoom In',            mouseKey: '' },
+  { button: 'WheelDown', modifiers: [],       action: 'Zoom Out',           mouseKey: '' },
 ];
 
 const EVE_ACTION_COLORS = {
@@ -848,19 +848,19 @@ const SC_EVA_BINDINGS = [
 ];
 
 const SC_FLIGHT_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Primary Fire',     keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Aim / Look',       keyboardKey: '' },
-  { button: 'Mouse3',    modifiers: [], action: 'Cycle Fire Group', keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Throttle Up',      keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Throttle Down',    keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Primary Fire',     mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim / Look',       mouseKey: '' },
+  { button: 'Mouse3',    modifiers: [], action: 'Cycle Fire Group', mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Throttle Up',      mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Throttle Down',    mouseKey: '' },
 ];
 
 const SC_FOOT_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Fire',             keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Aim Down Sights',  keyboardKey: '' },
-  { button: 'Mouse3',    modifiers: [], action: 'Melee',            keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',          keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',         keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Fire',             mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Aim Down Sights',  mouseKey: '' },
+  { button: 'Mouse3',    modifiers: [], action: 'Melee',            mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',          mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',         mouseKey: '' },
 ];
 
 const SC_ACTION_COLORS = {
@@ -1045,18 +1045,18 @@ const KSP_ROVER_BINDINGS = [
 ];
 
 const KSP_FLIGHT_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Select / Interact', keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Pan Camera',         keyboardKey: '' },
-  { button: 'Mouse3',    modifiers: [], action: 'Reset Camera',       keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',            keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',           keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Select / Interact', mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Pan Camera',         mouseKey: '' },
+  { button: 'Mouse3',    modifiers: [], action: 'Reset Camera',       mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',            mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',           mouseKey: '' },
 ];
 
 const KSP_EVA_MOUSE_BINDINGS = [
-  { button: 'Mouse1',    modifiers: [], action: 'Select / Interact', keyboardKey: '' },
-  { button: 'Mouse2',    modifiers: [], action: 'Look Around',        keyboardKey: '' },
-  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',            keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',           keyboardKey: '' },
+  { button: 'Mouse1',    modifiers: [], action: 'Select / Interact', mouseKey: '' },
+  { button: 'Mouse2',    modifiers: [], action: 'Look Around',        mouseKey: '' },
+  { button: 'WheelUp',   modifiers: [], action: 'Zoom In',            mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out',           mouseKey: '' },
 ];
 
 const KSP_ACTION_COLORS = {
@@ -1183,11 +1183,11 @@ const ED_FOOT_BINDINGS = [
 ];
 
 const ED_FOOT_MOUSE = [
-  { button: 'Mouse1', modifiers: [], action: 'Primary Fire', keyboardKey: '' },
-  { button: 'Mouse2', modifiers: [], action: 'Aim Down Sights', keyboardKey: '' },
-  { button: 'Mouse3', modifiers: [], action: 'Melee', keyboardKey: '' },
-  { button: 'WheelUp', modifiers: [], action: 'Zoom In', keyboardKey: '' },
-  { button: 'WheelDown', modifiers: [], action: 'Zoom Out', keyboardKey: '' },
+  { button: 'Mouse1', modifiers: [], action: 'Primary Fire', mouseKey: '' },
+  { button: 'Mouse2', modifiers: [], action: 'Aim Down Sights', mouseKey: '' },
+  { button: 'Mouse3', modifiers: [], action: 'Melee', mouseKey: '' },
+  { button: 'WheelUp', modifiers: [], action: 'Zoom In', mouseKey: '' },
+  { button: 'WheelDown', modifiers: [], action: 'Zoom Out', mouseKey: '' },
 ];
 
 const ED_SRV_BINDINGS = [

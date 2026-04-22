@@ -779,7 +779,7 @@ export default function App() {
                 return ordered.find(id => !used.has(id)) ?? ordered[0];
               })();
               const existing = mouseBindings.find(b => b.button === resolvedButton && JSON.stringify(b.modifiers) === JSON.stringify(modifiers ?? []));
-              setMouseModal({ button: resolvedButton, modifiers: modifiers ?? [], keyboardKey: existing?.keyboardKey ?? '' });
+              setMouseModal({ button: resolvedButton, modifiers: modifiers ?? [], keyboardKey: existing?.mouseKey ?? '' });
             }}
           />
         </div>
@@ -818,7 +818,7 @@ export default function App() {
                 modifiers:    modifiers   ?? [],
                 hotasMod:     hotasMod    ?? '',
                 isHotasMod:   isHotasMod  ?? false,
-                keyboardKey:  existing?.keyboardKey ?? '',
+                keyboardKey:  existing?.hotasKey ?? '',
               });
             }}
           />

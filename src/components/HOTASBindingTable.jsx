@@ -173,9 +173,9 @@ export default function HOTASBindingTable({
                   title={b.input}
                 >
                   {getHotasLabel(b.input)}
-                  {b.keyboardKey && (
-                    <span className="mouse-remap-tag" title={b.keyboardKey}>
-                      🕹→{compactKeyLabel(b.keyboardKey, ALL_KEY_MAP[b.keyboardKey], language)}
+                  {b.hotasKey && (
+                    <span className="mouse-remap-tag" title={b.hotasKey}>
+                      🕹→{compactKeyLabel(b.hotasKey, ALL_KEY_MAP[b.hotasKey], language)}
                     </span>
                   )}
                 </td>

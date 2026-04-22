@@ -109,18 +109,18 @@ export default function Keyboard({ bindings, selectedId, onKeyClick, keyColors =
   // Build map of keyboard keys that are remapped from mouse buttons
   const mouseRemapMap = {};
   for (const mb of mouseBindings) {
-    if (mb.keyboardKey) {
-      if (!mouseRemapMap[mb.keyboardKey]) mouseRemapMap[mb.keyboardKey] = [];
-      mouseRemapMap[mb.keyboardKey].push(mb);
+    if (mb.mouseKey) {
+      if (!mouseRemapMap[mb.mouseKey]) mouseRemapMap[mb.mouseKey] = [];
+      mouseRemapMap[mb.mouseKey].push(mb);
     }
   }
 
   // Build map of keyboard keys that are remapped from HOTAS buttons
   const hotasRemapMap = {};
   for (const hb of hotasBindings) {
-    if (hb.keyboardKey) {
-      if (!hotasRemapMap[hb.keyboardKey]) hotasRemapMap[hb.keyboardKey] = [];
-      hotasRemapMap[hb.keyboardKey].push(hb);
+    if (hb.hotasKey) {
+      if (!hotasRemapMap[hb.hotasKey]) hotasRemapMap[hb.hotasKey] = [];
+      hotasRemapMap[hb.hotasKey].push(hb);
     }
   }
 

@@ -86,7 +86,7 @@ export default function HOTASBindModal({
     const existing = existingBindings.find(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === id);
     if (existing) {
       setAction(resolveAction(existing.action, t));
-      setKeyboardKey(existing.keyboardKey ?? '');
+      setKeyboardKey(existing.hotasKey ?? '');
       setIsHotasMod(existing.isHotasMod ?? false);
     }
     if (inputRef.current && !('ontouchstart' in window)) inputRef.current.focus();
@@ -98,7 +98,7 @@ export default function HOTASBindModal({
     const existing = existingBindings.find(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === id);
     if (existing && action === '') {
       setAction(resolveAction(existing.action, t));
-      setKeyboardKey(existing.keyboardKey ?? '');
+      setKeyboardKey(existing.hotasKey ?? '');
       setIsHotasMod(existing.isHotasMod ?? false);
     }
   }, [input, modifiers.join(','), hotasMod]);

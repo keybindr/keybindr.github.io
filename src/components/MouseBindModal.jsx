@@ -55,7 +55,7 @@ export default function MouseBindModal({
     const existing = existingBindings.find(b => bindingId(b.button, b.modifiers) === newId);
     if (existing) {
       setAction(resolveAction(existing.action, t));
-      setKeyboardKey(existing.keyboardKey ?? '');
+      setKeyboardKey(existing.mouseKey ?? '');
     } else {
       const def = defaultActionFor(button);
       if (def) setAction(def);
@@ -66,7 +66,7 @@ export default function MouseBindModal({
     const existing = existingBindings.find(b => bindingId(b.button, b.modifiers) === newId);
     if (existing) {
       setAction(resolveAction(existing.action, t));
-      setKeyboardKey(existing.keyboardKey ?? '');
+      setKeyboardKey(existing.mouseKey ?? '');
     } else if (action === '') {
       const def = defaultActionFor(button);
       if (def) setAction(def);

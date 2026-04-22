@@ -134,9 +134,9 @@ export default function MouseBindingTable({ mouseBindings = [], onUpdateAction, 
                   onClick={() => onOpenModal?.(b.button, b.modifiers)}
                 >
                   {b.button}
-                  {b.keyboardKey && (
-                    <span className="mouse-remap-tag" title={b.keyboardKey}>
-                      🖱→{compactKeyLabel(b.keyboardKey, ALL_KEY_MAP[b.keyboardKey], language)}
+                  {b.mouseKey && (
+                    <span className="mouse-remap-tag" title={b.mouseKey}>
+                      🖱→{compactKeyLabel(b.mouseKey, ALL_KEY_MAP[b.mouseKey], language)}
                     </span>
                   )}
                 </td>

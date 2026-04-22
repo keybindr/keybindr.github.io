@@ -357,9 +357,9 @@ function drawHotasTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
       ...(b.hotasMod ? [`[${getHotasModInfo(b.hotasMod, bindings)?.label ?? getHotasLabel(b.hotasMod)}]+`] : []),
       ...((b.modifiers ?? []).map(m => `${m}+`)),
     ].join('');
-    const baseLabel = b.keyboardKey
+    const baseLabel = (b.hotasKey ?? b.keyboardKey)
       ? (() => {
-          const k     = b.keyboardKey;
+          const k     = b.hotasKey ?? b.keyboardKey;
           const label = /^Numpad\d$/.test(k) ? `Num${k.slice(-1)}` : resolveLabel(k, ALL_KEY_MAP[k], language);
           return `${getHotasLabel(b.input)} → ${label}`;
         })()
@@ -518,10 +518,10 @@ async function renderFormatToCanvas(format, layoutName, settings) {
     fillRoundRect  (ctx, pad, y, contentW, mTblBoxH, 8 * S, '#1a1a1a');
     strokeRoundRect(ctx, pad, y, contentW, mTblBoxH, 8 * S, '#3a3a3a', S);
     drawBindingTable(ctx, mouseBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', makeT(settings.uiLanguage || settings.language || 'en-US')('colButton'), 'button', b => {
-      if (!b.keyboardKey) return b.button;
-      const k     = b.keyboardKey;
+      const mk = b.mouseKey ?? b.keyboardKey;
+      if (!mk) return b.button;
       const lang  = settings.language ?? 'en-US';
-      const label = /^Numpad\d$/.test(k) ? `Num${k.slice(-1)}` : resolveLabel(k, ALL_KEY_MAP[k], lang);
+      const label = /^Numpad\d$/.test(mk) ? `Num${mk.slice(-1)}` : resolveLabel(mk, ALL_KEY_MAP[mk], lang);
       return `${b.button} → ${label}`;
     });
     y += sMTblBox + sMGapAfter;
@@ -569,18 +569,18 @@ export function exportJSON(formats, layoutName, settings = {}) {
       })),
       keyColors: f.keyColors,
       mouseBindings: (Array.isArray(f.mouseBindings) ? f.mouseBindings : []).map(b => ({
-        button:      b.button,
-        modifiers:   b.modifiers,
-        action:      resolveAction(b.action, t),
-        keyboardKey: b.keyboardKey || '',
+        button:    b.button,
+        modifiers: b.modifiers,
+        action:    resolveAction(b.action, t),
+        mouseKey:  b.mouseKey ?? b.keyboardKey ?? '',
       })),
       hotasBindings: (Array.isArray(f.hotasBindings) ? f.hotasBindings : []).map(b => ({
-        input:       b.input,
-        modifiers:   b.modifiers   ?? [],
-        hotasMod:    b.hotasMod    ?? '',
-        isHotasMod:  b.isHotasMod  ?? false,
-        action:      resolveAction(b.action, t),
-        keyboardKey: b.keyboardKey ?? '',
+        input:      b.input,
+        modifiers:  b.modifiers  ?? [],
+        hotasMod:   b.hotasMod   ?? '',
+        isHotasMod: b.isHotasMod ?? false,
+        action:     resolveAction(b.action, t),
+        hotasKey:   b.hotasKey ?? b.keyboardKey ?? '',
       })),
     })),
   };
@@ -642,21 +642,21 @@ function parseBindingsArray(arr) {
 
 function parseMouseBindingsArray(arr) {
   return (Array.isArray(arr) ? arr : []).map(b => ({
-    button:      String(b.button ?? ''),
-    modifiers:   (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
-    action:      String(b.action ?? ''),
-    keyboardKey: String(b.keyboardKey ?? ''),
+    button:    String(b.button ?? ''),
+    modifiers: (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
+    action:    String(b.action ?? ''),
+    mouseKey:  String(b.mouseKey ?? b.keyboardKey ?? ''),
   })).filter(b => b.button);
 }
 
 function parseHotasBindingsArray(arr) {
   return (Array.isArray(arr) ? arr : []).map(b => ({
-    input:       String(b.input ?? ''),
-    modifiers:   (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
-    hotasMod:    String(b.hotasMod    ?? ''),
-    isHotasMod:  !!b.isHotasMod,
-    action:      String(b.action      ?? ''),
-    keyboardKey: String(b.keyboardKey ?? ''),
+    input:      String(b.input ?? ''),
+    modifiers:  (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
+    hotasMod:   String(b.hotasMod   ?? ''),
+    isHotasMod: !!b.isHotasMod,
+    action:     String(b.action     ?? ''),
+    hotasKey:   String(b.hotasKey ?? b.keyboardKey ?? ''),
   })).filter(b => b.input);
 }
 

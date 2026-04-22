@@ -12,8 +12,8 @@ export const MAX_FORMATS = 5;
 export const MOUSE_BUTTONS = ['Mouse1', 'Mouse2', 'Mouse3', 'Mouse4', 'Mouse5', 'WheelUp', 'WheelDown', 'Mouse6', 'Mouse7', 'Mouse8', 'Mouse9', 'Mouse10', 'Mouse11', 'Mouse12', 'Mouse13', 'Mouse14', 'Mouse15', 'Mouse16', 'Mouse17', 'Mouse18', 'Mouse19', 'Mouse20'];
 
 const DEFAULT_MOUSE_BINDINGS = [
-  { button: 'Mouse1', modifiers: [], action: '__t:actionAttack', keyboardKey: '' },
-  { button: 'Mouse2', modifiers: [], action: '__t:actionAim',    keyboardKey: '' },
+  { button: 'Mouse1', modifiers: [], action: '__t:actionAttack', mouseKey: '' },
+  { button: 'Mouse2', modifiers: [], action: '__t:actionAim',    mouseKey: '' },
 ];
 
 function makeFormat(name = '', empty = false) {
@@ -30,10 +30,30 @@ const DEFAULT_FORMATS = [
   makeFormat('__t:formatOnFoot'),
 ];
 
+function migrateBindingKeys(formats) {
+  return formats.map(f => ({
+    ...f,
+    mouseBindings: (Array.isArray(f.mouseBindings) ? f.mouseBindings : []).map(b => {
+      if ('keyboardKey' in b && !('mouseKey' in b)) {
+        const { keyboardKey, ...rest } = b;
+        return { ...rest, mouseKey: keyboardKey };
+      }
+      return b;
+    }),
+    hotasBindings: (Array.isArray(f.hotasBindings) ? f.hotasBindings : []).map(b => {
+      if ('keyboardKey' in b && !('hotasKey' in b)) {
+        const { keyboardKey, ...rest } = b;
+        return { ...rest, hotasKey: keyboardKey };
+      }
+      return b;
+    }),
+  }));
+}
+
 function loadInitial() {
   try {
     const saved = JSON.parse(localStorage.getItem(FORMATS_KEY));
-    const formats = Array.isArray(saved) && saved.length > 0 ? saved : (() => {
+    const formats = Array.isArray(saved) && saved.length > 0 ? migrateBindingKeys(saved) : (() => {
       // migrate from legacy separate keys
       const oldBindings = JSON.parse(localStorage.getItem('keybindr_bindings'));
       const oldColors   = JSON.parse(localStorage.getItem('keybindr_key_colors'));
@@ -186,7 +206,7 @@ export function useFormats() {
     mutateActiveFormat(f => ({ ...f, bindings }));
   }
 
-  function addOrUpdateMouseBinding(button, modifiers, action, keyboardKey = '') {
+  function addOrUpdateMouseBinding(button, modifiers, action, mouseKey = '') {
     const id = bindingId(button, modifiers);
     mutateActiveFormat(f => {
       const current = Array.isArray(f.mouseBindings) ? f.mouseBindings : [];
@@ -196,12 +216,12 @@ export function useFormats() {
           ...f,
           mouseBindings: current.map(b =>
             bindingId(b.button, b.modifiers) === id
-              ? { ...b, button, modifiers: modifiers.slice().sort(), action, keyboardKey }
+              ? { ...b, button, modifiers: modifiers.slice().sort(), action, mouseKey }
               : b
           ),
         };
       }
-      return { ...f, mouseBindings: [...current, { button, modifiers: modifiers.slice().sort(), action, keyboardKey }] };
+      return { ...f, mouseBindings: [...current, { button, modifiers: modifiers.slice().sort(), action, mouseKey }] };
     });
   }
 
@@ -233,12 +253,12 @@ export function useFormats() {
   }
 
   // ── HOTAS bindings ────────────────────────────────────────────────────
-  function addOrUpdateHotasBinding(input, modifiers = [], action, keyboardKey = '', hotasMod = '', isHotasMod = false) {
+  function addOrUpdateHotasBinding(input, modifiers = [], action, hotasKey = '', hotasMod = '', isHotasMod = false) {
     const id = hotasBindingId(input, modifiers, hotasMod);
     mutateActiveFormat(f => {
       const current = Array.isArray(f.hotasBindings) ? f.hotasBindings : [];
       const exists = current.some(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === id);
-      const entry  = { input, modifiers: modifiers.slice().sort(), action, keyboardKey, hotasMod, isHotasMod };
+      const entry  = { input, modifiers: modifiers.slice().sort(), action, hotasKey, hotasMod, isHotasMod };
       if (exists) {
         return { ...f, hotasBindings: current.map(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === id ? entry : b) };
       }
