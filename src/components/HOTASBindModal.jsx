@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useT, resolveAction } from '../useTranslation';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { buildHotasGroups, getHotasLabel, hotasBindingId, getHotasModInfo, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from '../hotasConstants';
 import { resolveDisplayLabel } from '../keylabels';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
@@ -79,6 +80,7 @@ export default function HOTASBindModal({
   const inputRef      = useRef(null);
   const modalRef      = useRef(null);
   const isFirstRender = useRef(true);
+  useFocusTrap(modalRef, { onEscape: onCancel, initialFocusRef: inputRef });
 
   // Pre-fill when opening for an existing binding
   useEffect(() => {
@@ -89,7 +91,6 @@ export default function HOTASBindModal({
       setKeyboardKey(existing.hotasKey ?? '');
       setIsHotasMod(existing.isHotasMod ?? false);
     }
-    if (inputRef.current && !('ontouchstart' in window)) inputRef.current.focus();
   }, []);
 
   // When user switches input/modifiers/hotasMod, reload any existing action

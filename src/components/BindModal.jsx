@@ -5,6 +5,7 @@ import { useT, resolveAction } from '../useTranslation';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
 import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs } from '../modifierConstants';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 const PICKER_WIDTH = 252;
 const PICKER_GAP   = 12;
@@ -41,6 +42,7 @@ export default function BindModal({
 
   const inputRef = useRef(null);
   const modalRef = useRef(null);
+  useFocusTrap(modalRef, { onEscape: onCancel, initialFocusRef: inputRef });
 
   const newId = bindingId(keyId, modifiers);
 
@@ -73,7 +75,6 @@ export default function BindModal({
   })();
 
   useEffect(() => {
-    if (inputRef.current && !('ontouchstart' in window)) inputRef.current.focus();
     const existing = existingBindings.find(b => bindingId(b.key, b.modifiers) === newId);
     if (existing) setAction(resolveAction(existing.action, t));
   }, []);

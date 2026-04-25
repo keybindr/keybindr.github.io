@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useT } from '../useTranslation';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export default function HelpModal({ onClose }) {
   const t = useT();
+  const modalRef = useRef(null);
+  useFocusTrap(modalRef, { onEscape: onClose });
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal modal-help" onClick={e => e.stopPropagation()}>
+      <div className="modal modal-help" ref={modalRef} onClick={e => e.stopPropagation()}>
         <h3 className="modal-title help-modal-title">{t('helpTitle')}</h3>
         <div className="help-body">
           <p className="mobile-only mobile-notice">{t('mobileWarning')}</p>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useT, resolveAction } from '../useTranslation';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 import { bindingId } from '../useBindings';
 import { MOD_COLORS, MOD_FAMILY, buildModDefs } from '../modifierConstants';
 import { MOUSE_BUTTONS } from '../useFormats';
@@ -43,6 +44,7 @@ export default function MouseBindModal({
   const inputRef      = useRef(null);
   const modalRef      = useRef(null);
   const isFirstRender = useRef(true);
+  useFocusTrap(modalRef, { onEscape: onCancel, initialFocusRef: inputRef });
 
   const newId = bindingId(button, modifiers);
 
@@ -51,7 +53,6 @@ export default function MouseBindModal({
   }
 
   useEffect(() => {
-    if (inputRef.current && !('ontouchstart' in window)) inputRef.current.focus();
     const existing = existingBindings.find(b => bindingId(b.button, b.modifiers) === newId);
     if (existing) {
       setAction(resolveAction(existing.action, t));

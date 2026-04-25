@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { LAYOUTS } from '../keyboardLayouts';
 import { LOCALES } from '../keylabels';
 import { useT } from '../useTranslation';
 import { MOUSE_PROFILES } from '../mouseProfiles';
 import { HOTAS_PROFILES } from '../hotasProfiles';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 function stripKeyboardHints(name) {
   return name
@@ -16,10 +17,12 @@ function stripKeyboardHints(name) {
 export default function SettingsModal({ settings, onToggleSplit, onChangeLayout, onChangeLocale, onChangeUiLocale, onToggleCrossFormatWarnings, onToggleMouseBindings, onChangeMouseModel, onToggleHotasBindings, onChangeHotasModel, onChangeJoystickButtonCount, onChangeThrottleButtonCount, onChangePedalsButtonCount, onClearKeys, onClose }) {
   const t = useT();
   const { splitModifiers, physicalLayout, language, uiLanguage, warnCrossFormatConflicts, showMouseBindings, mouseModel, showHotasBindings, hotasModel, joystickButtonCount, throttleButtonCount, pedalsButtonCount } = settings;
+  const modalRef = useRef(null);
+  useFocusTrap(modalRef, { onEscape: onClose });
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal modal-settings" onClick={e => e.stopPropagation()}>
+      <div className="modal modal-settings" ref={modalRef} onClick={e => e.stopPropagation()}>
         <div className="settings-header">
           <h3 className="modal-title" style={{ marginBottom: 0 }}>{t('settingsTitle')}</h3>
           <button className="btn-icon" onClick={onClose} title={t('close')}>✕</button>

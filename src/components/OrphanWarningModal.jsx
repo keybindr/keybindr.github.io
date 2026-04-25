@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { useT } from '../useTranslation';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export default function OrphanWarningModal({ orphans, newLayoutName, onConfirm, onCancel, renderItem, bodyKeyOverride }) {
   const t = useT();
@@ -23,10 +24,12 @@ export default function OrphanWarningModal({ orphans, newLayoutName, onConfirm, 
   }
 
   const doRenderItem = renderItem ?? defaultRenderItem;
+  const modalRef = useRef(null);
+  useFocusTrap(modalRef, { onEscape: onCancel });
 
   return (
     <div className="modal-backdrop" onClick={onCancel}>
-      <div className="modal modal-orphan" onClick={e => e.stopPropagation()}>
+      <div className="modal modal-orphan" ref={modalRef} onClick={e => e.stopPropagation()}>
         <h3 className="modal-title">{t('orphanTitle', { layout: newLayoutName })}</h3>
         <div className="orphan-body">
           <p>{t(bodyKey, { count: orphans.length })}</p>

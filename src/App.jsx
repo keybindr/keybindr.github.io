@@ -27,6 +27,8 @@ import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 import { localeUsesISO } from './keylabels';
 import { TranslationContext, makeT, resolveAction } from './useTranslation';
 import { preloadLocales } from './locales/index.js';
+import { useFocusTrap } from './hooks/useFocusTrap';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 
 const DEFAULT_FORMAT_NAMES   = ['__t:formatOnFoot'];
@@ -168,9 +170,11 @@ function LegendTri({ color, dir }) {
 // ── Mobile warning modal ──────────────────────────────────────────────────────
 function MobileWarningModal({ onClose }) {
   const t = React.useContext(TranslationContext);
+  const modalRef = React.useRef(null);
+  useFocusTrap(modalRef, { onEscape: onClose });
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal mobile-warning-modal" onClick={e => e.stopPropagation()}>
+      <div className="modal mobile-warning-modal" ref={modalRef} onClick={e => e.stopPropagation()}>
         <button className="mobile-warning-close" onClick={onClose} title={t('close')}>✕</button>
         <p className="mobile-warning-text">{t('mobileWarning')}</p>
       </div>
@@ -847,8 +851,13 @@ export default function App() {
         </div>
       )}
 
-      {/* Lazy-loaded modals — Suspense fallback is null since modals render over
-          the existing UI; the fraction-of-a-second load is imperceptible. */}
+      {/* Lazy-loaded modals — wrapped in an ErrorBoundary so a modal crash
+          shows a dismissable toast instead of blanking the whole page. */}
+      <ErrorBoundary fallback={(err, reset) => (
+        <div className="error-toast" role="alert" onClick={reset}>
+          {err.message || 'Something went wrong'}
+        </div>
+      )}>
       <Suspense fallback={null}>
       {hotasModal && (
         <HOTASBindModal
@@ -985,6 +994,7 @@ export default function App() {
       )}
 
       </Suspense>
+      </ErrorBoundary>
 
       {showMobileWarning && <MobileWarningModal onClose={closeMobileWarning} />}
 

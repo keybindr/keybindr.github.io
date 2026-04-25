@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useT } from '../useTranslation';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export default function ShareModal({ url, onClose }) {
   const t = useT();
   const [copied, setCopied] = useState(false);
+  const modalRef = useRef(null);
+  useFocusTrap(modalRef, { onEscape: onClose });
 
   function handleCopy() {
     navigator.clipboard.writeText(url).then(() => {
@@ -14,7 +17,7 @@ export default function ShareModal({ url, onClose }) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal modal-share" onClick={e => e.stopPropagation()}>
+      <div className="modal modal-share" ref={modalRef} onClick={e => e.stopPropagation()}>
         <h3 className="modal-title">{t('shareTitle')}</h3>
         <div className="share-body">
           <p>{t('shareBody')}</p>
