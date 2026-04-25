@@ -105,6 +105,7 @@ const en = {
   exportFooter:         'Generated @ keybindr.github.io',
   importErrUnsupported: 'Unsupported file type — use .json',
   importErrRead:        'Failed to read file',
+  importErrInvalid:     'Invalid file — not a keybindr JSON export',
   helpOutro:          '',
   showHotasBindings:   'Add HOTAS Bindings (BETA)',
   hotasBindingsTitle:  'HOTAS Bindings',

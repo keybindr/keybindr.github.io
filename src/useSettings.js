@@ -16,6 +16,7 @@ function detectLocale() {
 
 const detectedLocale = detectLocale();
 
+// Mobile breakpoint — keep in sync with @media (max-width: 768px) in index.css
 const isMobile = window.innerWidth <= 768;
 
 const DEFAULTS = {

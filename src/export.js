@@ -395,9 +395,15 @@ function drawHotasTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
  * @returns {Promise<HTMLCanvasElement>}
  */
 async function renderFormatToCanvas(format, layoutName, settings) {
-  const S    = 2;
+  const S    = 2;   // retina scale factor
   const FONT = `'Fira Code', 'Courier New', monospace`;
   const pad  = 32 * S;
+
+  // Named font sizes and geometry constants (in canvas px = logical px × S)
+  const FONT_TITLE  = 22 * S;   // layout name heading
+  const FONT_SUB    = 14 * S;   // format subtitle and section headings
+  const FONT_FOOTER = 10 * S;   // footer attribution line
+  const BOX_RADIUS  =  8 * S;   // rounded corner radius for container boxes
 
   const bindings      = format.bindings || [];
   const mouseBindings = Array.isArray(format.mouseBindings) ? format.mouseBindings : [];
@@ -426,14 +432,14 @@ async function renderFormatToCanvas(format, layoutName, settings) {
 
   const mTblContentH = mouseBindings.length > 0 ? tblHeaderH + mouseBindings.length * tblRowH : 0;
   const mTblBoxH     = mouseBindings.length > 0 ? mTblContentH + 2 * tblInset : 0;
-  const sMTitle      = mouseBindings.length > 0 ? 22 * S : 0;
+  const sMTitle      = mouseBindings.length > 0 ? FONT_TITLE : 0;
   const sMGap        = mouseBindings.length > 0 ? 10 * S : 0;
   const sMTblBox     = mTblBoxH;
   const sMGapAfter   = mouseBindings.length > 0 ? 16 * S : 0;
 
   const hTblContentH = hotasBindings.length > 0 ? tblHeaderH + hotasBindings.length * tblRowH : 0;
   const hTblBoxH     = hotasBindings.length > 0 ? hTblContentH + 2 * tblInset : 0;
-  const sHTitle      = hotasBindings.length > 0 ? 22 * S : 0;
+  const sHTitle      = hotasBindings.length > 0 ? FONT_TITLE : 0;
   const sHGap        = hotasBindings.length > 0 ? 10 * S : 0;
   const sHTblBox     = hTblBoxH;
   const sHGapAfter   = hotasBindings.length > 0 ? 16 * S : 0;
@@ -450,7 +456,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   const sGap4    = 20 * S;
   const sSep     =  2 * S;
   const sGap5    = 16 * S;
-  const sKbTitle = bindings.length > 0 ? 22 * S : 0;
+  const sKbTitle = bindings.length > 0 ? FONT_TITLE : 0;
   const sKbTitleGap = bindings.length > 0 ? 10 * S : 0;
   const sTblBox  = tblBoxH;
   const sGap6    = bindings.length > 0 ? 20 * S : 0;
@@ -476,16 +482,16 @@ async function renderFormatToCanvas(format, layoutName, settings) {
 
   // Layout name — accent color, uppercase, bold, letter-spacing
   y += sTitle;
-  ctx.font      = `bold ${22 * S}px ${FONT}`;
+  ctx.font      = `bold ${FONT_TITLE}px ${FONT}`;
   ctx.fillStyle = '#e0a84b';
-  if ('letterSpacing' in ctx) ctx.letterSpacing = `${Math.round(0.05 * 22 * S)}px`;
+  if ('letterSpacing' in ctx) ctx.letterSpacing = `${Math.round(0.05 * FONT_TITLE)}px`;
   ctx.fillText((layoutName || makeT(settings.uiLanguage || settings.language || 'en-US')('layoutNameDefault')).toUpperCase(), pad, y);
   if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
   y += sGap1;
 
   // Format name (subtitle)
   y += sSub;
-  ctx.font      = `${14 * S}px ${FONT}`;
+  ctx.font      = `${FONT_SUB}px ${FONT}`;
   ctx.fillStyle = '#777';
   const tFmt = makeT(settings.uiLanguage || settings.language || 'en-US');
   ctx.fillText(resolveAction(format.name, tFmt) || tFmt('exportFormatFallback'), pad, y);
@@ -496,8 +502,8 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   y += sLegend + sGap3;
 
   // Keyboard container box
-  fillRoundRect  (ctx, pad, y, contentW, kbBoxH, 8 * S, '#111');
-  strokeRoundRect(ctx, pad, y, contentW, kbBoxH, 8 * S, '#3a3a3a', S);
+  fillRoundRect  (ctx, pad, y, contentW, kbBoxH, BOX_RADIUS, '#111');
+  strokeRoundRect(ctx, pad, y, contentW, kbBoxH, BOX_RADIUS, '#3a3a3a', S);
   await svgToCanvas(ctx, buildKeyboardSVG(bindings, kc, settings),
     pad + kbInset, y + kbInset, kbDrawW, kbDrawH);
   y += sKbBox + sGap4;
@@ -513,26 +519,26 @@ async function renderFormatToCanvas(format, layoutName, settings) {
 
   // Keyboard bindings section title + table
   if (bindings.length > 0) {
-    ctx.font      = `bold ${14 * S}px ${FONT}`;
+    ctx.font      = `bold ${FONT_SUB}px ${FONT}`;
     ctx.fillStyle = '#e0a84b';
     y += sKbTitle;
     ctx.fillText(makeT(settings.uiLanguage || settings.language || 'en-US')('bindingsTitle').toUpperCase(), pad, y);
     y += sKbTitleGap;
-    fillRoundRect  (ctx, pad, y, contentW, tblBoxH, 8 * S, '#1a1a1a');
-    strokeRoundRect(ctx, pad, y, contentW, tblBoxH, 8 * S, '#3a3a3a', S);
+    fillRoundRect  (ctx, pad, y, contentW, tblBoxH, BOX_RADIUS, '#1a1a1a');
+    strokeRoundRect(ctx, pad, y, contentW, tblBoxH, BOX_RADIUS, '#3a3a3a', S);
     drawBindingTable(ctx, bindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', null, 'key', null, kc);
     y += sTblBox + sGap6;
   }
 
   // Mouse bindings section
   if (mouseBindings.length > 0) {
-    ctx.font      = `bold ${14 * S}px ${FONT}`;
+    ctx.font      = `bold ${FONT_SUB}px ${FONT}`;
     ctx.fillStyle = '#e0a84b';
     y += sMTitle;
     ctx.fillText(makeT(settings.uiLanguage || settings.language || 'en-US')('mouseBindingsTitle').toUpperCase(), pad, y);
     y += sMGap;
-    fillRoundRect  (ctx, pad, y, contentW, mTblBoxH, 8 * S, '#1a1a1a');
-    strokeRoundRect(ctx, pad, y, contentW, mTblBoxH, 8 * S, '#3a3a3a', S);
+    fillRoundRect  (ctx, pad, y, contentW, mTblBoxH, BOX_RADIUS, '#1a1a1a');
+    strokeRoundRect(ctx, pad, y, contentW, mTblBoxH, BOX_RADIUS, '#3a3a3a', S);
     drawBindingTable(ctx, mouseBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', makeT(settings.uiLanguage || settings.language || 'en-US')('colButton'), 'button', b => {
       const mk = b.mouseKey ?? b.keyboardKey;
       if (!mk) return b.button;
@@ -546,19 +552,19 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   // HOTAS bindings section
   if (hotasBindings.length > 0) {
     const tFmt = makeT(settings.uiLanguage || settings.language || 'en-US');
-    ctx.font      = `bold ${14 * S}px ${FONT}`;
+    ctx.font      = `bold ${FONT_SUB}px ${FONT}`;
     ctx.fillStyle = '#e0a84b';
     y += sHTitle;
     ctx.fillText(tFmt('hotasBindingsTitle').toUpperCase(), pad, y);
     y += sHGap;
-    fillRoundRect  (ctx, pad, y, contentW, hTblBoxH, 8 * S, '#1a1a1a');
-    strokeRoundRect(ctx, pad, y, contentW, hTblBoxH, 8 * S, '#3a3a3a', S);
+    fillRoundRect  (ctx, pad, y, contentW, hTblBoxH, BOX_RADIUS, '#1a1a1a');
+    strokeRoundRect(ctx, pad, y, contentW, hTblBoxH, BOX_RADIUS, '#3a3a3a', S);
     drawHotasTable(ctx, hotasBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US');
     y += sHTblBox + sHGapAfter;
   }
 
   // Footer
-  ctx.font      = `${10 * S}px ${FONT}`;
+  ctx.font      = `${FONT_FOOTER}px ${FONT}`;
   ctx.fillStyle = '#f0c060';
   ctx.fillText(makeT(settings.uiLanguage || settings.language || 'en-US')('exportFooter'), pad, totalH - sBotPad);
 
@@ -636,7 +642,10 @@ export function importFile(file, language = 'en-US') {
         const ext = file.name.split('.').pop().toLowerCase();
         if (ext !== 'json') { reject(new Error(t('importErrUnsupported'))); return; }
         resolve(parseJSON(e.target.result));
-      } catch (err) { reject(err); }
+      } catch (err) {
+        // Translate known error keys; pass through anything else as-is
+        reject(new Error(t(err.message) !== err.message ? t(err.message) : err.message));
+      }
     };
     reader.onerror = () => reject(new Error(t('importErrRead')));
     reader.readAsText(file);
@@ -650,10 +659,11 @@ function parseBindingsArray(arr) {
     const raw = String(b.key ?? '');
     return {
       key:       LABEL_TO_KEY[raw] ?? raw,
-      modifiers: (Array.isArray(b.modifiers) ? b.modifiers : []).slice().sort(),
+      modifiers: (Array.isArray(b.modifiers) ? b.modifiers : [])
+                   .filter(m => typeof m === 'string').slice().sort(),
       action:    String(b.action ?? ''),
     };
-  });
+  }).filter(b => b.key);
 }
 
 function parseMouseBindingsArray(arr) {
@@ -678,11 +688,17 @@ function parseHotasBindingsArray(arr) {
 
 function parseJSON(text) {
   const data = JSON.parse(text);
+  if (data === null || typeof data !== 'object' || Array.isArray(data)) {
+    throw new Error('importErrInvalid');
+  }
   if (data.formats && Array.isArray(data.formats)) {
     const formats = data.formats.slice(0, 5).map(f => ({
       name:      String(f.name ?? ''),
       bindings:  parseBindingsArray(f.bindings),
-      keyColors: (f.keyColors && typeof f.keyColors === 'object') ? f.keyColors : {},
+      // sanitize keyColors: keep only entries where value is a string
+      keyColors: (f.keyColors && typeof f.keyColors === 'object' && !Array.isArray(f.keyColors))
+        ? Object.fromEntries(Object.entries(f.keyColors).filter(([, v]) => typeof v === 'string'))
+        : {},
       mouseBindings: parseMouseBindingsArray(f.mouseBindings),
       hotasBindings: parseHotasBindingsArray(f.hotasBindings),
     }));

@@ -1050,6 +1050,7 @@ html, body {
 
 .mobile-only { display: none; }
 
+/* Primary mobile breakpoint — keep in sync with isMobile check in useSettings.js */
 @media (max-width: 768px) {
   .layout-name,
   .layout-name-input { font-size: 20px; }
