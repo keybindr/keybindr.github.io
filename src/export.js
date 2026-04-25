@@ -50,6 +50,14 @@ function splitTriPts(corner, { x, y, w, h }) {
   ];
 }
 
+/**
+ * Builds a standalone SVG string representing the keyboard with bound keys
+ * highlighted and modifier corner triangles rendered for each binding.
+ * @param {Array}  bindings   - Array of binding objects { key, modifiers, action }
+ * @param {Object} keyColors  - Map of keyId → hex color string for custom colors
+ * @param {Object} settings   - { physicalLayout, language, splitModifiers }
+ * @returns {string} SVG markup string
+ */
 function buildKeyboardSVG(bindings, keyColors, settings) {
   const { splitModifiers, physicalLayout = 'ansi-104', language = 'en-US' } = settings;
   const layout = getLayout(physicalLayout);
@@ -378,6 +386,14 @@ function drawHotasTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
   }
 }
 
+/**
+ * Renders a single format's keyboard + binding tables onto an off-screen canvas.
+ * Scale factor S=2 produces a 2× retina-quality image.
+ * @param {Object} format     - Format object { bindings, mouseBindings, hotasBindings, keyColors, name }
+ * @param {string} layoutName - Top-level layout name shown as the title
+ * @param {Object} settings   - { physicalLayout, language, splitModifiers, uiLanguage }
+ * @returns {Promise<HTMLCanvasElement>}
+ */
 async function renderFormatToCanvas(format, layoutName, settings) {
   const S    = 2;
   const FONT = `'Fira Code', 'Courier New', monospace`;

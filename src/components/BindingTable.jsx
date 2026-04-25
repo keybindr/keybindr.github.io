@@ -121,7 +121,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
             <th className="cell-color-head">{t('colColor')}</th>
             <th className="cell-action">{t('colAction')}</th>
             <th className="cell-del-head">
-              <button className="btn-lock" onClick={e => { e.stopPropagation(); onToggleLocked?.(v => !v); }} title={locked ? t('unlockDelete') : t('lockDelete')}>
+              <button className="btn-lock" onClick={e => { e.stopPropagation(); onToggleLocked?.(v => !v); }} title={locked ? t('unlockDelete') : t('lockDelete')} aria-label={locked ? t('unlockDelete') : t('lockDelete')}>
                 <span style={{ position: 'relative', left: '6px', color: 'var(--accent)', lineHeight: 1 }}>
                   {locked ? (
                     <svg width="11" height="13" viewBox="0 0 11 13" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -174,6 +174,8 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                     onDragEnd={handleDragEnd}
                     onClick={e => e.stopPropagation()}
                     title={t('dragToReorder')}
+                    aria-label={t('dragToReorder')}
+                    role="button"
                   >⠿</span>
                 </td>
                 <td className="cell-mod">
@@ -227,6 +229,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                     className="btn-del"
                     style={{ visibility: locked ? 'hidden' : 'visible' }}
                     title={t('removeBinding')}
+                    aria-label={t('removeBinding')}
                     onClick={e => { e.stopPropagation(); if (!locked) onRemove(b.key, b.modifiers); }}
                   >✕</button>
                 </td>

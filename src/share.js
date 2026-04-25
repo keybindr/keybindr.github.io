@@ -35,6 +35,15 @@ async function gunzipB64(str) {
   return new TextDecoder().decode(buf);
 }
 
+/**
+ * Encodes the current layout into a shareable URL fragment.
+ * Payloads under THRESHOLD bytes are base64-encoded; larger payloads are
+ * gzip-compressed first (when CompressionStream is available).
+ * @param {Array}  formats    - Array of format objects
+ * @param {string} layoutName - Top-level layout name
+ * @param {Object} settings   - { physicalLayout, language }
+ * @returns {Promise<string>} Full URL with #layout=... hash
+ */
 export async function encodeShareUrl(formats, layoutName, settings = {}) {
   const payload = JSON.stringify({
     layoutName,

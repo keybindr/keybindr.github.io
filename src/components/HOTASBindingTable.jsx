@@ -90,6 +90,7 @@ export default function HOTASBindingTable({
                 className="btn-lock"
                 onClick={e => { e.stopPropagation(); onToggleLocked?.(v => !v); }}
                 title={locked ? t('unlockDelete') : t('lockDelete')}
+                aria-label={locked ? t('unlockDelete') : t('lockDelete')}
               >
                 <span style={{ position: 'relative', left: '6px', color: 'var(--accent)', lineHeight: 1 }}>
                   {locked ? (
@@ -135,6 +136,8 @@ export default function HOTASBindingTable({
                     onDragEnd={handleDragEnd}
                     onClick={e => e.stopPropagation()}
                     title={t('dragToReorder')}
+                    aria-label={t('dragToReorder')}
+                    role="button"
                   >⠿</span>
                 </td>
 
@@ -219,6 +222,7 @@ export default function HOTASBindingTable({
                     className="btn-del"
                     style={{ visibility: locked ? 'hidden' : 'visible' }}
                     title={t('removeBinding')}
+                    aria-label={t('removeBinding')}
                     onClick={e => { e.stopPropagation(); if (!locked) onRemove(b.input, b.modifiers ?? [], b.hotasMod ?? ''); }}
                   >✕</button>
                 </td>

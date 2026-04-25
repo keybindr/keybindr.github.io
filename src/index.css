@@ -432,8 +432,8 @@ html, body {
 }
 .binding-table tr:hover { background: var(--surface2); }
 .binding-table tr.row-selected { background: #3a3010; }
-.binding-table tr.row-selected td { border-bottom-color: #4a4010; }
-.binding-table tr.row-dragging { opacity: 0.4; }
+.binding-table .row-selected td { border-bottom-color: #4a4010; }
+.binding-table tr.row-dragging { opacity: 0.4; will-change: opacity; }
 .binding-table tr.row-drag-over td { border-top: 2px solid var(--accent); }
 .binding-table tr.row-conflict td { border-bottom-color: #5a3a00; }
 
@@ -1325,6 +1325,7 @@ html, body {
   flex-shrink: 0;
 }
 
+/* Secondary breakpoint (680px): modal-backdrop goes column layout on very small screens */
 @media (max-width: 680px) {
   .modal-backdrop {
     flex-direction: column;
@@ -1538,3 +1539,22 @@ html, body {
 .cpk-input[type="number"]::-webkit-inner-spin-button,
 .cpk-input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 .cpk-input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Error toast ─────────────────────────────────────────────────────────────── */
+.error-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #5a1a1a;
+  color: #ffb3b3;
+  border: 1px solid #a03030;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 13px;
+  z-index: 9999;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  max-width: 90vw;
+  text-align: center;
+}

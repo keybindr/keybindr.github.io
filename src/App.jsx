@@ -65,7 +65,7 @@ function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove,
   return (
     <div className="format-tabs">
       {formats.map((f, i) => {
-        const label    = resolveAction(f.name, t) || (t ? t('formatFallback', { n: String(i + 1) }) : `Format ${i + 1}`);
+        const label    = resolveAction(f.name, t) || t('formatFallback', { n: String(i + 1) });
         const isActive = i === activeIndex;
         const removable = i > 0;
 
@@ -74,7 +74,7 @@ function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove,
             key={i}
             className={`format-tab${isActive ? ' active' : ''}`}
             onClick={() => handleTabClick(i)}
-            title={isActive ? (t ? t('tabClickRename') : 'Click to rename') : label}
+            title={isActive ? t('tabClickRename') : label}
           >
             {editingIdx === i ? (
               <input
@@ -143,8 +143,8 @@ function LayoutName({ name, onChange, t }) {
   }
 
   return (
-    <div className="layout-name" onClick={() => setEditing(true)} title={t ? t('tabClickRename') : 'Click to rename'}>
-      {name || (t ? t('layoutNameDefault') : 'Custom Keybind Layout Name')}
+    <div className="layout-name" onClick={() => setEditing(true)} title={t('tabClickRename')}>
+      {name || t('layoutNameDefault')}
     </div>
   );
 }
@@ -217,6 +217,13 @@ export default function App() {
   const [showHamburger, setShowHamburger] = useState(false);
   const [activePreset, setActivePreset]   = useState(null);
   const [deleteLocked, setDeleteLocked]   = useState(false);
+  const [errorMsg, setErrorMsg]           = useState(null);
+  const [isExporting, setIsExporting]     = useState(false);
+
+  function showError(msg) {
+    setErrorMsg(msg);
+    setTimeout(() => setErrorMsg(null), 5000);
+  }
 
   const [showMobileWarning, setShowMobileWarning] = useState(() => {
     return window.innerWidth <= 768 && !localStorage.getItem(MOBILE_WARNED_KEY);
@@ -335,7 +342,7 @@ export default function App() {
         setSelectedId(null);
         setActivePreset(null);
       })
-      .catch(err => alert(err.message));
+      .catch(err => showError(err.message));
     e.target.value = '';
   }
 
@@ -619,8 +626,13 @@ export default function App() {
                 <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(formats, layoutName, settings))}>
                   {t('exportJson')}
                 </button>
-                <button className="dropdown-item" onClick={() => menuAction(() => exportPNG(formats, layoutName, settings).catch(err => alert(err.message)))}>
-                  {t('exportPng')}
+                <button className="dropdown-item" disabled={isExporting} onClick={() => menuAction(() => {
+                  setIsExporting(true);
+                  exportPNG(formats, layoutName, settings)
+                    .catch(err => showError(err.message))
+                    .finally(() => setIsExporting(false));
+                })}>
+                  {t('exportPng')}{isExporting ? ' …' : ''}
                 </button>
                 {(() => {
                   const ap = GAME_PRESETS.find(p => p.id === activePreset);
@@ -644,7 +656,7 @@ export default function App() {
               </div>
             )}
           </div>
-          <button className="btn-icon" title={t('shareLayout')} onClick={handleShare}>
+          <button className="btn-icon" title={t('shareLayout')} aria-label={t('shareLayout')} onClick={handleShare}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="13" cy="3" r="1.5"/>
               <circle cx="3" cy="8" r="1.5"/>
@@ -653,13 +665,13 @@ export default function App() {
               <line x1="4.5" y1="9" x2="11.5" y2="12"/>
             </svg>
           </button>
-          <button className="btn-icon" title={t('help')} onClick={() => setShowHelp(true)}>?</button>
-          <button className="btn-icon" title={t('settings')} onClick={() => setShowSettings(true)}>⚙</button>
+          <button className="btn-icon" title={t('help')} aria-label={t('help')} onClick={() => setShowHelp(true)}>?</button>
+          <button className="btn-icon" title={t('settings')} aria-label={t('settings')} onClick={() => setShowSettings(true)}>⚙</button>
         </div>
 
         {/* Mobile hamburger */}
         <div className="header-mobile" ref={hamburgerRef}>
-          <button className="btn-hamburger" onClick={() => setShowHamburger(v => !v)} title={t('menu')}>
+          <button className="btn-hamburger" onClick={() => setShowHamburger(v => !v)} title={t('menu')} aria-label={t('menu')}>
             ☰
           </button>
           {showHamburger && (
@@ -960,6 +972,12 @@ export default function App() {
       )}
 
       {showMobileWarning && <MobileWarningModal onClose={closeMobileWarning} />}
+
+      {errorMsg && (
+        <div className="error-toast" role="alert" onClick={() => setErrorMsg(null)}>
+          {errorMsg}
+        </div>
+      )}
 
       <footer className="app-footer">
         <div className="footer-content">
