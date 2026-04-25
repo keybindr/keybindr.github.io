@@ -1,15 +1,17 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, Suspense } from 'react';
 import Keyboard from './components/Keyboard';
-import BindModal from './components/BindModal';
 import BindingTable from './components/BindingTable';
 import MouseBindingTable from './components/MouseBindingTable';
-import MouseBindModal from './components/MouseBindModal';
 import HOTASBindingTable from './components/HOTASBindingTable';
-import HOTASBindModal from './components/HOTASBindModal';
-import HelpModal from './components/HelpModal';
-import SettingsModal from './components/SettingsModal';
-import ShareModal from './components/ShareModal';
-import ShareImportModal from './components/ShareImportModal';
+
+// Modals are lazy-loaded — they're only shown on user action, never on initial render.
+const BindModal          = React.lazy(() => import('./components/BindModal'));
+const MouseBindModal     = React.lazy(() => import('./components/MouseBindModal'));
+const HOTASBindModal     = React.lazy(() => import('./components/HOTASBindModal'));
+const HelpModal          = React.lazy(() => import('./components/HelpModal'));
+const SettingsModal      = React.lazy(() => import('./components/SettingsModal'));
+const ShareModal         = React.lazy(() => import('./components/ShareModal'));
+const ShareImportModal   = React.lazy(() => import('./components/ShareImportModal'));
 import { bindingId } from './useBindings';
 import { useFormats, MAX_FORMATS, MOUSE_BUTTONS } from './useFormats';
 import { getAllHotasInputs, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from './hotasConstants';
@@ -18,7 +20,7 @@ import { getHotasProfile, getEffectiveHotasCounts, getHotasProfileInputSet, HOTA
 import { useSettings } from './useSettings';
 import { exportJSON, exportPNG, importFile } from './export';
 import { GAME_PRESETS } from './gamePresets';
-import OrphanWarningModal from './components/OrphanWarningModal';
+const OrphanWarningModal = React.lazy(() => import('./components/OrphanWarningModal'));
 import { encodeShareUrl, decodeShareHash } from './share';
 import { DEFAULT_BINDINGS } from './defaultBindings';
 import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
@@ -845,6 +847,9 @@ export default function App() {
         </div>
       )}
 
+      {/* Lazy-loaded modals — Suspense fallback is null since modals render over
+          the existing UI; the fraction-of-a-second load is imperceptible. */}
+      <Suspense fallback={null}>
       {hotasModal && (
         <HOTASBindModal
           initialInput={hotasModal.input}
@@ -978,6 +983,8 @@ export default function App() {
           onCancel={() => setPendingHotasModel(null)}
         />
       )}
+
+      </Suspense>
 
       {showMobileWarning && <MobileWarningModal onClose={closeMobileWarning} />}
 
