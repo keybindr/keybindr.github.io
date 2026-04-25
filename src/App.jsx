@@ -24,6 +24,7 @@ import { DEFAULT_BINDINGS } from './defaultBindings';
 import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 import { localeUsesISO } from './keylabels';
 import { TranslationContext, makeT, resolveAction } from './useTranslation';
+import { preloadLocales } from './locales/index.js';
 
 
 const DEFAULT_FORMAT_NAMES   = ['__t:formatOnFoot'];
@@ -219,6 +220,7 @@ export default function App() {
   const [deleteLocked, setDeleteLocked]   = useState(false);
   const [errorMsg, setErrorMsg]           = useState(null);
   const [isExporting, setIsExporting]     = useState(false);
+  const [, forceUpdate]                   = useState(0);
 
   function showError(msg) {
     setErrorMsg(msg);
@@ -278,6 +280,12 @@ export default function App() {
     if (name) localStorage.setItem(LAYOUT_NAME_KEY, name);
     else localStorage.removeItem(LAYOUT_NAME_KEY);
   }
+
+  // Preload the active locale(s) on startup and whenever language settings change.
+  // en-US is always in cache; everything else is fetched then triggers a re-render.
+  useEffect(() => {
+    preloadLocales(settings.uiLanguage, settings.language).then(() => forceUpdate(n => n + 1));
+  }, [settings.uiLanguage, settings.language]);
 
   useEffect(() => {
     const hash = window.location.hash;

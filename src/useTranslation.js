@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { TRANSLATIONS, LANG_FALLBACK } from './translations';
+import { getLoadedLocale, LANG_FALLBACK } from './locales/index.js';
 import { GAME_ACTION_LABELS } from './gamePresets';
 
 export const TranslationContext = createContext(key => key);
@@ -14,10 +14,18 @@ export function resolveAction(action, t) {
   return action ?? '';
 }
 
+/**
+ * Builds a synchronous translator for the given BCP-47 language code.
+ * The locale (and its fallback) must already be in the cache — call
+ * preloadLocales() before invoking makeT() for non-English languages.
+ * en-US is always available as the base fallback.
+ * @param {string} language
+ * @returns {function(string, object=): string}
+ */
 export function makeT(language) {
-  const primary  = TRANSLATIONS[language]                    || {};
-  const fallback = TRANSLATIONS[LANG_FALLBACK[language]]     || {};
-  const base     = TRANSLATIONS['en-US']                     || {};
+  const primary  = getLoadedLocale(language)                      || {};
+  const fallback = getLoadedLocale(LANG_FALLBACK[language] ?? '') || {};
+  const base     = getLoadedLocale('en-US')                       || {};
   return function t(key, vars) {
     let str = primary[key] ?? fallback[key] ?? base[key] ?? key;
     if (vars) {
