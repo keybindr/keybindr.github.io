@@ -3,6 +3,10 @@ import Keyboard from './components/Keyboard';
 import BindingTable from './components/BindingTable';
 import MouseBindingTable from './components/MouseBindingTable';
 import HOTASBindingTable from './components/HOTASBindingTable';
+import FormatTabs from './components/FormatTabs';
+import LayoutName from './components/LayoutName';
+import LegendTri from './components/LegendTri';
+import MobileWarningModal from './components/MobileWarningModal';
 
 // Modals are lazy-loaded — they're only shown on user action, never on initial render.
 const BindModal          = React.lazy(() => import('./components/BindModal'));
@@ -13,7 +17,7 @@ const SettingsModal      = React.lazy(() => import('./components/SettingsModal')
 const ShareModal         = React.lazy(() => import('./components/ShareModal'));
 const ShareImportModal   = React.lazy(() => import('./components/ShareImportModal'));
 import { bindingId } from './useBindings';
-import { useFormats, MAX_FORMATS, MOUSE_BUTTONS } from './useFormats';
+import { useFormats, MOUSE_BUTTONS } from './useFormats';
 import { getAllHotasInputs, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from './hotasConstants';
 import { getMouseProfile, getProfileButtonSet, MOUSE_PROFILES } from './mouseProfiles';
 import { getHotasProfile, getEffectiveHotasCounts, getHotasProfileInputSet, HOTAS_PROFILES } from './hotasProfiles';
@@ -25,9 +29,8 @@ import { encodeShareUrl, decodeShareHash } from './share';
 import { DEFAULT_BINDINGS } from './defaultBindings';
 import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 import { localeUsesISO } from './keylabels';
-import { TranslationContext, makeT, resolveAction } from './useTranslation';
+import { TranslationContext, makeT } from './useTranslation';
 import { preloadLocales } from './locales/index.js';
-import { useFocusTrap } from './hooks/useFocusTrap';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 
@@ -47,140 +50,6 @@ function hasCustomSession(formats, layoutName) {
 const LAYOUT_NAME_KEY    = 'keybindr_layout_name';
 const MOBILE_WARNED_KEY  = 'keybindr_mobile_warned';
 const DEFAULT_LAYOUT_NAME = null; // displayed via translation key 'layoutNameDefault'
-
-// ── Format tabs ───────────────────────────────────────────────────────────────
-function FormatTabs({ formats, activeIndex, onSwitch, onAdd, onRename, onRemove, t }) {
-  const [editingIdx, setEditingIdx] = useState(null);
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (editingIdx !== null) inputRef.current?.select();
-  }, [editingIdx]);
-
-  function handleTabClick(i) {
-    if (i === activeIndex) setEditingIdx(i);
-    else onSwitch(i);
-  }
-
-  function commit(val) {
-    onRename(editingIdx, val.trim());
-    setEditingIdx(null);
-  }
-
-  return (
-    <div className="format-tabs">
-      {formats.map((f, i) => {
-        const label    = resolveAction(f.name, t) || t('formatFallback', { n: String(i + 1) });
-        const isActive = i === activeIndex;
-        const removable = i > 0;
-
-        return (
-          <div
-            key={i}
-            className={`format-tab${isActive ? ' active' : ''}`}
-            onClick={() => handleTabClick(i)}
-            title={isActive ? t('tabClickRename') : label}
-          >
-            {editingIdx === i ? (
-              <input
-                ref={inputRef}
-                className="format-tab-input"
-                defaultValue={resolveAction(f.name, t)}
-                maxLength={20}
-                onClick={e => e.stopPropagation()}
-                onBlur={e => commit(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') e.target.blur();
-                  if (e.key === 'Escape') setEditingIdx(null);
-                }}
-              />
-            ) : (
-              <span>{label}</span>
-            )}
-            {removable && (
-              <>
-                <span className="format-tab-sep">|</span>
-                <span
-                  className="format-tab-remove"
-                  onClick={e => { e.stopPropagation(); onRemove(i); }}
-                  title={t ? t('tabRemove') : 'Remove format'}
-                >✕</span>
-              </>
-            )}
-          </div>
-        );
-      })}
-      {formats.length < MAX_FORMATS && (
-        <button className="format-add-btn" onClick={onAdd} title={t ? t('tabAdd') : 'Add format'}>+</button>
-      )}
-    </div>
-  );
-}
-
-// ── Layout name ───────────────────────────────────────────────────────────────
-function LayoutName({ name, onChange, t }) {
-  const [editing, setEditing] = useState(false);
-  const inputRef = useRef(null);
-
-  useEffect(() => {
-    if (editing) inputRef.current?.select();
-  }, [editing]);
-
-  function commit(val) {
-    onChange(val.trim());
-    setEditing(false);
-  }
-
-  if (editing) {
-    return (
-      <input
-        ref={inputRef}
-        className="layout-name-input"
-        defaultValue={name}
-        maxLength={60}
-        onBlur={e => commit(e.target.value)}
-        onKeyDown={e => {
-          if (e.key === 'Enter') commit(e.target.value);
-          if (e.key === 'Escape') setEditing(false);
-        }}
-      />
-    );
-  }
-
-  return (
-    <div className="layout-name" onClick={() => setEditing(true)} title={t('tabClickRename')}>
-      {name || t('layoutNameDefault')}
-    </div>
-  );
-}
-
-// ── Legend triangle SVG ───────────────────────────────────────────────────────
-function LegendTri({ color, dir }) {
-  const s = 10;
-  const pts = dir === 'shift' ? `${s},0 ${s},${s} 0,0`
-            : dir === 'alt'   ? `${s},${s} ${s},0 0,${s}`
-            :                   `0,${s} 0,0 ${s},${s}`;
-  return (
-    <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} style={{ display: 'inline-block', flexShrink: 0 }}>
-      <polygon points={pts} fill={color} />
-    </svg>
-  );
-}
-
-// ── Mobile warning modal ──────────────────────────────────────────────────────
-function MobileWarningModal({ onClose }) {
-  const t = React.useContext(TranslationContext);
-  const modalRef = React.useRef(null);
-  useFocusTrap(modalRef, { onEscape: onClose });
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal mobile-warning-modal" ref={modalRef} onClick={e => e.stopPropagation()}>
-        <button className="mobile-warning-close" onClick={onClose} title={t('close')}>✕</button>
-        <p className="mobile-warning-text">{t('mobileWarning')}</p>
-      </div>
-    </div>
-  );
-}
 
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -723,7 +592,7 @@ export default function App() {
         </div>
       </header>
 
-      <LayoutName name={layoutName} onChange={handleLayoutNameChange} t={t} />
+      <LayoutName name={layoutName} onChange={handleLayoutNameChange} />
 
       <div className="legend-row">
         <div className="legend">
@@ -751,7 +620,6 @@ export default function App() {
           onAdd={addFormat}
           onRename={setFormatName}
           onRemove={i => { removeFormat(i); setSelectedId(null); }}
-          t={t}
         />
       </div>
 
