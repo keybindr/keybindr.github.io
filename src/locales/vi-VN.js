@@ -134,4 +134,27 @@ export default {
   formatFallback:      'Định dạng {n}',
   menu:               'Menu',
   currentColor:       'Màu hiện tại',
+
+  // ── Keys added by fill-missing-locale-keys (pending translation) ──
+  'mouseOrphanBodySingular': 'The following binding uses a button not on this mouse and will be removed:',  // TODO: translate
+  'mouseOrphanBodyPlural'  : 'The following {count} bindings use buttons not on this mouse and will be removed:',  // TODO: translate
+  'hotasOrphanBodySingular': 'The following binding uses an input not on this HOTAS and will be removed:',  // TODO: translate
+  'hotasOrphanBodyPlural'  : 'The following {count} bindings use inputs not on this HOTAS and will be removed:',  // TODO: translate
+  'additionalButtons'      : 'Additional Buttons',  // TODO: translate
+  'mouseModel'             : 'Mouse Model',  // TODO: translate
+  'helpUndoLabel'          : 'Undo / Redo',  // TODO: translate
+  'helpUndoBody'           : 'Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z) step through your recent changes.',  // TODO: translate
+  'importErrInvalid'       : 'Invalid file — not a keybindr JSON export',  // TODO: translate
+  'helpOutro'              : '',  // TODO: translate
+  'showHotasBindings'      : 'Add HOTAS Bindings (BETA)',  // TODO: translate
+  'hotasBindingsTitle'     : 'HOTAS Bindings',  // TODO: translate
+  'hotasColInput'          : 'Input',  // TODO: translate
+  'addHotasBinding'        : 'Add HOTAS Binding',  // TODO: translate
+  'hotasSection'           : 'HOTAS',  // TODO: translate
+  'hotasMarkAsModifier'    : 'Mark as HOTAS modifier button',  // TODO: translate
+  'hotasModifierButton'    : 'HOTAS Modifier',  // TODO: translate
+  'hotasNoModifiers'       : 'Mark a button as a modifier first',  // TODO: translate
+  'joystickButtonCount'    : 'Joystick Buttons',  // TODO: translate
+  'throttleButtonCount'    : 'Throttle Buttons',  // TODO: translate
+  'pedalsButtonCount'      : 'Pedals Buttons',  // TODO: translate
 };

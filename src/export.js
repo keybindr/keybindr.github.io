@@ -686,7 +686,7 @@ function parseHotasBindingsArray(arr) {
   })).filter(b => b.input);
 }
 
-function parseJSON(text) {
+export function parseJSON(text) {
   const data = JSON.parse(text);
   if (data === null || typeof data !== 'object' || Array.isArray(data)) {
     throw new Error('importErrInvalid');
