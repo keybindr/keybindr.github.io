@@ -124,6 +124,29 @@ function retagAndDedupe(list, splitModifiers, idOf) {
   return result;
 }
 
+// Physical Left/Right pairs treated as "the same key" when unified.
+const MOD_PAIRS = [['ShiftLeft', 'ShiftRight'], ['AltLeft', 'AltRight'], ['ControlLeft', 'ControlRight']];
+
+// Forces each L/R modifier pair's keyColors entry to match when collapsing
+// to unified mode — the two sides are the same logical key there, so any
+// pre-existing mismatch (e.g. from imported/legacy data, or from colors set
+// while split) is resolved by letting the Left side's value win.
+function reconcileKeyColors(keyColors) {
+  let next = keyColors;
+  let changed = false;
+  for (const [l, r] of MOD_PAIRS) {
+    const hasL = Object.prototype.hasOwnProperty.call(keyColors, l);
+    const hasR = Object.prototype.hasOwnProperty.call(keyColors, r);
+    if (!hasL && !hasR) continue;
+    if (hasL && hasR && keyColors[l] === keyColors[r]) continue;
+    const winner = hasL ? keyColors[l] : keyColors[r];
+    if (!changed) { next = { ...keyColors }; changed = true; }
+    next[l] = winner;
+    next[r] = winner;
+  }
+  return next;
+}
+
 const HISTORY_LIMIT = 3;
 
 export function useFormats() {
@@ -380,6 +403,7 @@ export function useFormats() {
           splitModifiers,
           b => hotasBindingId(b.input, b.modifiers, b.hotasMod ?? ''),
         ),
+        keyColors: splitModifiers ? f.keyColors : reconcileKeyColors(f.keyColors),
       })),
     }));
   }

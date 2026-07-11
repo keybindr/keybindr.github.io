@@ -26,6 +26,8 @@ export default function BindModal({
   const modDefs     = buildModDefs(settings);
   const isModifier  = MODIFIER_KEY_IDS.has(keyId);
   const trueColors  = settings?.splitModifiers ? KEY_TRUE_COLORS_SPLIT : KEY_TRUE_COLORS;
+  const paletteHexSet   = new Set(KEY_PALETTE.map(c => c.hex));
+  const trueColorHexSet = new Set(trueColors.map(c => c.hex));
 
   const isBoundKey = existingBindings.some(b => b.key === keyId);
   const accentHex = resolveAccent(keyId, settings?.splitModifiers);
@@ -38,6 +40,8 @@ export default function BindModal({
   const [localColor, setLocalColor] = useState(keyColor ?? '');
   const isPaletteColor = !keyColor || keyColor === KEY_COLOR_NONE || KEY_PALETTE.some(c => c.hex === keyColor);
   const [showCustomPicker, setShowCustomPicker] = useState(!isPaletteColor);
+  const isCustomColorActive = !!localColor && localColor !== KEY_COLOR_NONE
+    && !paletteHexSet.has(localColor) && !trueColorHexSet.has(localColor);
 
   const inputRef = useRef(null);
   const modalRef = useRef(null);
@@ -219,9 +223,9 @@ export default function BindModal({
                 {t('customColor')}
               </button>
             </div>
-            {isModifier && (
+            {(isModifier || isCustomColorActive) && (
               <div className="palette-swatch-row">
-                {trueColors.map(c => (
+                {isModifier && trueColors.map(c => (
                   <button
                     key={c.id}
                     type="button"
@@ -231,6 +235,15 @@ export default function BindModal({
                     onClick={() => { setShowCustomPicker(false); applyColor(c.hex); }}
                   />
                 ))}
+                {isCustomColorActive && (
+                  <button
+                    type="button"
+                    className="color-swatch active"
+                    style={{ background: localColor }}
+                    title={localColor}
+                    onClick={() => setShowCustomPicker(true)}
+                  />
+                )}
               </div>
             )}
           </div>
