@@ -1,5 +1,5 @@
 import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
-import { resolveLabel, resolveDisplayLabel } from './keylabels';
+import { resolveLabel, resolveDisplayLabel, DISPLAY_LABEL_OVERRIDES } from './keylabels';
 import { makeT, resolveAction } from './useTranslation';
 import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_ACCENT_SPLIT, KEY_COLOR_NONE, MOD_COLORS, MOD_LABELS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill, resolveAccent } from './modifierConstants';
 import { getHotasLabel, getHotasModInfo } from './hotasConstants';
@@ -11,6 +11,22 @@ const LABEL_TO_KEY = Object.fromEntries(
     .filter(([, v]) => v.label)
     .map(([id, v]) => [v.label, id])
 );
+// Several key pairs render the same base label on the keyboard SVG (both
+// Shift keys say "Shift", NumpadEnter says "Enter" like the main Enter key,
+// etc.) so the scan above lands on an arbitrary winner. Pin the ambiguous
+// label to the more common real-world default — exports written before
+// resolveDisplayLabel below existed can only carry the shared label, and
+// this keeps re-importing them deterministic instead of picking whichever
+// side ALL_KEY_MAP happened to iterate to last.
+Object.assign(LABEL_TO_KEY, {
+  Shift: 'ShiftLeft', Ctrl: 'ControlLeft', Alt: 'AltLeft', '⊞': 'MetaLeft',
+  Enter: 'Enter', '-': 'Minus', '/': 'Slash', '.': 'Period',
+});
+// Newer exports write the unambiguous display label (LShift, Numpad Enter,
+// etc.) instead — map those back to their key IDs too.
+for (const [id, label] of Object.entries(DISPLAY_LABEL_OVERRIDES)) {
+  LABEL_TO_KEY[label] = id;
+}
 
 // ── Keyboard SVG generation ───────────────────────────────────────────────────
 
@@ -589,7 +605,7 @@ export function exportJSON(formats, layoutName, settings = {}) {
     formats: formats.map(f => ({
       name: f.name,
       bindings: f.bindings.map(b => ({
-        key:       ALL_KEY_MAP[b.key]?.label ?? b.key,
+        key:       resolveDisplayLabel(b.key, ALL_KEY_MAP[b.key], 'en-US'),
         modifiers: b.modifiers,
         action:    resolveAction(b.action, t),
       })),

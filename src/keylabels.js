@@ -619,7 +619,7 @@ export function resolveLabel(keyId, keyDef, localeId) {
 
 // Like resolveLabel but applies unambiguous naming for keys that share display labels.
 // Use this everywhere except the keyboard SVG itself.
-const DISPLAY_LABEL_OVERRIDES = {
+export const DISPLAY_LABEL_OVERRIDES = {
   // Left/right modifier pairs — both sides share the same base label on the SVG
   ShiftLeft:    'LShift',   ShiftRight:   'RShift',
   ControlLeft:  'LCtrl',    ControlRight: 'RCtrl',
