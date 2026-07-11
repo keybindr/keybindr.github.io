@@ -1,5 +1,5 @@
 import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
-import { resolveLabel } from './keylabels';
+import { resolveLabel, resolveDisplayLabel } from './keylabels';
 import { makeT, resolveAction } from './useTranslation';
 import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_ACCENT_SPLIT, KEY_COLOR_NONE, MOD_COLORS, MOD_LABELS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill, resolveAccent } from './modifierConstants';
 import { getHotasLabel, getHotasModInfo } from './hotasConstants';
@@ -297,7 +297,7 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US', ke
     // Key — bold, --accent2 (#f0c060), matches .cell-key
     ctx.font      = `bold ${fontSize}px ${FONT}`;
     ctx.fillStyle = '#f0c060';
-    const keyText = resolveKeyLabel ? resolveKeyLabel(b) : resolveLabel(b[keyField], ALL_KEY_MAP[b[keyField]], language);
+    const keyText = resolveKeyLabel ? resolveKeyLabel(b) : resolveDisplayLabel(b[keyField], ALL_KEY_MAP[b[keyField]], language);
     ctx.fillText(keyText, colKey, ty);
 
     // Color swatch — only for keyboard bindings, centred in color col
@@ -372,7 +372,7 @@ function drawHotasTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
     const baseLabel = (b.hotasKey ?? b.keyboardKey)
       ? (() => {
           const k     = b.hotasKey ?? b.keyboardKey;
-          const label = /^Numpad\d$/.test(k) ? `Num${k.slice(-1)}` : resolveLabel(k, ALL_KEY_MAP[k], language);
+          const label = /^Numpad\d$/.test(k) ? `Num${k.slice(-1)}` : resolveDisplayLabel(k, ALL_KEY_MAP[k], language);
           return `${getHotasLabel(b.input)} → ${label}`;
         })()
       : (getHotasLabel(b.input) || b.input);
@@ -547,7 +547,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
       const mk = b.mouseKey ?? b.keyboardKey;
       if (!mk) return b.button;
       const lang  = settings.language ?? 'en-US';
-      const label = /^Numpad\d$/.test(mk) ? `Num${mk.slice(-1)}` : resolveLabel(mk, ALL_KEY_MAP[mk], lang);
+      const label = /^Numpad\d$/.test(mk) ? `Num${mk.slice(-1)}` : resolveDisplayLabel(mk, ALL_KEY_MAP[mk], lang);
       return `${b.button} → ${label}`;
     });
     y += sMTblBox + sMGapAfter;

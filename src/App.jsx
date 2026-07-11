@@ -178,7 +178,10 @@ export default function App() {
   }, []);
 
   function applySharedImport(result) {
-    if (result.formats) replaceFormats(result.formats);
+    if (result.formats) {
+      replaceFormats(result.formats);
+      retagModifiers(settings.splitModifiers);
+    }
     if (result.layoutName !== undefined) handleLayoutNameChange(result.layoutName);
     if (result.physicalLayout) setPhysicalLayout(result.physicalLayout);
     if (result.language)       setLanguage(result.language);
@@ -209,6 +212,7 @@ export default function App() {
       .then(result => {
         if (result.type === 'full') {
           replaceFormats(result.data.formats);
+          retagModifiers(settings.splitModifiers);
           handleLayoutNameChange(result.data.layoutName || '');
           if (result.data.physicalLayout) setPhysicalLayout(result.data.physicalLayout);
           if (result.data.language)       setLanguage(result.data.language);
@@ -218,10 +222,12 @@ export default function App() {
           if (result.data.formats?.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
         } else if (result.type === 'formats') {
           replaceFormats(result.data);
+          retagModifiers(settings.splitModifiers);
           if (result.data.some(f => f.mouseBindings?.length > 0)) setShowMouseBindings(true);
           if (result.data.some(f => f.hotasBindings?.length > 0)) setShowHotasBindings(true);
         } else {
           replaceActiveBindings(result.data);
+          retagModifiers(settings.splitModifiers);
         }
         setSelectedId(null);
         setActivePreset(null);
@@ -278,7 +284,7 @@ export default function App() {
       setSelectedId(bindingId(key, mods));
     }
     const newColor = keyColors[key];
-    if (newColor && newColor !== modalOriginalColor.current) {
+    if (newColor && newColor !== KEY_COLOR_NONE && newColor !== modalOriginalColor.current) {
       addRecentColor(newColor);
     }
     setModalKey(null);
@@ -304,6 +310,7 @@ export default function App() {
 
   function handleLoadPreset(preset) {
     replaceFormats(preset.formats.map(f => ({ name: f.name, bindings: f.bindings, keyColors: f.keyColors ?? {}, mouseBindings: f.mouseBindings ?? [], hotasBindings: f.hotasBindings ?? [] })));
+    retagModifiers(settings.splitModifiers);
     if (preset.layoutName) handleLayoutNameChange(preset.layoutName);
     setActivePreset(preset.id);
     setDeleteLocked(true);

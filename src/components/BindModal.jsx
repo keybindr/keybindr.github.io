@@ -4,7 +4,7 @@ import { resolveDisplayLabel } from '../keylabels';
 import { useT, resolveAction } from '../useTranslation';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
-import { KEY_DEFAULT, KEY_BOUND, KEY_PALETTE, KEY_TRUE_COLORS, KEY_TRUE_COLORS_SPLIT, KEY_COLOR_NONE, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs, resolveAccent } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_PALETTE, KEY_TRUE_COLORS, KEY_TRUE_COLORS_SPLIT, KEY_COLOR_NONE, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs, resolveAccent } from '../modifierConstants';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 
 const MODIFIER_KEY_IDS = new Set([
@@ -38,7 +38,8 @@ export default function BindModal({
   const [modifiers, setModifiers]   = useState([]);
   const [action, setAction]         = useState('');
   const [localColor, setLocalColor] = useState(keyColor ?? '');
-  const isPaletteColor = !keyColor || keyColor === KEY_COLOR_NONE || KEY_PALETTE.some(c => c.hex === keyColor);
+  const isPaletteColor = !keyColor || keyColor === KEY_COLOR_NONE
+    || paletteHexSet.has(keyColor) || trueColorHexSet.has(keyColor);
   const [showCustomPicker, setShowCustomPicker] = useState(!isPaletteColor);
   const isCustomColorActive = !!localColor && localColor !== KEY_COLOR_NONE
     && !paletteHexSet.has(localColor) && !trueColorHexSet.has(localColor);
