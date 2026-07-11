@@ -25,6 +25,7 @@ export default {
   save:               'Simpan',
   close:              'Tutup',
   editKeyColor:       'Edit warna tombol',
+  customColor:        'Kustom',
   clickToEdit:        'Klik untuk mengedit',
   dragToReorder:      'Seret untuk mengurutkan ulang',
   removeBinding:      'Hapus binding',

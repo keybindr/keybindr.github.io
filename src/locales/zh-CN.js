@@ -25,6 +25,7 @@ export default {
   save:               '保存',
   close:              '关闭',
   editKeyColor:       '编辑按键颜色',
+  customColor:        '自定义',
   clickToEdit:        '点击编辑',
   dragToReorder:      '拖动以重新排序',
   removeBinding:      '删除绑定',

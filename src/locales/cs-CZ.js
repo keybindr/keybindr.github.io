@@ -25,6 +25,7 @@ export default {
   save:               'Uložit',
   close:              'Zavřít',
   editKeyColor:       'Upravit barvu klávesy',
+  customColor:        'Vlastní',
   clickToEdit:        'Kliknutím upravit',
   dragToReorder:      'Přetáhnout pro změnu pořadí',
   removeBinding:      'Odebrat zkratku',

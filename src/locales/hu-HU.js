@@ -25,6 +25,7 @@ export default {
   save:               'Mentés',
   close:              'Bezárás',
   editKeyColor:       'Billentyűszín szerkesztése',
+  customColor:        'Egyéni',
   clickToEdit:        'Kattintson a szerkesztéshez',
   dragToReorder:      'Húzza az átrendezéshez',
   removeBinding:      'Kötés eltávolítása',

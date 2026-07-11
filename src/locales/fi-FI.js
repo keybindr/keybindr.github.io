@@ -25,6 +25,7 @@ export default {
   save:               'Tallenna',
   close:              'Sulje',
   editKeyColor:       'Muokkaa näppäimen väriä',
+  customColor:        'Mukautettu',
   clickToEdit:        'Napsauta muokataksesi',
   dragToReorder:      'Vedä järjestääksesi uudelleen',
   removeBinding:      'Poista määritys',

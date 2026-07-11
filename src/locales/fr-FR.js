@@ -25,6 +25,7 @@ export default {
   save:               'Enregistrer',
   close:              'Fermer',
   editKeyColor:       'Modifier la couleur de touche',
+  customColor:        'Personnalisé',
   clickToEdit:        'Cliquer pour modifier',
   dragToReorder:      'Glisser pour réorganiser',
   removeBinding:      'Supprimer le raccourci',

@@ -25,6 +25,7 @@ export default {
   save:               '저장',
   close:              '닫기',
   editKeyColor:       '키 색상 편집',
+  customColor:        '사용자 지정',
   clickToEdit:        '클릭하여 편집',
   dragToReorder:      '드래그하여 순서 변경',
   removeBinding:      '바인딩 제거',

@@ -82,8 +82,8 @@ function buildKeyboardSVG(bindings, keyColors, settings) {
     const custom = keyColors[k.id];
     const accent = KEY_ACCENT[k.id];
     const fill   = custom ? custom : accent ? modFill(accent) : bound ? KEY_BOUND : KEY_DEFAULT;
-    const stroke = bound ? BORDER_BOUND : accent ? accent : BORDER_DEFAULT;
-    const tcol   = bound ? TEXT_BOUND : TEXT_DEFAULT;
+    const stroke = (bound || accent) ? BORDER_BOUND : BORDER_DEFAULT;
+    const tcol   = (bound || accent) ? TEXT_BOUND : TEXT_DEFAULT;
     const rawLabel = (splitModifiers && SPLIT_LABELS[k.id]) ? SPLIT_LABELS[k.id] : resolveLabel(k.id, k, language);
     const label  = escapeXml(rawLabel);
     const fs     = k.w > 60 ? 11 : 10;

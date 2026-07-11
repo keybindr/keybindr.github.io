@@ -179,11 +179,10 @@ function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings =
                      : accentColor ? modFill(accentColor)
                      : isBound     ? KEY_BOUND
                      : KEY_DEFAULT;
-        const stroke = isSelected  ? BORDER_SELECTED
-                     : isBound     ? BORDER_BOUND
-                     : accentColor ? accentColor
+        const stroke = isSelected ? BORDER_SELECTED
+                     : (isBound || accentColor) ? BORDER_BOUND
                      : BORDER_DEFAULT;
-        const textColor = isBound ? TEXT_BOUND : TEXT_DEFAULT;
+        const textColor = (isBound || accentColor) ? TEXT_BOUND : TEXT_DEFAULT;
 
         const mods = [...new Set(keyBindings.flatMap(b => b.modifiers))];
         const mouseRemaps = mouseRemapMap[k.id] || [];

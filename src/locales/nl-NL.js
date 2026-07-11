@@ -25,6 +25,7 @@ export default {
   save:               'Opslaan',
   close:              'Sluiten',
   editKeyColor:       'Toetskleur bewerken',
+  customColor:        'Aangepast',
   clickToEdit:        'Klik om te bewerken',
   dragToReorder:      'Slepen om te herordenen',
   removeBinding:      'Binding verwijderen',

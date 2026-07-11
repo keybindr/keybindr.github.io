@@ -1,6 +1,25 @@
 export const KEY_DEFAULT = '#2a2a2a';
 export const KEY_BOUND   = '#3d3420';
 
+// Curated key-color palette — dark, muted flat fills tuned to read cleanly
+// against the board background. The first six double as the game-preset
+// category colors (see gamePresets.js), kept here as the single source of
+// truth so both stay in sync.
+export const KEY_PALETTE = [
+  { id: 'olive',   label: 'Olive',   hex: '#3a481c' },
+  { id: 'brass',   label: 'Brass',   hex: '#564428' },
+  { id: 'indigo',  label: 'Indigo',  hex: '#28385a' },
+  { id: 'wine',    label: 'Wine',    hex: '#5a2e28' },
+  { id: 'plum',    label: 'Plum',    hex: '#42285a' },
+  { id: 'teal',    label: 'Teal',    hex: '#28484e' },
+  { id: 'forest',  label: 'Forest',  hex: '#1f4a30' },
+  { id: 'crimson', label: 'Crimson', hex: '#5a1f35' },
+  { id: 'slate',   label: 'Slate',   hex: '#3a3a42' },
+  { id: 'rust',    label: 'Rust',    hex: '#5a3a1f' },
+  { id: 'magenta', label: 'Magenta', hex: '#4a1f42' },
+  { id: 'cyan',    label: 'Cyan',    hex: '#1f4a4a' },
+];
+
 // Accent colors for physical modifier keys (ShiftLeft/Right, AltLeft/Right, ControlLeft/Right)
 export const KEY_ACCENT = {
   ShiftLeft:    '#7b9ee0', ShiftRight:    '#7b9ee0',

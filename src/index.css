@@ -184,9 +184,22 @@ html, body {
   flex-shrink: 0;
 }
 .color-swatch:hover { transform: scale(1.15); }
-.color-swatch.active { outline: 2px solid #fff; outline-offset: 1px; }
+.color-swatch.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+
+.color-swatch-none {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface2);
+  color: var(--text-dim);
+}
+.color-swatch-none:hover { color: var(--text); }
+.color-swatch-none.active { color: var(--accent); }
 
 .btn-clear-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: none;
   border: 1px solid var(--border);
   color: var(--text-dim);
@@ -198,6 +211,14 @@ html, body {
   white-space: nowrap;
 }
 .btn-clear-color:hover { color: var(--danger); border-color: var(--danger); }
+.btn-clear-color.active { color: var(--text); border-color: var(--accent); }
+
+.palette-swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
 
 /* Layout name */
 .layout-name {
@@ -831,6 +852,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 12px;
   z-index: 100;
 }
 
@@ -974,13 +996,6 @@ html, body {
   transition: color var(--t-normal);
 }
 .btn-secondary:hover { color: var(--text); }
-
-/* Color picker row — picker + Clear inline */
-.color-pick-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 /* Recently picked label + swatches */
 .recently-picked-label {
@@ -1297,6 +1312,8 @@ html, body {
 }
 
 /* ── Color picker floating panel ─────────────────────────────────────────────── */
+/* A normal flex sibling of .modal in .modal-backdrop — the browser's flex
+   layout keeps it glued to the modal on resize, no JS position calc needed. */
 .cpk-panel {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1314,16 +1331,6 @@ html, body {
   flex-direction: column;
   gap: 8px;
   padding-right: 2px;
-}
-
-
-/* Static current-color indicator in the Key Color row */
-.color-current-swatch {
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-  border: 1px solid rgba(255,255,255,0.15);
-  flex-shrink: 0;
 }
 
 /* Secondary breakpoint (680px): modal-backdrop goes column layout on very small screens */
@@ -1346,14 +1353,8 @@ html, body {
   }
 
   .cpk-panel {
-    position: relative !important;
-    top: auto !important;
-    left: auto !important;
-    bottom: auto !important;
-    height: auto !important;
-    max-height: none;
-    width: calc(100vw - 16px);
     order: 2;
+    width: calc(100vw - 16px);
   }
 }
 

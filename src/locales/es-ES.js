@@ -25,6 +25,7 @@ export default {
   save:               'Guardar',
   close:              'Cerrar',
   editKeyColor:       'Editar color de tecla',
+  customColor:        'Personalizado',
   clickToEdit:        'Clic para editar',
   dragToReorder:      'Arrastrar para reordenar',
   removeBinding:      'Eliminar atajo',

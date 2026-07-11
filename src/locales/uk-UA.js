@@ -25,6 +25,7 @@ export default {
   save:               'Зберегти',
   close:              'Закрити',
   editKeyColor:       'Змінити колір клавіші',
+  customColor:        'Власний',
   clickToEdit:        'Натисніть для редагування',
   dragToReorder:      'Перетягніть для зміни порядку',
   removeBinding:      'Видалити прив\u02BCязку',

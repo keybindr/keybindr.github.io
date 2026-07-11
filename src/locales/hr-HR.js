@@ -25,6 +25,7 @@ export default {
   save:               'Spremi',
   close:              'Zatvori',
   editKeyColor:       'Uredi boju tipke',
+  customColor:        'Prilagođeno',
   clickToEdit:        'Kliknite za uređivanje',
   dragToReorder:      'Povucite za promjenu redoslijeda',
   removeBinding:      'Ukloni prečac',

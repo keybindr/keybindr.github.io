@@ -25,6 +25,7 @@ export default {
   save:               'Gem',
   close:              'Luk',
   editKeyColor:       'Rediger tastfarve',
+  customColor:        'Brugerdefineret',
   clickToEdit:        'Klik for at redigere',
   dragToReorder:      'Træk for at omarrangere',
   removeBinding:      'Fjern binding',

@@ -4,11 +4,8 @@ import { resolveDisplayLabel } from '../keylabels';
 import { useT, resolveAction } from '../useTranslation';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
-import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_PALETTE, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs } from '../modifierConstants';
 import { useFocusTrap } from '../hooks/useFocusTrap';
-
-const PICKER_WIDTH = 252;
-const PICKER_GAP   = 12;
 
 const MODIFIER_KEY_IDS = new Set([
   'ShiftLeft', 'ShiftRight', 'ControlLeft', 'ControlRight',
@@ -38,7 +35,8 @@ export default function BindModal({
   const [modifiers, setModifiers]   = useState([]);
   const [action, setAction]         = useState('');
   const [localColor, setLocalColor] = useState(keyColor ?? '');
-  const [pickerPos, setPickerPos]   = useState(null);
+  const isPaletteColor = !keyColor || KEY_PALETTE.some(c => c.hex === keyColor);
+  const [showCustomPicker, setShowCustomPicker] = useState(!isPaletteColor);
 
   const inputRef = useRef(null);
   const modalRef = useRef(null);
@@ -85,16 +83,6 @@ export default function BindModal({
     if (existing && action === '') setAction(resolveAction(existing.action, t));
   }, [modifiers.join(',')]);
 
-  useEffect(() => {
-    if (!modalRef.current) return;
-    const rect = modalRef.current.getBoundingClientRect();
-    setPickerPos({
-      top:  rect.top,
-      left: Math.max(8, rect.left - PICKER_WIDTH - PICKER_GAP),
-      height: rect.height,
-    });
-  }, []);
-
   function toggleModifier(value) {
     setModifiers(prev => {
       if (prev.includes(value)) {
@@ -130,18 +118,8 @@ export default function BindModal({
   return (
     <div className="modal-backdrop" onClick={onCancel}>
 
-      {pickerPos && (
-        <div
-          className="cpk-panel"
-          style={{
-            position: 'fixed',
-            top:    pickerPos.top,
-            left:   pickerPos.left,
-            height: pickerPos.height,
-            zIndex: 101,
-          }}
-          onClick={e => e.stopPropagation()}
-        >
+      {showCustomPicker && (
+        <div className="cpk-panel" onClick={e => e.stopPropagation()}>
           <div className="cpk-panel-body">
             <ColorPicker color={localColor || effectiveColor} onChange={applyColor} />
             {recentColors.length > 0 && (
@@ -210,17 +188,35 @@ export default function BindModal({
 
           <div className="modal-row">
             <label>{t('keyColor')}</label>
-            <div className="color-pick-row">
-              <div
-                className="color-current-swatch"
-                style={{ background: localColor || 'var(--surface2)' }}
-                title={t('currentColor')}
-              />
-              {localColor && (
-                <button type="button" className="btn-clear-color" onClick={() => applyColor('')}>
-                  {t('clear')}
-                </button>
-              )}
+            <div className="palette-swatch-row">
+              <button
+                type="button"
+                className={`color-swatch color-swatch-none${!localColor ? ' active' : ''}`}
+                title={t('none')}
+                onClick={() => { setShowCustomPicker(false); applyColor(''); }}
+              >
+                <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+                  <line x1="6" y1="18" x2="18" y2="6" stroke="currentColor" strokeWidth="2" />
+                </svg>
+              </button>
+              {KEY_PALETTE.map(c => (
+                <button
+                  key={c.id}
+                  type="button"
+                  className={`color-swatch${c.hex === localColor ? ' active' : ''}`}
+                  style={{ background: c.hex }}
+                  title={c.label}
+                  onClick={() => { setShowCustomPicker(false); applyColor(c.hex); }}
+                />
+              ))}
+              <button
+                type="button"
+                className={`btn-clear-color${showCustomPicker ? ' active' : ''}`}
+                onClick={() => setShowCustomPicker(v => !v)}
+              >
+                {t('customColor')}
+              </button>
             </div>
           </div>
 

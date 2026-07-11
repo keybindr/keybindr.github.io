@@ -25,6 +25,7 @@ export default {
   save:               'Сохранить',
   close:              'Закрыть',
   editKeyColor:       'Изменить цвет клавиши',
+  customColor:        'Другой',
   clickToEdit:        'Нажмите для редактирования',
   dragToReorder:      'Перетащите для изменения порядка',
   removeBinding:      'Удалить привязку',

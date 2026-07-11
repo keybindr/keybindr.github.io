@@ -25,6 +25,7 @@ export default {
   save:               'Αποθήκευση',
   close:              'Κλείσιμο',
   editKeyColor:       'Επεξεργασία χρώματος πλήκτρου',
+  customColor:        'Προσαρμοσμένο',
   clickToEdit:        'Κάντε κλικ για επεξεργασία',
   dragToReorder:      'Σύρετε για αναδιάταξη',
   removeBinding:      'Κατάργηση συντόμευσης',

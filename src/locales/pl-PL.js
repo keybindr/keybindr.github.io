@@ -25,6 +25,7 @@ export default {
   save:               'Zapisz',
   close:              'Zamknij',
   editKeyColor:       'Edytuj kolor klawisza',
+  customColor:        'Niestandardowy',
   clickToEdit:        'Kliknij, aby edytować',
   dragToReorder:      'Przeciągnij, aby zmienić kolejność',
   removeBinding:      'Usuń powiązanie',

@@ -25,6 +25,7 @@ export default {
   save:               '保存',
   close:              '閉じる',
   editKeyColor:       'キーの色を編集',
+  customColor:        'カスタム',
   clickToEdit:        'クリックして編集',
   dragToReorder:      'ドラッグして並べ替え',
   removeBinding:      'バインディングを削除',

@@ -25,6 +25,7 @@ export default {
   save:               'Запазване',
   close:              'Затваряне',
   editKeyColor:       'Промяна на цвета на клавиша',
+  customColor:        'Персонализиран',
   clickToEdit:        'Щракнете за редактиране',
   dragToReorder:      'Плъзнете за преподреждане',
   removeBinding:      'Премахване на комбинацията',

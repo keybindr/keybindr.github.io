@@ -25,6 +25,7 @@ export default {
   save:               'Speichern',
   close:              'Schließen',
   editKeyColor:       'Tastenfarbe bearbeiten',
+  customColor:        'Benutzerdefiniert',
   clickToEdit:        'Zum Bearbeiten klicken',
   dragToReorder:      'Zum Neuanordnen ziehen',
   removeBinding:      'Belegung entfernen',

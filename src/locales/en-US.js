@@ -25,6 +25,7 @@ export default {
   save:               'Save',
   close:              'Close',
   editKeyColor:       'Edit key color',
+  customColor:        'Custom',
   clickToEdit:        'Click to edit',
   dragToReorder:      'Drag to reorder',
   removeBinding:      'Remove binding',

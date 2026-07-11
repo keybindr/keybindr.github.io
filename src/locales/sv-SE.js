@@ -25,6 +25,7 @@ export default {
   save:               'Spara',
   close:              'Stäng',
   editKeyColor:       'Redigera tangentfärg',
+  customColor:        'Anpassad',
   clickToEdit:        'Klicka för att redigera',
   dragToReorder:      'Dra för att ändra ordning',
   removeBinding:      'Ta bort bindning',

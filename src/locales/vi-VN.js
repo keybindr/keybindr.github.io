@@ -25,6 +25,7 @@ export default {
   save:               'Lưu',
   close:              'Đóng',
   editKeyColor:       'Chỉnh màu phím',
+  customColor:        'Tùy chỉnh',
   clickToEdit:        'Nhấp để chỉnh sửa',
   dragToReorder:      'Kéo để sắp xếp lại',
   removeBinding:      'Xóa gán phím',

@@ -1,3 +1,5 @@
+import { KEY_PALETTE } from './modifierConstants';
+
 // ── WoW key parsing ───────────────────────────────────────────────────────────
 
 const WOW_TO_BROWSER = {
@@ -473,13 +475,14 @@ const GW2_MOUSE_BINDINGS = [
 
 // ── Preset key colors ─────────────────────────────────────────────────────────
 
+const PALETTE = Object.fromEntries(KEY_PALETTE.map(c => [c.id, c.hex]));
 const C = {
-  movement:  '#3a481c',  // dark olive       — yellow-green, unique in the palette
-  ability1:  '#564428',  // dark warm brass  — primary hotbar
-  ability2:  '#28385a',  // dark indigo      — Shift-row, cooler than modifier blue
-  ability3:  '#5a2e28',  // dark wine-red    — Ctrl-row, redder than modifier orange
-  targeting: '#42285a',  // deep plum        — new hue, not in modifier palette
-  ui:        '#28484e',  // dark steel-teal  — new hue, calm interface tone
+  movement:  PALETTE.olive,   // yellow-green, unique in the palette
+  ability1:  PALETTE.brass,   // primary hotbar
+  ability2:  PALETTE.indigo,  // Shift-row, cooler than modifier blue
+  ability3:  PALETTE.wine,    // Ctrl-row, redder than modifier orange
+  targeting: PALETTE.plum,    // new hue, not in modifier palette
+  ui:        PALETTE.teal,    // new hue, calm interface tone
 };
 
 // Maps raw action ID (after the prefix colon) → color

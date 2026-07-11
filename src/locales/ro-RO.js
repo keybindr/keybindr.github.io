@@ -25,6 +25,7 @@ export default {
   save:               'Salvează',
   close:              'Închide',
   editKeyColor:       'Editează culoarea tastei',
+  customColor:        'Personalizat',
   clickToEdit:        'Clic pentru editare',
   dragToReorder:      'Trage pentru reordonare',
   removeBinding:      'Elimină scurtătura',

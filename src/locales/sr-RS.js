@@ -25,6 +25,7 @@ export default {
   save:               'Сачувај',
   close:              'Затвори',
   editKeyColor:       'Промени боју тастера',
+  customColor:        'Прилагођено',
   clickToEdit:        'Кликните за уређивање',
   dragToReorder:      'Превуците за промену редоследа',
   removeBinding:      'Уклони пречицу',

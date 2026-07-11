@@ -25,6 +25,7 @@ export default {
   save:               'Lagre',
   close:              'Lukk',
   editKeyColor:       'Rediger tastfarge',
+  customColor:        'Egendefinert',
   clickToEdit:        'Klikk for å redigere',
   dragToReorder:      'Dra for å omorganisere',
   removeBinding:      'Fjern binding',

@@ -25,6 +25,7 @@ export default {
   save:               'Salva',
   close:              'Chiudi',
   editKeyColor:       'Modifica colore tasto',
+  customColor:        'Personalizzato',
   clickToEdit:        'Clicca per modificare',
   dragToReorder:      'Trascina per riordinare',
   removeBinding:      'Rimuovi associazione',

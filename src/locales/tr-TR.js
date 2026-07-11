@@ -25,6 +25,7 @@ export default {
   save:               'Kaydet',
   close:              'Kapat',
   editKeyColor:       'Tuş rengini düzenle',
+  customColor:        'Özel',
   clickToEdit:        'Düzenlemek için tıklayın',
   dragToReorder:      'Yeniden sıralamak için sürükleyin',
   removeBinding:      'Atamayı kaldır',
