@@ -3,7 +3,7 @@ import { useT, resolveAction } from '../useTranslation';
 import { getHotasLabel, hotasBindingId, getHotasModInfo } from '../hotasConstants';
 import { resolveDisplayLabel } from '../keylabels';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
-import { MOD_COLORS } from '../modifierConstants';
+import { MOD_COLORS, MOD_LABELS } from '../modifierConstants';
 
 function compactKeyLabel(keyId, keyDef, language) {
   if (/^Numpad\d$/.test(keyId)) return `Num${keyId.slice(-1)}`;
@@ -159,7 +159,7 @@ export default function HOTASBindingTable({
                       )}
                       {mods.map(m => (
                         <span key={m} className="mod-tag" style={{ borderColor: MOD_COLORS[m] ?? '#888', color: MOD_COLORS[m] ?? '#888' }}>
-                          {m}
+                          {MOD_LABELS[m] ?? m}
                         </span>
                       ))}
                     </div>

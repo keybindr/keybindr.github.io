@@ -1,17 +1,19 @@
 import React, { useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
+import { resolveDisplayLabel } from '../keylabels';
+import { MOD_LABELS } from '../modifierConstants';
 import { useT } from '../useTranslation';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 
-export default function OrphanWarningModal({ orphans, newLayoutName, onConfirm, onCancel, renderItem, bodyKeyOverride }) {
+export default function OrphanWarningModal({ orphans, newLayoutName, onConfirm, onCancel, renderItem, bodyKeyOverride, language = 'en-US' }) {
   const t = useT();
   const defaultBodyKey = orphans.length === 1 ? 'orphanBodySingular' : 'orphanBodyPlural';
   const bodyKey = bodyKeyOverride ?? defaultBodyKey;
 
   function defaultRenderItem(b, i) {
-    const keyLabel = ALL_KEY_MAP[b.key]?.label ?? b.key;
+    const keyLabel = resolveDisplayLabel(b.key, ALL_KEY_MAP[b.key], language);
     const combo = b.modifiers.length > 0
-      ? `${b.modifiers.join('+')}+${keyLabel}`
+      ? `${b.modifiers.map(m => MOD_LABELS[m] ?? m).join('+')}+${keyLabel}`
       : keyLabel;
     return (
       <div key={i} className="orphan-item">

@@ -4,7 +4,7 @@ import { resolveDisplayLabel } from '../keylabels';
 import { useT, resolveAction } from '../useTranslation';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
-import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_PALETTE, KEY_TRUE_COLORS, KEY_COLOR_NONE, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_PALETTE, KEY_TRUE_COLORS, KEY_TRUE_COLORS_SPLIT, KEY_COLOR_NONE, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs, resolveAccent } from '../modifierConstants';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 
 const MODIFIER_KEY_IDS = new Set([
@@ -25,9 +25,10 @@ export default function BindModal({
   const language    = settings?.language ?? 'en-US';
   const modDefs     = buildModDefs(settings);
   const isModifier  = MODIFIER_KEY_IDS.has(keyId);
+  const trueColors  = settings?.splitModifiers ? KEY_TRUE_COLORS_SPLIT : KEY_TRUE_COLORS;
 
   const isBoundKey = existingBindings.some(b => b.key === keyId);
-  const accentHex = KEY_ACCENT[keyId];
+  const accentHex = resolveAccent(keyId, settings?.splitModifiers);
   const effectiveColor = (keyColor && keyColor !== KEY_COLOR_NONE ? keyColor : null)
     || (accentHex ? modFill(accentHex) : null)
     || (isBoundKey ? KEY_BOUND : KEY_DEFAULT);
@@ -162,11 +163,11 @@ export default function BindModal({
                   key={m.value}
                   type="button"
                   className={`mod-btn${modifiers.includes(m.value) ? ' active' : ''}`}
-                  style={modifiers.includes(m.value) ? {
+                  style={{
                     borderColor: m.color,
                     color: m.color,
-                    background: m.color + '22',
-                  } : {}}
+                    background: modifiers.includes(m.value) ? m.color + '22' : 'transparent',
+                  }}
                   onClick={() => toggleModifier(m.value)}
                 >{m.label}</button>
               ))}
@@ -220,7 +221,7 @@ export default function BindModal({
             </div>
             {isModifier && (
               <div className="palette-swatch-row">
-                {KEY_TRUE_COLORS.map(c => (
+                {trueColors.map(c => (
                   <button
                     key={c.id}
                     type="button"

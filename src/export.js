@@ -1,7 +1,7 @@
 import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
 import { resolveLabel } from './keylabels';
 import { makeT, resolveAction } from './useTranslation';
-import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_COLOR_NONE, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from './modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_ACCENT_SPLIT, KEY_COLOR_NONE, MOD_COLORS, MOD_LABELS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill, resolveAccent } from './modifierConstants';
 import { getHotasLabel, getHotasModInfo } from './hotasConstants';
 
 // Reverse map: US-English label → key ID, built from the union of all layouts.
@@ -82,7 +82,7 @@ function buildKeyboardSVG(bindings, keyColors, settings) {
     const rawColor = keyColors[k.id];
     const noColor = rawColor === KEY_COLOR_NONE;
     const custom  = rawColor && !noColor ? rawColor : null;
-    const accent  = KEY_ACCENT[k.id];
+    const accent  = resolveAccent(k.id, splitModifiers);
     const fill    = noColor ? KEY_DEFAULT : custom ? custom : accent ? modFill(accent) : bound ? KEY_BOUND : KEY_DEFAULT;
     const stroke  = noColor ? BORDER_DEFAULT : (bound || accent) ? BORDER_BOUND : BORDER_DEFAULT;
     const tcol    = noColor ? TEXT_DEFAULT : (bound || accent) ? TEXT_BOUND : TEXT_DEFAULT;
@@ -146,16 +146,16 @@ function svgToCanvas(ctx, svgStr, x, y, w, h) {
 function drawLegend(ctx, x, y, keyColors, splitModifiers, S) {
   const leg = (hex, fallback) => (hex && hex !== KEY_COLOR_NONE) ? hex : fallback;
   const items = splitModifiers ? [
-    { label: 'LShift', color: leg(keyColors['ShiftLeft'],    '#7b9ee0'), dir: 'shift' },
-    { label: 'RShift', color: leg(keyColors['ShiftRight'],   '#7b9ee0'), dir: 'shift' },
-    { label: 'LAlt',   color: leg(keyColors['AltLeft'],      '#7be09a'), dir: 'alt'   },
-    { label: 'RAlt',   color: leg(keyColors['AltRight'],     '#7be09a'), dir: 'alt'   },
-    { label: 'LCtrl',  color: leg(keyColors['ControlLeft'],  '#e07b39'), dir: 'ctrl'  },
-    { label: 'RCtrl',  color: leg(keyColors['ControlRight'], '#e07b39'), dir: 'ctrl'  },
+    { label: 'LShift', color: leg(keyColors['ShiftLeft'],    KEY_ACCENT_SPLIT.ShiftLeft),    dir: 'shift' },
+    { label: 'RShift', color: leg(keyColors['ShiftRight'],   KEY_ACCENT_SPLIT.ShiftRight),   dir: 'shift' },
+    { label: 'LAlt',   color: leg(keyColors['AltLeft'],      KEY_ACCENT_SPLIT.AltLeft),      dir: 'alt'   },
+    { label: 'RAlt',   color: leg(keyColors['AltRight'],     KEY_ACCENT_SPLIT.AltRight),     dir: 'alt'   },
+    { label: 'LCtrl',  color: leg(keyColors['ControlLeft'],  KEY_ACCENT_SPLIT.ControlLeft),  dir: 'ctrl'  },
+    { label: 'RCtrl',  color: leg(keyColors['ControlRight'], KEY_ACCENT_SPLIT.ControlRight), dir: 'ctrl'  },
   ] : [
-    { label: 'Shift', color: leg(keyColors['ShiftLeft']   || keyColors['ShiftRight'],   '#7b9ee0'), dir: 'shift' },
-    { label: 'Alt',   color: leg(keyColors['AltLeft']     || keyColors['AltRight'],     '#7be09a'), dir: 'alt'   },
-    { label: 'Ctrl',  color: leg(keyColors['ControlLeft'] || keyColors['ControlRight'], '#e07b39'), dir: 'ctrl'  },
+    { label: 'Shift', color: leg(keyColors['ShiftLeft']   || keyColors['ShiftRight'],   KEY_ACCENT.ShiftLeft),   dir: 'shift' },
+    { label: 'Alt',   color: leg(keyColors['AltLeft']     || keyColors['AltRight'],     KEY_ACCENT.AltLeft),     dir: 'alt'   },
+    { label: 'Ctrl',  color: leg(keyColors['ControlLeft'] || keyColors['ControlRight'], KEY_ACCENT.ControlLeft), dir: 'ctrl'  },
   ];
 
   const s = 10 * S;
@@ -276,14 +276,15 @@ function drawBindingTable(ctx, bindings, x, y, availW, S, language = 'en-US', ke
       ctx.font = `${tagSize}px ${FONT}`;
       for (const m of b.modifiers) {
         const color = MOD_COLORS[m] || '#888';
+        const label = MOD_LABELS[m] ?? m;
         const pad   = 5 * S;
-        const tw    = ctx.measureText(m).width + pad * 2;
+        const tw    = ctx.measureText(label).width + pad * 2;
         const tagH  = Math.round(rowH * 0.52);
         const tagY  = rowY + (rowH - tagH) / 2;
         ctx.save();
         strokeRoundRect(ctx, mx, tagY, tw, tagH, 3 * S, color, S * 0.7);
         ctx.fillStyle = color;
-        ctx.fillText(m, mx + pad, ty);
+        ctx.fillText(label, mx + pad, ty);
         ctx.restore();
         mx += tw + 3 * S;
       }
@@ -366,7 +367,7 @@ function drawHotasTable(ctx, bindings, x, y, availW, S, language = 'en-US') {
     ctx.fillStyle = '#f0c060';
     const modPrefix = [
       ...(b.hotasMod ? [`[${getHotasModInfo(b.hotasMod, bindings)?.label ?? getHotasLabel(b.hotasMod)}]+`] : []),
-      ...((b.modifiers ?? []).map(m => `${m}+`)),
+      ...((b.modifiers ?? []).map(m => `${MOD_LABELS[m] ?? m}+`)),
     ].join('');
     const baseLabel = (b.hotasKey ?? b.keyboardKey)
       ? (() => {

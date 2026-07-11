@@ -21,18 +21,50 @@ function blendToBg(hex, ratio) {
   return `#${h(c(r))}${h(c(g))}${h(c(b))}`;
 }
 
-// Accent colors for physical modifier keys (ShiftLeft/Right, AltLeft/Right, ControlLeft/Right)
+// Accent colors for physical modifier keys (ShiftLeft/Right, AltLeft/Right,
+// ControlLeft/Right) when the two sides are shown as one unified logical key
+// (settings.splitModifiers off) — both physical keys share a single color.
 export const KEY_ACCENT = {
   ShiftLeft:    '#7b9ee0', ShiftRight:    '#7b9ee0',
   AltLeft:      '#7be09a', AltRight:      '#7be09a',
   ControlLeft:  '#e07b39', ControlRight:  '#e07b39',
 };
 
-// Color for each modifier value — used in tags, triangles, and tooltips
+// Accent colors for the same physical keys when split mode is on and each
+// side is bound independently — same hue per pair, left brighter/lighter
+// and right deeper/richer so the two sides read as visually distinct.
+export const KEY_ACCENT_SPLIT = {
+  ShiftLeft:    '#99b6eb', ShiftRight:    '#5681d2',
+  AltLeft:      '#99ebb1', AltRight:      '#56d27b',
+  ControlLeft:  '#ea9257', ControlRight:  '#c96826',
+};
+
+// Resolves the accent color for a physical modifier key, honoring the
+// unified vs. split display mode.
+export function resolveAccent(keyId, splitModifiers) {
+  if (splitModifiers) return KEY_ACCENT_SPLIT[keyId] || null;
+  return KEY_ACCENT[keyId] || null;
+}
+
+// Color for each modifier value — used in tags, triangles, and tooltips.
+// Unified values (Shift/Alt/Ctrl) mirror KEY_ACCENT; split values
+// (ShiftLeft/ShiftRight/AltLeft/AltRight/CtrlLeft/CtrlRight) mirror
+// KEY_ACCENT_SPLIT so bindings made in split mode pick up the distinct
+// left/right colors automatically.
 export const MOD_COLORS = {
-  Shift: '#7b9ee0', ShiftLeft: '#7b9ee0', ShiftRight: '#7b9ee0',
-  Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
-  Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
+  Shift: KEY_ACCENT.ShiftLeft, ShiftLeft: KEY_ACCENT_SPLIT.ShiftLeft, ShiftRight: KEY_ACCENT_SPLIT.ShiftRight,
+  Alt:   KEY_ACCENT.AltLeft,   AltLeft:   KEY_ACCENT_SPLIT.AltLeft,   AltRight:   KEY_ACCENT_SPLIT.AltRight,
+  Ctrl:  KEY_ACCENT.ControlLeft, CtrlLeft: KEY_ACCENT_SPLIT.ControlLeft, CtrlRight: KEY_ACCENT_SPLIT.ControlRight,
+};
+
+// Display label for each modifier value — used anywhere a binding's
+// modifier is rendered as text (tags, tooltips). Split values render as
+// LShift/RShift/etc. rather than their raw ShiftLeft/ShiftRight value.
+export const MOD_LABELS = {
+  Shift: 'Shift', Alt: 'Alt', Ctrl: 'Ctrl',
+  ShiftLeft: 'LShift', ShiftRight: 'RShift',
+  AltLeft:   'LAlt',   AltRight:   'RAlt',
+  CtrlLeft:  'LCtrl',  CtrlRight:  'RCtrl',
 };
 
 // Pure, unblended modifier accent colors as they actually appear on the
@@ -42,6 +74,17 @@ export const KEY_TRUE_COLORS = [
   { id: 'shift-true', label: 'Shift Blue', hex: MOD_COLORS.Shift },
   { id: 'ctrl-true',  label: 'Ctrl Red',   hex: MOD_COLORS.Ctrl  },
   { id: 'alt-true',   label: 'Alt Green',  hex: MOD_COLORS.Alt   },
+];
+
+// Split-mode counterpart: each side's own distinct default color, offered
+// when settings.splitModifiers is on so left/right can be picked separately.
+export const KEY_TRUE_COLORS_SPLIT = [
+  { id: 'shift-left-true',  label: 'LShift Blue', hex: KEY_ACCENT_SPLIT.ShiftLeft    },
+  { id: 'shift-right-true', label: 'RShift Blue', hex: KEY_ACCENT_SPLIT.ShiftRight   },
+  { id: 'ctrl-left-true',   label: 'LCtrl Red',   hex: KEY_ACCENT_SPLIT.ControlLeft  },
+  { id: 'ctrl-right-true',  label: 'RCtrl Red',   hex: KEY_ACCENT_SPLIT.ControlRight },
+  { id: 'alt-left-true',    label: 'LAlt Green',  hex: KEY_ACCENT_SPLIT.AltLeft      },
+  { id: 'alt-right-true',   label: 'RAlt Green',  hex: KEY_ACCENT_SPLIT.AltRight     },
 ];
 
 // Maps modifier value → physical key IDs (for color lookups from keyColors)
@@ -109,6 +152,12 @@ const MOD_FILL_RATIO = {
   [MOD_COLORS.Shift]: 0.58,
   [MOD_COLORS.Alt]:   0.58,
   [MOD_COLORS.Ctrl]:  0.7,
+  [KEY_ACCENT_SPLIT.ShiftLeft]:   0.58,
+  [KEY_ACCENT_SPLIT.ShiftRight]:  0.58,
+  [KEY_ACCENT_SPLIT.AltLeft]:     0.58,
+  [KEY_ACCENT_SPLIT.AltRight]:    0.58,
+  [KEY_ACCENT_SPLIT.ControlLeft]: 0.7,
+  [KEY_ACCENT_SPLIT.ControlRight]: 0.7,
 };
 
 export function modFill(hex) {

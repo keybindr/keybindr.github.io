@@ -32,7 +32,7 @@ import { localeUsesISO } from './keylabels';
 import { TranslationContext, makeT } from './useTranslation';
 import { preloadLocales } from './locales/index.js';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { KEY_COLOR_NONE } from './modifierConstants';
+import { KEY_COLOR_NONE, KEY_ACCENT, KEY_ACCENT_SPLIT } from './modifierConstants';
 
 
 const DEFAULT_FORMAT_NAMES   = ['__t:formatOnFoot'];
@@ -58,7 +58,7 @@ export default function App() {
     formats, activeIndex, switchTo, addFormat, setFormatName, removeFormat,
     bindings, keyColors, mouseBindings, hotasBindings, recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
-    replaceActiveBindings, replaceFormats, removeOrphanBindings, removeOrphanMouseBindings,
+    replaceActiveBindings, replaceFormats, retagModifiers, removeOrphanBindings, removeOrphanMouseBindings,
     setKeyColor, clearKeyColor, restoreKeyColor, addRecentColor,
     addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction, reorderMouseBindings,
     addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction, reorderHotasBindings,
@@ -445,15 +445,15 @@ export default function App() {
 
   // Legend colors follow modifier key custom colors, falling back to defaults
   const legColor = (hex, fallback) => (hex && hex !== KEY_COLOR_NONE) ? hex : fallback;
-  const legShift  = legColor(keyColors['ShiftLeft']   || keyColors['ShiftRight'],   '#7b9ee0');
-  const legAlt    = legColor(keyColors['AltLeft']     || keyColors['AltRight'],     '#7be09a');
-  const legCtrl   = legColor(keyColors['ControlLeft'] || keyColors['ControlRight'], '#e07b39');
-  const legShiftL = legColor(keyColors['ShiftLeft'],   '#7b9ee0');
-  const legShiftR = legColor(keyColors['ShiftRight'],  '#7b9ee0');
-  const legAltL   = legColor(keyColors['AltLeft'],     '#7be09a');
-  const legAltR   = legColor(keyColors['AltRight'],    '#7be09a');
-  const legCtrlL  = legColor(keyColors['ControlLeft'], '#e07b39');
-  const legCtrlR  = legColor(keyColors['ControlRight'],'#e07b39');
+  const legShift  = legColor(keyColors['ShiftLeft']   || keyColors['ShiftRight'],   KEY_ACCENT.ShiftLeft);
+  const legAlt    = legColor(keyColors['AltLeft']     || keyColors['AltRight'],     KEY_ACCENT.AltLeft);
+  const legCtrl   = legColor(keyColors['ControlLeft'] || keyColors['ControlRight'], KEY_ACCENT.ControlLeft);
+  const legShiftL = legColor(keyColors['ShiftLeft'],   KEY_ACCENT_SPLIT.ShiftLeft);
+  const legShiftR = legColor(keyColors['ShiftRight'],  KEY_ACCENT_SPLIT.ShiftRight);
+  const legAltL   = legColor(keyColors['AltLeft'],     KEY_ACCENT_SPLIT.AltLeft);
+  const legAltR   = legColor(keyColors['AltRight'],    KEY_ACCENT_SPLIT.AltRight);
+  const legCtrlL  = legColor(keyColors['ControlLeft'], KEY_ACCENT_SPLIT.ControlLeft);
+  const legCtrlR  = legColor(keyColors['ControlRight'],KEY_ACCENT_SPLIT.ControlRight);
 
   return (
     <TranslationContext.Provider value={t}>
@@ -801,7 +801,7 @@ export default function App() {
       {showSettings && (
         <SettingsModal
           settings={settings}
-          onToggleSplit={setSplitModifiers}
+          onToggleSplit={val => { retagModifiers(val); setSplitModifiers(val); }}
           onChangeLayout={handleLayoutChange}
           onChangeLocale={handleLocaleChange}
           onChangeUiLocale={handleUiLocaleChange}
@@ -822,6 +822,7 @@ export default function App() {
         <OrphanWarningModal
           orphans={pendingLayout.orphans}
           newLayoutName={pendingLayout.name}
+          language={settings.language}
           onConfirm={confirmLayoutChange}
           onCancel={() => setPendingLayout(null)}
         />

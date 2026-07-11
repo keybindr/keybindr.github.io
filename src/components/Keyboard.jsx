@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { getKeys, getLayout } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
-import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_COLOR_NONE, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_COLOR_NONE, MOD_COLORS, MOD_LABELS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill, resolveAccent } from '../modifierConstants';
 import { useT, resolveAction } from '../useTranslation';
 import { getHotasLabel, hotasBindingId } from '../hotasConstants';
 
@@ -21,12 +21,6 @@ function modTriangleColor(mod, keyColors) {
   }
   return MOD_COLORS[mod] || '#888';
 }
-
-const TOOLTIP_MOD_LABEL = {
-  Ctrl: 'Ctrl', CtrlLeft: 'LCtrl', CtrlRight: 'RCtrl',
-  Shift: 'Shift', ShiftLeft: 'LShift', ShiftRight: 'RShift',
-  Alt: 'Alt', AltLeft: 'LAlt', AltRight: 'RAlt',
-};
 
 const TOOLTIP_WIDTH = 220;
 
@@ -175,7 +169,7 @@ function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings =
         const rawColor    = keyColors[k.id];
         const noColor     = rawColor === KEY_COLOR_NONE;
         const customColor = rawColor && !noColor ? rawColor : null;
-        const accentColor = KEY_ACCENT[k.id] || null;
+        const accentColor = resolveAccent(k.id, splitModifiers);
 
         const fill   = noColor     ? KEY_DEFAULT
                      : customColor ? customColor
@@ -310,7 +304,7 @@ function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings =
                 {b.modifiers.map(m => (
                   <span key={m} className="tooltip-mod-tag"
                     style={{ borderColor: MOD_COLORS[m] || '#888', color: MOD_COLORS[m] || '#888' }}>
-                    {TOOLTIP_MOD_LABEL[m] || m}
+                    {MOD_LABELS[m] || m}
                   </span>
                 ))}
                 <span className="tooltip-arrow">→</span>
@@ -327,7 +321,7 @@ function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings =
                 {mb.modifiers.map(m => (
                   <span key={m} className="tooltip-mod-tag"
                     style={{ borderColor: MOD_COLORS[m] || '#888', color: MOD_COLORS[m] || '#888' }}>
-                    {TOOLTIP_MOD_LABEL[m] || m}
+                    {MOD_LABELS[m] || m}
                   </span>
                 ))}
                 <span className="tooltip-arrow">→</span>
@@ -344,7 +338,7 @@ function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings =
                 {(hb.modifiers ?? []).map(m => (
                   <span key={m} className="tooltip-mod-tag"
                     style={{ borderColor: MOD_COLORS[m] || '#888', color: MOD_COLORS[m] || '#888' }}>
-                    {TOOLTIP_MOD_LABEL[m] || m}
+                    {MOD_LABELS[m] || m}
                   </span>
                 ))}
                 <span className="tooltip-arrow">→</span>

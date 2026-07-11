@@ -3,7 +3,7 @@ import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveDisplayLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 import { useT, resolveAction } from '../useTranslation';
-import { KEY_DEFAULT, KEY_BOUND, KEY_COLOR_NONE, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_COLOR_NONE, MOD_COLORS, MOD_LABELS, MOD_FAMILY, MOD_KEY_FAMILY } from '../modifierConstants';
 
 const KEY_BOUND_COLOR = KEY_BOUND;
 
@@ -183,7 +183,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                     <div className="mod-tags">
                       {b.modifiers.map(m => (
                         <span key={m} className="mod-tag" style={{ borderColor: MOD_COLORS[m] ?? '#888', color: MOD_COLORS[m] ?? '#888' }}>
-                          {m}
+                          {MOD_LABELS[m] ?? m}
                         </span>
                       ))}
                     </div>

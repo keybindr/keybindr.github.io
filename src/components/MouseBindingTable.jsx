@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { bindingId } from '../useBindings';
 import { useT, resolveAction } from '../useTranslation';
-import { MOD_COLORS } from '../modifierConstants';
+import { MOD_COLORS, MOD_LABELS } from '../modifierConstants';
 import { resolveDisplayLabel } from '../keylabels';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 
@@ -122,7 +122,7 @@ export default function MouseBindingTable({ mouseBindings = [], onUpdateAction, 
                     <div className="mod-tags">
                       {b.modifiers.map(m => (
                         <span key={m} className="mod-tag" style={{ borderColor: MOD_COLORS[m] ?? '#888', color: MOD_COLORS[m] ?? '#888' }}>
-                          {m}
+                          {MOD_LABELS[m] ?? m}
                         </span>
                       ))}
                     </div>

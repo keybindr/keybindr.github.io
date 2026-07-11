@@ -83,6 +83,47 @@ function persist(formats, active) {
   localStorage.setItem(ACTIVE_KEY,  String(active));
 }
 
+// Maps split modifier values to their unified name, and vice versa — used to
+// retag existing bindings when the unified/split display setting changes.
+const MOD_TO_UNIFIED = { ShiftLeft: 'Shift', ShiftRight: 'Shift', AltLeft: 'Alt', AltRight: 'Alt', CtrlLeft: 'Ctrl', CtrlRight: 'Ctrl' };
+const MOD_TO_SPLIT    = { Shift: 'ShiftLeft', Alt: 'AltLeft', Ctrl: 'CtrlLeft' };
+
+function retagModList(modifiers, splitModifiers) {
+  const map = splitModifiers ? MOD_TO_SPLIT : MOD_TO_UNIFIED;
+  return [...new Set((modifiers ?? []).map(m => map[m] ?? m))].sort();
+}
+
+const RIGHT_MODS = new Set(['ShiftRight', 'AltRight', 'CtrlRight']);
+
+// Retags a list of bindings' modifiers for the new unified/split display
+// mode and resolves any collisions the retag creates. Collapsing split ->
+// unified can make a Left-side and a Right-side binding land on the same
+// key+modifiers combo (an irresolvable conflict, since unified has no L/R
+// distinction) — in that case the Right-side binding is dropped and the
+// Left-side one wins. Any other exact duplicates keep whichever came first.
+function retagAndDedupe(list, splitModifiers, idOf) {
+  const prepared = list.map(b => {
+    const hadRight = !splitModifiers && (b.modifiers ?? []).some(m => RIGHT_MODS.has(m));
+    return { binding: { ...b, modifiers: retagModList(b.modifiers, splitModifiers) }, hadRight };
+  });
+
+  const nonRightIds = new Set();
+  for (const { binding, hadRight } of prepared) {
+    if (!hadRight) nonRightIds.add(idOf(binding));
+  }
+
+  const seen = new Set();
+  const result = [];
+  for (const { binding, hadRight } of prepared) {
+    const id = idOf(binding);
+    if (hadRight && nonRightIds.has(id)) continue; // Left-side (or already-unified) version wins
+    if (seen.has(id)) continue;
+    seen.add(id);
+    result.push(binding);
+  }
+  return result;
+}
+
 const HISTORY_LIMIT = 3;
 
 export function useFormats() {
@@ -317,6 +358,32 @@ export function useFormats() {
     mutate(() => ({ formats: newFormats.slice(0, MAX_FORMATS), active: 0 }));
   }
 
+  // ── Modifier retagging ────────────────────────────────────────────────
+  // When the unified/split display setting changes, existing bindings still
+  // carry the old modifier vocabulary (e.g. "Shift" while switching to split
+  // mode expects "ShiftLeft"/"ShiftRight"). Retag every binding across every
+  // format so labels and colors line up with the new display mode, merging
+  // any bindings that collapse onto the same key+modifiers combo.
+  function retagModifiers(splitModifiers) {
+    mutate(s => ({
+      ...s,
+      formats: s.formats.map(f => ({
+        ...f,
+        bindings: retagAndDedupe(f.bindings, splitModifiers, b => bindingId(b.key, b.modifiers)),
+        mouseBindings: retagAndDedupe(
+          Array.isArray(f.mouseBindings) ? f.mouseBindings : [],
+          splitModifiers,
+          b => bindingId(b.button, b.modifiers),
+        ),
+        hotasBindings: retagAndDedupe(
+          Array.isArray(f.hotasBindings) ? f.hotasBindings : [],
+          splitModifiers,
+          b => hotasBindingId(b.input, b.modifiers, b.hotasMod ?? ''),
+        ),
+      })),
+    }));
+  }
+
   function removeOrphanBindings(validKeySet) {
     mutate(s => ({
       ...s,
@@ -407,7 +474,7 @@ export function useFormats() {
     hotasBindings: Array.isArray(activeFormat?.hotasBindings) ? activeFormat.hotasBindings : [],
     recentColors,
     addOrUpdate, remove, reorderBindings, updateAction,
-    replaceActiveBindings, replaceFormats, removeOrphanBindings, removeOrphanMouseBindings,
+    replaceActiveBindings, replaceFormats, retagModifiers, removeOrphanBindings, removeOrphanMouseBindings,
     addOrUpdateMouseBinding, removeMouseBinding, updateMouseAction, reorderMouseBindings,
     addOrUpdateHotasBinding, removeHotasBinding, removeHotasModifier, updateHotasAction, reorderHotasBindings,
     removeOrphanHotasBindings,
