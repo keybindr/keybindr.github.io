@@ -3,7 +3,7 @@ import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveDisplayLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 import { useT, resolveAction } from '../useTranslation';
-import { KEY_BOUND, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_COLOR_NONE, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY } from '../modifierConstants';
 
 const KEY_BOUND_COLOR = KEY_BOUND;
 
@@ -196,7 +196,7 @@ export default function BindingTable({ bindings, keyColors = {}, selectedId, onS
                   <button
                     type="button"
                     className="binding-color-swatch"
-                    style={{ background: keyColor || KEY_BOUND_COLOR }}
+                    style={{ background: keyColor === KEY_COLOR_NONE ? KEY_DEFAULT : keyColor || KEY_BOUND_COLOR }}
                     title={t('editKeyColor')}
                     onClick={e => { e.stopPropagation(); onOpenModal?.(b.key); }}
                   />

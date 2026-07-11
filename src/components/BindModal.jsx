@@ -4,7 +4,7 @@ import { resolveDisplayLabel } from '../keylabels';
 import { useT, resolveAction } from '../useTranslation';
 import { bindingId } from '../useBindings';
 import ColorPicker from './ColorPicker';
-import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_PALETTE, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_PALETTE, KEY_TRUE_COLORS, KEY_COLOR_NONE, MOD_COLORS, MOD_FAMILY, MOD_KEY_FAMILY, modFill, buildModDefs } from '../modifierConstants';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 
 const MODIFIER_KEY_IDS = new Set([
@@ -28,14 +28,14 @@ export default function BindModal({
 
   const isBoundKey = existingBindings.some(b => b.key === keyId);
   const accentHex = KEY_ACCENT[keyId];
-  const effectiveColor = keyColor
+  const effectiveColor = (keyColor && keyColor !== KEY_COLOR_NONE ? keyColor : null)
     || (accentHex ? modFill(accentHex) : null)
     || (isBoundKey ? KEY_BOUND : KEY_DEFAULT);
 
   const [modifiers, setModifiers]   = useState([]);
   const [action, setAction]         = useState('');
   const [localColor, setLocalColor] = useState(keyColor ?? '');
-  const isPaletteColor = !keyColor || KEY_PALETTE.some(c => c.hex === keyColor);
+  const isPaletteColor = !keyColor || keyColor === KEY_COLOR_NONE || KEY_PALETTE.some(c => c.hex === keyColor);
   const [showCustomPicker, setShowCustomPicker] = useState(!isPaletteColor);
 
   const inputRef = useRef(null);
@@ -121,7 +121,7 @@ export default function BindModal({
       {showCustomPicker && (
         <div className="cpk-panel" onClick={e => e.stopPropagation()}>
           <div className="cpk-panel-body">
-            <ColorPicker color={localColor || effectiveColor} onChange={applyColor} />
+            <ColorPicker color={(localColor && localColor !== KEY_COLOR_NONE) ? localColor : effectiveColor} onChange={applyColor} />
             {recentColors.length > 0 && (
               <>
                 <div className="recently-picked-label">{t('recentlyPicked')}</div>
@@ -191,9 +191,9 @@ export default function BindModal({
             <div className="palette-swatch-row">
               <button
                 type="button"
-                className={`color-swatch color-swatch-none${!localColor ? ' active' : ''}`}
+                className={`color-swatch color-swatch-none${(!localColor || localColor === KEY_COLOR_NONE) ? ' active' : ''}`}
                 title={t('none')}
-                onClick={() => { setShowCustomPicker(false); applyColor(''); }}
+                onClick={() => { setShowCustomPicker(false); applyColor(KEY_COLOR_NONE); }}
               >
                 <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
                   <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
@@ -218,6 +218,20 @@ export default function BindModal({
                 {t('customColor')}
               </button>
             </div>
+            {isModifier && (
+              <div className="palette-swatch-row">
+                {KEY_TRUE_COLORS.map(c => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className={`color-swatch${c.hex === localColor ? ' active' : ''}`}
+                    style={{ background: c.hex }}
+                    title={c.label}
+                    onClick={() => { setShowCustomPicker(false); applyColor(c.hex); }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {hasConflict && (

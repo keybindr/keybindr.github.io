@@ -1,24 +1,25 @@
 export const KEY_DEFAULT = '#2a2a2a';
 export const KEY_BOUND   = '#3d3420';
 
-// Curated key-color palette — dark, muted flat fills tuned to read cleanly
-// against the board background. The first six double as the game-preset
-// category colors (see gamePresets.js), kept here as the single source of
-// truth so both stay in sync.
-export const KEY_PALETTE = [
-  { id: 'olive',   label: 'Olive',   hex: '#3a481c' },
-  { id: 'brass',   label: 'Brass',   hex: '#564428' },
-  { id: 'indigo',  label: 'Indigo',  hex: '#28385a' },
-  { id: 'wine',    label: 'Wine',    hex: '#5a2e28' },
-  { id: 'plum',    label: 'Plum',    hex: '#42285a' },
-  { id: 'teal',    label: 'Teal',    hex: '#28484e' },
-  { id: 'forest',  label: 'Forest',  hex: '#1f4a30' },
-  { id: 'crimson', label: 'Crimson', hex: '#5a1f35' },
-  { id: 'slate',   label: 'Slate',   hex: '#3a3a42' },
-  { id: 'rust',    label: 'Rust',    hex: '#5a3a1f' },
-  { id: 'magenta', label: 'Magenta', hex: '#4a1f42' },
-  { id: 'cyan',    label: 'Cyan',    hex: '#1f4a4a' },
-];
+// Sentinel stored in keyColors to mean "explicitly no color" — distinct from
+// an absent entry, which falls back to the generic KEY_BOUND/accent styling.
+// Lets the "no color" swatch make a bound key render exactly like an unbound
+// one (fill, border, and text) instead of the default bound treatment.
+export const KEY_COLOR_NONE = 'none';
+
+// Blends a hex color toward the #1a1a1a board background by `ratio` (0 =
+// background, 1 = the pure color). Shared by modifier fills and the
+// key-color palette so both can be tuned with the same knob.
+function blendToBg(hex, ratio) {
+  if (!hex || hex.length < 7) return KEY_DEFAULT;
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  const bg = 0x1a;
+  const h = n => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0');
+  const c = n => Math.round(bg + (n - bg) * ratio);
+  return `#${h(c(r))}${h(c(g))}${h(c(b))}`;
+}
 
 // Accent colors for physical modifier keys (ShiftLeft/Right, AltLeft/Right, ControlLeft/Right)
 export const KEY_ACCENT = {
@@ -33,6 +34,15 @@ export const MOD_COLORS = {
   Alt:   '#7be09a', AltLeft:   '#7be09a', AltRight:   '#7be09a',
   Ctrl:  '#e07b39', CtrlLeft:  '#e07b39', CtrlRight:  '#e07b39',
 };
+
+// Pure, unblended modifier accent colors as they actually appear on the
+// keyboard layout (corner triangles / KEY_ACCENT) — offered as a second row
+// of key-color swatches so a key can be colored to match a modifier exactly.
+export const KEY_TRUE_COLORS = [
+  { id: 'shift-true', label: 'Shift Blue', hex: MOD_COLORS.Shift },
+  { id: 'ctrl-true',  label: 'Ctrl Red',   hex: MOD_COLORS.Ctrl  },
+  { id: 'alt-true',   label: 'Alt Green',  hex: MOD_COLORS.Alt   },
+];
 
 // Maps modifier value → physical key IDs (for color lookups from keyColors)
 export const MOD_KEY_IDS = {
@@ -91,14 +101,57 @@ export function buildModDefs(settings) {
   ];
 }
 
-// Blends an accent hex color at 25% over the #1a1a1a background
+// Per-accent blend ratio toward the #1a1a1a background — muted enough to sit
+// alongside the dark key-color palette, but saturated enough to still read
+// as the same hue as the full-strength legend/corner color. Orange runs a
+// bit hotter than blue/green since it reads as "brownish" at the same ratio.
+const MOD_FILL_RATIO = {
+  [MOD_COLORS.Shift]: 0.58,
+  [MOD_COLORS.Alt]:   0.58,
+  [MOD_COLORS.Ctrl]:  0.7,
+};
+
 export function modFill(hex) {
-  if (!hex || hex.length < 7) return KEY_DEFAULT;
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  const bg = 0x1a;
-  const h = n => Math.max(0, Math.min(255, n)).toString(16).padStart(2, '0');
-  const blend = c => Math.round(bg + (c - bg) * 0.25);
-  return `#${h(blend(r))}${h(blend(g))}${h(blend(b))}`;
+  return blendToBg(hex, MOD_FILL_RATIO[hex] ?? 0.5);
 }
+
+// Pure/vivid base hues for the key-color palette — same idea as KEY_ACCENT
+// for modifiers. Ids are internal (and referenced by gamePresets.js) and
+// stay put on the ROYGBIV wheel; labels below describe what each one
+// actually renders as, since every band is now tuned to approximate one of
+// the original named colors rather than its literal rainbow hue.
+// "yellow" and "green" intentionally swap their pure hue/ratio pair (see
+// PALETTE_RATIO_OVERRIDES) so `movement` can move onto the "green" id while
+// keeping the same olive color it always had, freeing "yellow" up for `ui`.
+const PALETTE_BASE = [
+  { id: 'red',    label: 'Wine',   hex: '#da6262' },
+  { id: 'orange', label: 'Brass',  hex: '#daa262' },
+  { id: 'yellow', label: 'Forest', hex: '#62da80' },
+  { id: 'green',  label: 'Olive',  hex: '#dad062' },
+  { id: 'blue',   label: 'Indigo', hex: '#629eda' },
+  { id: 'indigo', label: 'Slate',  hex: '#8062da' },
+  { id: 'violet', label: 'Plum',   hex: '#c662da' },
+];
+
+// Default blend ratio for the palette; override per-id here if a specific
+// color needs to run hotter/cooler than the rest (mirrors MOD_FILL_RATIO).
+// Each override is tuned to land close to that color's pre-ROYGBIV
+// equivalent (e.g. orange -> the old "brass"), rather than the flat 0.58.
+const PALETTE_FILL_RATIO = 0.58;
+const PALETTE_RATIO_OVERRIDES = {
+  red:    0.31, // -> old "wine"
+  orange: 0.3,  // -> old "brass"
+  yellow: 0.28, // -> old "teal" (now used by ui)
+  green:  0.2,  // -> old "olive" (now used by movement)
+  blue:   0.29, // -> old "indigo"
+  indigo: 0.26, // -> old "slate"
+  violet: 0.28, // -> old "plum"
+};
+
+// Curated key-color palette — mapped onto the game-preset categories (see
+// gamePresets.js), kept here as the single source of truth so both stay in
+// sync.
+export const KEY_PALETTE = PALETTE_BASE.map(c => ({
+  ...c,
+  hex: blendToBg(c.hex, PALETTE_RATIO_OVERRIDES[c.id] ?? PALETTE_FILL_RATIO),
+}));

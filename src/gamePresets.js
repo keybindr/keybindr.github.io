@@ -477,12 +477,12 @@ const GW2_MOUSE_BINDINGS = [
 
 const PALETTE = Object.fromEntries(KEY_PALETTE.map(c => [c.id, c.hex]));
 const C = {
-  movement:  PALETTE.olive,   // yellow-green, unique in the palette
-  ability1:  PALETTE.brass,   // primary hotbar
-  ability2:  PALETTE.indigo,  // Shift-row, cooler than modifier blue
-  ability3:  PALETTE.wine,    // Ctrl-row, redder than modifier orange
-  targeting: PALETTE.plum,    // new hue, not in modifier palette
-  ui:        PALETTE.teal,    // new hue, calm interface tone
+  movement:  PALETTE.yellow,  // Forest green, reads as movement/"go"
+  ability1:  PALETTE.orange,  // primary hotbar
+  ability2:  PALETTE.blue,    // Shift-row
+  ability3:  PALETTE.red,     // Ctrl-row
+  targeting: PALETTE.violet,  // distinct from both ability rows
+  ui:        PALETTE.red,     // Wine, calm interface tone
 };
 
 // Maps raw action ID (after the prefix colon) → color

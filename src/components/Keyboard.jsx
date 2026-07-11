@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { getKeys, getLayout } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
-import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from '../modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_COLOR_NONE, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from '../modifierConstants';
 import { useT, resolveAction } from '../useTranslation';
 import { getHotasLabel, hotasBindingId } from '../hotasConstants';
 
@@ -17,7 +17,7 @@ const SIZE = 10;
 
 function modTriangleColor(mod, keyColors) {
   for (const kid of (MOD_KEY_IDS[mod] || [])) {
-    if (keyColors[kid]) return keyColors[kid];
+    if (keyColors[kid] && keyColors[kid] !== KEY_COLOR_NONE) return keyColors[kid];
   }
   return MOD_COLORS[mod] || '#888';
 }
@@ -172,17 +172,21 @@ function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings =
         const keyBindings = boundMap[k.id] || [];
         const isBound     = keyBindings.length > 0;
         const isSelected  = keyBindings.some(b => bindingId(b.key, b.modifiers) === selectedId);
-        const customColor = keyColors[k.id];
+        const rawColor    = keyColors[k.id];
+        const noColor     = rawColor === KEY_COLOR_NONE;
+        const customColor = rawColor && !noColor ? rawColor : null;
         const accentColor = KEY_ACCENT[k.id] || null;
 
-        const fill   = customColor ? customColor
+        const fill   = noColor     ? KEY_DEFAULT
+                     : customColor ? customColor
                      : accentColor ? modFill(accentColor)
                      : isBound     ? KEY_BOUND
                      : KEY_DEFAULT;
         const stroke = isSelected ? BORDER_SELECTED
+                     : noColor    ? BORDER_DEFAULT
                      : (isBound || accentColor) ? BORDER_BOUND
                      : BORDER_DEFAULT;
-        const textColor = (isBound || accentColor) ? TEXT_BOUND : TEXT_DEFAULT;
+        const textColor = noColor ? TEXT_DEFAULT : (isBound || accentColor) ? TEXT_BOUND : TEXT_DEFAULT;
 
         const mods = [...new Set(keyBindings.flatMap(b => b.modifiers))];
         const mouseRemaps = mouseRemapMap[k.id] || [];

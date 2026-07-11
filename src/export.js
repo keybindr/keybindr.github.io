@@ -1,7 +1,7 @@
 import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
 import { resolveLabel } from './keylabels';
 import { makeT, resolveAction } from './useTranslation';
-import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from './modifierConstants';
+import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_COLOR_NONE, MOD_COLORS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill } from './modifierConstants';
 import { getHotasLabel, getHotasModInfo } from './hotasConstants';
 
 // Reverse map: US-English label → key ID, built from the union of all layouts.
@@ -21,7 +21,7 @@ const TEXT_BOUND     = '#f5e0b0';
 const TRI            = 10;
 
 function triColor(mod, keyColors) {
-  for (const id of (MOD_KEY_IDS[mod] || [])) if (keyColors[id]) return keyColors[id];
+  for (const id of (MOD_KEY_IDS[mod] || [])) if (keyColors[id] && keyColors[id] !== KEY_COLOR_NONE) return keyColors[id];
   return MOD_COLORS[mod] || '#888';
 }
 
@@ -77,13 +77,15 @@ function buildKeyboardSVG(bindings, keyColors, settings) {
   }).join('');
 
   const keyEls = KEYS.map(k => {
-    const bs     = bmap[k.id] || [];
-    const bound  = bs.length > 0;
-    const custom = keyColors[k.id];
-    const accent = KEY_ACCENT[k.id];
-    const fill   = custom ? custom : accent ? modFill(accent) : bound ? KEY_BOUND : KEY_DEFAULT;
-    const stroke = (bound || accent) ? BORDER_BOUND : BORDER_DEFAULT;
-    const tcol   = (bound || accent) ? TEXT_BOUND : TEXT_DEFAULT;
+    const bs      = bmap[k.id] || [];
+    const bound   = bs.length > 0;
+    const rawColor = keyColors[k.id];
+    const noColor = rawColor === KEY_COLOR_NONE;
+    const custom  = rawColor && !noColor ? rawColor : null;
+    const accent  = KEY_ACCENT[k.id];
+    const fill    = noColor ? KEY_DEFAULT : custom ? custom : accent ? modFill(accent) : bound ? KEY_BOUND : KEY_DEFAULT;
+    const stroke  = noColor ? BORDER_DEFAULT : (bound || accent) ? BORDER_BOUND : BORDER_DEFAULT;
+    const tcol    = noColor ? TEXT_DEFAULT : (bound || accent) ? TEXT_BOUND : TEXT_DEFAULT;
     const rawLabel = (splitModifiers && SPLIT_LABELS[k.id]) ? SPLIT_LABELS[k.id] : resolveLabel(k.id, k, language);
     const label  = escapeXml(rawLabel);
     const fs     = k.w > 60 ? 11 : 10;
@@ -142,17 +144,18 @@ function svgToCanvas(ctx, svgStr, x, y, w, h) {
 }
 
 function drawLegend(ctx, x, y, keyColors, splitModifiers, S) {
+  const leg = (hex, fallback) => (hex && hex !== KEY_COLOR_NONE) ? hex : fallback;
   const items = splitModifiers ? [
-    { label: 'LShift', color: keyColors['ShiftLeft']    || '#7b9ee0', dir: 'shift' },
-    { label: 'RShift', color: keyColors['ShiftRight']   || '#7b9ee0', dir: 'shift' },
-    { label: 'LAlt',   color: keyColors['AltLeft']      || '#7be09a', dir: 'alt'   },
-    { label: 'RAlt',   color: keyColors['AltRight']     || '#7be09a', dir: 'alt'   },
-    { label: 'LCtrl',  color: keyColors['ControlLeft']  || '#e07b39', dir: 'ctrl'  },
-    { label: 'RCtrl',  color: keyColors['ControlRight'] || '#e07b39', dir: 'ctrl'  },
+    { label: 'LShift', color: leg(keyColors['ShiftLeft'],    '#7b9ee0'), dir: 'shift' },
+    { label: 'RShift', color: leg(keyColors['ShiftRight'],   '#7b9ee0'), dir: 'shift' },
+    { label: 'LAlt',   color: leg(keyColors['AltLeft'],      '#7be09a'), dir: 'alt'   },
+    { label: 'RAlt',   color: leg(keyColors['AltRight'],     '#7be09a'), dir: 'alt'   },
+    { label: 'LCtrl',  color: leg(keyColors['ControlLeft'],  '#e07b39'), dir: 'ctrl'  },
+    { label: 'RCtrl',  color: leg(keyColors['ControlRight'], '#e07b39'), dir: 'ctrl'  },
   ] : [
-    { label: 'Shift', color: keyColors['ShiftLeft']  || keyColors['ShiftRight']   || '#7b9ee0', dir: 'shift' },
-    { label: 'Alt',   color: keyColors['AltLeft']    || keyColors['AltRight']     || '#7be09a', dir: 'alt'   },
-    { label: 'Ctrl',  color: keyColors['ControlLeft']|| keyColors['ControlRight'] || '#e07b39', dir: 'ctrl'  },
+    { label: 'Shift', color: leg(keyColors['ShiftLeft']   || keyColors['ShiftRight'],   '#7b9ee0'), dir: 'shift' },
+    { label: 'Alt',   color: leg(keyColors['AltLeft']     || keyColors['AltRight'],     '#7be09a'), dir: 'alt'   },
+    { label: 'Ctrl',  color: leg(keyColors['ControlLeft'] || keyColors['ControlRight'], '#e07b39'), dir: 'ctrl'  },
   ];
 
   const s = 10 * S;

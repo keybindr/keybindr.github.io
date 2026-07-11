@@ -32,6 +32,7 @@ import { localeUsesISO } from './keylabels';
 import { TranslationContext, makeT } from './useTranslation';
 import { preloadLocales } from './locales/index.js';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { KEY_COLOR_NONE } from './modifierConstants';
 
 
 const DEFAULT_FORMAT_NAMES   = ['__t:formatOnFoot'];
@@ -443,15 +444,16 @@ export default function App() {
     : settings;
 
   // Legend colors follow modifier key custom colors, falling back to defaults
-  const legShift  = keyColors['ShiftLeft']   || keyColors['ShiftRight']   || '#7b9ee0';
-  const legAlt    = keyColors['AltLeft']     || keyColors['AltRight']     || '#7be09a';
-  const legCtrl   = keyColors['ControlLeft'] || keyColors['ControlRight'] || '#e07b39';
-  const legShiftL = keyColors['ShiftLeft']   || '#7b9ee0';
-  const legShiftR = keyColors['ShiftRight']  || '#7b9ee0';
-  const legAltL   = keyColors['AltLeft']     || '#7be09a';
-  const legAltR   = keyColors['AltRight']    || '#7be09a';
-  const legCtrlL  = keyColors['ControlLeft'] || '#e07b39';
-  const legCtrlR  = keyColors['ControlRight']|| '#e07b39';
+  const legColor = (hex, fallback) => (hex && hex !== KEY_COLOR_NONE) ? hex : fallback;
+  const legShift  = legColor(keyColors['ShiftLeft']   || keyColors['ShiftRight'],   '#7b9ee0');
+  const legAlt    = legColor(keyColors['AltLeft']     || keyColors['AltRight'],     '#7be09a');
+  const legCtrl   = legColor(keyColors['ControlLeft'] || keyColors['ControlRight'], '#e07b39');
+  const legShiftL = legColor(keyColors['ShiftLeft'],   '#7b9ee0');
+  const legShiftR = legColor(keyColors['ShiftRight'],  '#7b9ee0');
+  const legAltL   = legColor(keyColors['AltLeft'],     '#7be09a');
+  const legAltR   = legColor(keyColors['AltRight'],    '#7be09a');
+  const legCtrlL  = legColor(keyColors['ControlLeft'], '#e07b39');
+  const legCtrlR  = legColor(keyColors['ControlRight'],'#e07b39');
 
   return (
     <TranslationContext.Provider value={t}>
