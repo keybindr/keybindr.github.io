@@ -70,21 +70,24 @@ export const MOD_LABELS = {
 // Pure, unblended modifier accent colors as they actually appear on the
 // keyboard layout (corner triangles / KEY_ACCENT) — offered as a second row
 // of key-color swatches so a key can be colored to match a modifier exactly.
+// `prefix` is the modifier name (kept untranslated, matching MOD_LABELS —
+// key names are never localized); `colorKey` is a translation key for the
+// color word, resolved via t() at render time so it can be localized.
 export const KEY_TRUE_COLORS = [
-  { id: 'shift-true', label: 'Shift Blue', hex: MOD_COLORS.Shift },
-  { id: 'ctrl-true',  label: 'Ctrl Red',   hex: MOD_COLORS.Ctrl  },
-  { id: 'alt-true',   label: 'Alt Green',  hex: MOD_COLORS.Alt   },
+  { id: 'shift-true', prefix: 'Shift', colorKey: 'colorBlue',  hex: MOD_COLORS.Shift },
+  { id: 'ctrl-true',  prefix: 'Ctrl',  colorKey: 'colorRed',   hex: MOD_COLORS.Ctrl  },
+  { id: 'alt-true',   prefix: 'Alt',   colorKey: 'colorGreen', hex: MOD_COLORS.Alt   },
 ];
 
 // Split-mode counterpart: each side's own distinct default color, offered
 // when settings.splitModifiers is on so left/right can be picked separately.
 export const KEY_TRUE_COLORS_SPLIT = [
-  { id: 'shift-left-true',  label: 'LShift Blue', hex: KEY_ACCENT_SPLIT.ShiftLeft    },
-  { id: 'shift-right-true', label: 'RShift Blue', hex: KEY_ACCENT_SPLIT.ShiftRight   },
-  { id: 'ctrl-left-true',   label: 'LCtrl Red',   hex: KEY_ACCENT_SPLIT.ControlLeft  },
-  { id: 'ctrl-right-true',  label: 'RCtrl Red',   hex: KEY_ACCENT_SPLIT.ControlRight },
-  { id: 'alt-left-true',    label: 'LAlt Green',  hex: KEY_ACCENT_SPLIT.AltLeft      },
-  { id: 'alt-right-true',   label: 'RAlt Green',  hex: KEY_ACCENT_SPLIT.AltRight     },
+  { id: 'shift-left-true',  prefix: 'LShift', colorKey: 'colorBlue',  hex: KEY_ACCENT_SPLIT.ShiftLeft    },
+  { id: 'shift-right-true', prefix: 'RShift', colorKey: 'colorBlue',  hex: KEY_ACCENT_SPLIT.ShiftRight   },
+  { id: 'ctrl-left-true',   prefix: 'LCtrl',  colorKey: 'colorRed',   hex: KEY_ACCENT_SPLIT.ControlLeft  },
+  { id: 'ctrl-right-true',  prefix: 'RCtrl',  colorKey: 'colorRed',   hex: KEY_ACCENT_SPLIT.ControlRight },
+  { id: 'alt-left-true',    prefix: 'LAlt',   colorKey: 'colorGreen', hex: KEY_ACCENT_SPLIT.AltLeft      },
+  { id: 'alt-right-true',   prefix: 'RAlt',   colorKey: 'colorGreen', hex: KEY_ACCENT_SPLIT.AltRight     },
 ];
 
 // Maps modifier value → physical key IDs (for color lookups from keyColors)

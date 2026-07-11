@@ -156,4 +156,7 @@ export default {
   formatFallback:      'Format {n}',
   menu:               'Menu',
   currentColor:       'Current color',
+  colorBlue:          'Blue',
+  colorRed:           'Red',
+  colorGreen:         'Green',
 };

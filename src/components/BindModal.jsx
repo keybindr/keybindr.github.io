@@ -232,7 +232,7 @@ export default function BindModal({
                     type="button"
                     className={`color-swatch${c.hex === localColor ? ' active' : ''}`}
                     style={{ background: c.hex }}
-                    title={c.label}
+                    title={`${c.prefix} ${t(c.colorKey)}`}
                     onClick={() => { setShowCustomPicker(false); applyColor(c.hex); }}
                   />
                 ))}

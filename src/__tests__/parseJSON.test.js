@@ -189,3 +189,83 @@ describe('parseJSON — binding sanitization', () => {
     expect(mods).toEqual(['Ctrl', 'Shift']); // sorted, non-strings dropped
   });
 });
+
+// ── Ambiguous key label resolution ──────────────────────────────────────────────
+//
+// Several key pairs render the same base label on the keyboard SVG (both
+// Shift keys say "Shift", NumpadEnter says "Enter" like the main Enter key,
+// etc). Older exports can only carry that shared label; parseJSON must
+// resolve it to a deterministic key rather than whichever physical key
+// ALL_KEY_MAP happened to iterate to last.
+
+function bindingsPayload(bindings) {
+  return JSON.stringify({
+    version: 5,
+    layoutName: '',
+    formats: [{ name: 'Format', bindings, keyColors: {} }],
+  });
+}
+
+function importedKeys(bindings) {
+  const result = parseJSON(bindingsPayload(bindings));
+  return result.data.formats[0].bindings.map(b => b.key);
+}
+
+describe('parseJSON — ambiguous modifier labels (pre-fix exports)', () => {
+  it('resolves the shared "Shift" label to the Left key', () => {
+    expect(importedKeys([{ key: 'Shift', modifiers: [], action: 'Sprint' }])).toEqual(['ShiftLeft']);
+  });
+
+  it('resolves the shared "Ctrl" label to the Left key', () => {
+    expect(importedKeys([{ key: 'Ctrl', modifiers: [], action: 'Sneak' }])).toEqual(['ControlLeft']);
+  });
+
+  it('resolves the shared "Alt" label to the Left key', () => {
+    expect(importedKeys([{ key: 'Alt', modifiers: [], action: 'Dodge' }])).toEqual(['AltLeft']);
+  });
+
+  it('resolves the shared "⊞" (Meta) label to the Left key', () => {
+    expect(importedKeys([{ key: '⊞', modifiers: [], action: 'Start Menu' }])).toEqual(['MetaLeft']);
+  });
+});
+
+describe('parseJSON — unambiguous modifier labels (post-fix exports)', () => {
+  it('round-trips LShift/RShift to their distinct physical keys', () => {
+    expect(importedKeys([
+      { key: 'LShift', modifiers: [], action: 'Sprint' },
+      { key: 'RShift', modifiers: [], action: 'Block' },
+    ])).toEqual(['ShiftLeft', 'ShiftRight']);
+  });
+
+  it('round-trips LCtrl/RCtrl and LAlt/RAlt to their distinct physical keys', () => {
+    expect(importedKeys([
+      { key: 'LCtrl', modifiers: [], action: 'A' },
+      { key: 'RCtrl', modifiers: [], action: 'B' },
+      { key: 'LAlt',  modifiers: [], action: 'C' },
+      { key: 'RAlt',  modifiers: [], action: 'D' },
+    ])).toEqual(['ControlLeft', 'ControlRight', 'AltLeft', 'AltRight']);
+  });
+});
+
+describe('parseJSON — ambiguous Numpad labels', () => {
+  it('resolves "Enter" to the main Enter key, not NumpadEnter', () => {
+    expect(importedKeys([{ key: 'Enter', modifiers: [], action: 'Confirm' }])).toEqual(['Enter']);
+  });
+
+  it('resolves "-", "/", "." to their main-board keys, not the Numpad equivalents', () => {
+    expect(importedKeys([
+      { key: '-', modifiers: [], action: 'A' },
+      { key: '/', modifiers: [], action: 'B' },
+      { key: '.', modifiers: [], action: 'C' },
+    ])).toEqual(['Minus', 'Slash', 'Period']);
+  });
+
+  it('round-trips the unambiguous Numpad display labels to their distinct keys', () => {
+    expect(importedKeys([
+      { key: 'Numpad Enter', modifiers: [], action: 'A' },
+      { key: 'Numpad -',     modifiers: [], action: 'B' },
+      { key: 'Numpad /',     modifiers: [], action: 'C' },
+      { key: 'Numpad .',     modifiers: [], action: 'D' },
+    ])).toEqual(['NumpadEnter', 'NumpadSubtract', 'NumpadDivide', 'NumpadDecimal']);
+  });
+});

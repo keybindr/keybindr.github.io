@@ -158,4 +158,7 @@ export default {
   'helpUndoBody'           : 'Ctrl+Z and Ctrl+Y (or Ctrl+Shift+Z) step through your recent changes.',  // TODO: translate
   'importErrInvalid'       : 'Invalid file — not a keybindr JSON export',  // TODO: translate
   'helpOutro'              : '',  // TODO: translate
+  'colorBlue' : 'Blue',  // TODO: translate
+  'colorRed'  : 'Red',  // TODO: translate
+  'colorGreen': 'Green',  // TODO: translate
 };

@@ -101,7 +101,7 @@ const RIGHT_MODS = new Set(['ShiftRight', 'AltRight', 'CtrlRight']);
 // key+modifiers combo (an irresolvable conflict, since unified has no L/R
 // distinction) — in that case the Right-side binding is dropped and the
 // Left-side one wins. Any other exact duplicates keep whichever came first.
-function retagAndDedupe(list, splitModifiers, idOf) {
+export function retagAndDedupe(list, splitModifiers, idOf) {
   const prepared = list.map(b => {
     const hadRight = !splitModifiers && (b.modifiers ?? []).some(m => RIGHT_MODS.has(m));
     return { binding: { ...b, modifiers: retagModList(b.modifiers, splitModifiers) }, hadRight };
@@ -131,7 +131,7 @@ const MOD_PAIRS = [['ShiftLeft', 'ShiftRight'], ['AltLeft', 'AltRight'], ['Contr
 // to unified mode — the two sides are the same logical key there, so any
 // pre-existing mismatch (e.g. from imported/legacy data, or from colors set
 // while split) is resolved by letting the Left side's value win.
-function reconcileKeyColors(keyColors) {
+export function reconcileKeyColors(keyColors) {
   let next = keyColors;
   let changed = false;
   for (const [l, r] of MOD_PAIRS) {

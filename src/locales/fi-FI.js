@@ -158,4 +158,7 @@ export default {
   'joystickButtonCount'    : 'Joystick Buttons',  // TODO: translate
   'throttleButtonCount'    : 'Throttle Buttons',  // TODO: translate
   'pedalsButtonCount'      : 'Pedals Buttons',  // TODO: translate
+  'colorBlue' : 'Blue',  // TODO: translate
+  'colorRed'  : 'Red',  // TODO: translate
+  'colorGreen': 'Green',  // TODO: translate
 };
