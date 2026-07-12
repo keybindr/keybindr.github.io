@@ -430,6 +430,9 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   const hotasBindings = Array.isArray(format.hotasBindings) ? format.hotasBindings : [];
   const kc            = format.keyColors || {};
 
+  const uiLang = settings.uiLanguage || settings.language || 'en-US';
+  const t      = makeT(uiLang);
+
   const { width: KB_W, height: KB_H } = getLayout(settings.physicalLayout ?? 'ansi-104');
 
   // Content width — matches separator line, same on both sides of keyboard/table
@@ -505,7 +508,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   ctx.font      = `bold ${FONT_TITLE}px ${FONT}`;
   ctx.fillStyle = '#e0a84b';
   if ('letterSpacing' in ctx) ctx.letterSpacing = `${Math.round(0.05 * FONT_TITLE)}px`;
-  ctx.fillText((layoutName || makeT(settings.uiLanguage || settings.language || 'en-US')('layoutNameDefault')).toUpperCase(), pad, y);
+  ctx.fillText((layoutName || t('layoutNameDefault')).toUpperCase(), pad, y);
   if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
   y += sGap1;
 
@@ -513,8 +516,7 @@ async function renderFormatToCanvas(format, layoutName, settings) {
   y += sSub;
   ctx.font      = `${FONT_SUB}px ${FONT}`;
   ctx.fillStyle = '#777';
-  const tFmt = makeT(settings.uiLanguage || settings.language || 'en-US');
-  ctx.fillText(resolveAction(format.name, tFmt) || tFmt('exportFormatFallback'), pad, y);
+  ctx.fillText(resolveAction(format.name, t) || t('exportFormatFallback'), pad, y);
   y += sGap2;
 
   // Legend
@@ -542,11 +544,11 @@ async function renderFormatToCanvas(format, layoutName, settings) {
     ctx.font      = `bold ${FONT_SUB}px ${FONT}`;
     ctx.fillStyle = '#e0a84b';
     y += sKbTitle;
-    ctx.fillText(makeT(settings.uiLanguage || settings.language || 'en-US')('bindingsTitle').toUpperCase(), pad, y);
+    ctx.fillText(t('bindingsTitle').toUpperCase(), pad, y);
     y += sKbTitleGap;
     fillRoundRect  (ctx, pad, y, contentW, tblBoxH, BOX_RADIUS, '#1a1a1a');
     strokeRoundRect(ctx, pad, y, contentW, tblBoxH, BOX_RADIUS, '#3a3a3a', S);
-    drawBindingTable(ctx, bindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', null, 'key', null, kc);
+    drawBindingTable(ctx, bindings, pad + tblInset, y + tblInset, tblInnerW, S, uiLang, null, 'key', null, kc);
     y += sTblBox + sGap6;
   }
 
@@ -555,11 +557,11 @@ async function renderFormatToCanvas(format, layoutName, settings) {
     ctx.font      = `bold ${FONT_SUB}px ${FONT}`;
     ctx.fillStyle = '#e0a84b';
     y += sMTitle;
-    ctx.fillText(makeT(settings.uiLanguage || settings.language || 'en-US')('mouseBindingsTitle').toUpperCase(), pad, y);
+    ctx.fillText(t('mouseBindingsTitle').toUpperCase(), pad, y);
     y += sMGap;
     fillRoundRect  (ctx, pad, y, contentW, mTblBoxH, BOX_RADIUS, '#1a1a1a');
     strokeRoundRect(ctx, pad, y, contentW, mTblBoxH, BOX_RADIUS, '#3a3a3a', S);
-    drawBindingTable(ctx, mouseBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US', makeT(settings.uiLanguage || settings.language || 'en-US')('colButton'), 'button', b => {
+    drawBindingTable(ctx, mouseBindings, pad + tblInset, y + tblInset, tblInnerW, S, uiLang, t('colButton'), 'button', b => {
       const mk = b.mouseKey ?? b.keyboardKey;
       if (!mk) return b.button;
       const lang  = settings.language ?? 'en-US';
@@ -571,22 +573,21 @@ async function renderFormatToCanvas(format, layoutName, settings) {
 
   // HOTAS bindings section
   if (hotasBindings.length > 0) {
-    const tFmt = makeT(settings.uiLanguage || settings.language || 'en-US');
     ctx.font      = `bold ${FONT_SUB}px ${FONT}`;
     ctx.fillStyle = '#e0a84b';
     y += sHTitle;
-    ctx.fillText(tFmt('hotasBindingsTitle').toUpperCase(), pad, y);
+    ctx.fillText(t('hotasBindingsTitle').toUpperCase(), pad, y);
     y += sHGap;
     fillRoundRect  (ctx, pad, y, contentW, hTblBoxH, BOX_RADIUS, '#1a1a1a');
     strokeRoundRect(ctx, pad, y, contentW, hTblBoxH, BOX_RADIUS, '#3a3a3a', S);
-    drawHotasTable(ctx, hotasBindings, pad + tblInset, y + tblInset, tblInnerW, S, settings.uiLanguage || settings.language || 'en-US');
+    drawHotasTable(ctx, hotasBindings, pad + tblInset, y + tblInset, tblInnerW, S, uiLang);
     y += sHTblBox + sHGapAfter;
   }
 
   // Footer
   ctx.font      = `${FONT_FOOTER}px ${FONT}`;
   ctx.fillStyle = '#f0c060';
-  ctx.fillText(makeT(settings.uiLanguage || settings.language || 'en-US')('exportFooter'), pad, totalH - sBotPad);
+  ctx.fillText(t('exportFooter'), pad, totalH - sBotPad);
 
   return canvas;
 }
