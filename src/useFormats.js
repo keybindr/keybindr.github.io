@@ -78,9 +78,19 @@ function loadRecent() {
   try { return JSON.parse(localStorage.getItem(RECENT_KEY)) ?? []; } catch { return []; }
 }
 
+// localStorage may be unavailable (private browsing, quota exceeded) — writes are
+// best-effort; state still updates in memory, it just won't persist across reloads.
+function safeSetItem(key, value) {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // ignore
+  }
+}
+
 function persist(formats, active) {
-  localStorage.setItem(FORMATS_KEY, JSON.stringify(formats));
-  localStorage.setItem(ACTIVE_KEY,  String(active));
+  safeSetItem(FORMATS_KEY, JSON.stringify(formats));
+  safeSetItem(ACTIVE_KEY,  String(active));
 }
 
 // Maps split modifier values to their unified name, and vice versa — used to
@@ -448,7 +458,7 @@ export function useFormats() {
   function addRecentColor(color) {
     setRecent(prev => {
       const next = [color, ...prev.filter(c => c !== color)].slice(0, 5);
-      localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+      safeSetItem(RECENT_KEY, JSON.stringify(next));
       return next;
     });
   }
@@ -484,7 +494,7 @@ export function useFormats() {
     setState(fresh);
     persist(fresh.formats, fresh.active);
     setRecent([]);
-    localStorage.setItem(RECENT_KEY, '[]');
+    safeSetItem(RECENT_KEY, '[]');
   }
 
   const activeFormat = formats[activeIndex];

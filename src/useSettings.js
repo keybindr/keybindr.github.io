@@ -59,7 +59,12 @@ function load() {
 }
 
 function persist(s) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  } catch {
+    // localStorage may be unavailable (private browsing, quota exceeded) — settings
+    // still work for this session, just won't persist across reloads.
+  }
 }
 
 export function useSettings() {

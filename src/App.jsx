@@ -22,6 +22,7 @@ import { getAllHotasInputs, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, 
 import { getMouseProfile, getProfileButtonSet } from './mouseProfiles';
 import { getHotasProfile, getEffectiveHotasCounts, getHotasProfileInputSet } from './hotasProfiles';
 import { useSettings } from './useSettings';
+import { useClickOutside } from './hooks/useClickOutside';
 import { exportJSON, exportPNG, importFile } from './export';
 import { GAME_PRESETS } from './gamePresets';
 const OrphanWarningModal = React.lazy(() => import('./components/OrphanWarningModal'));
@@ -50,6 +51,15 @@ function hasCustomSession(formats, layoutName) {
 
 const LAYOUT_NAME_KEY    = 'keybindr_layout_name';
 const MOBILE_WARNED_KEY  = 'keybindr_mobile_warned';
+
+// localStorage may be unavailable (private browsing, quota exceeded) — writes are
+// best-effort; state still updates in memory, it just won't persist across reloads.
+function safeSetItem(key, value) {
+  try { localStorage.setItem(key, value); } catch { /* ignore */ }
+}
+function safeRemoveItem(key) {
+  try { localStorage.removeItem(key); } catch { /* ignore */ }
+}
 
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -123,37 +133,14 @@ export default function App() {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [undo, redo]);
 
-  useEffect(() => {
-    if (!showMenu) return;
-    function onMouseDown(e) {
-      if (!menuRef.current?.contains(e.target)) setShowMenu(false);
-    }
-    document.addEventListener('mousedown', onMouseDown);
-    return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [showMenu]);
-
-  useEffect(() => {
-    if (!showHamburger) return;
-    function onMouseDown(e) {
-      if (!hamburgerRef.current?.contains(e.target)) setShowHamburger(false);
-    }
-    document.addEventListener('mousedown', onMouseDown);
-    return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [showHamburger]);
-
-  useEffect(() => {
-    if (!showPresets) return;
-    function onMouseDown(e) {
-      if (!presetsRef.current?.contains(e.target)) setShowPresets(false);
-    }
-    document.addEventListener('mousedown', onMouseDown);
-    return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [showPresets]);
+  useClickOutside(menuRef, showMenu, () => setShowMenu(false));
+  useClickOutside(hamburgerRef, showHamburger, () => setShowHamburger(false));
+  useClickOutside(presetsRef, showPresets, () => setShowPresets(false));
 
   function handleLayoutNameChange(name) {
     setLayoutNameState(name);
-    if (name) localStorage.setItem(LAYOUT_NAME_KEY, name);
-    else localStorage.removeItem(LAYOUT_NAME_KEY);
+    if (name) safeSetItem(LAYOUT_NAME_KEY, name);
+    else safeRemoveItem(LAYOUT_NAME_KEY);
   }
 
   // Preload the active locale(s) on startup and whenever language settings change.
@@ -205,7 +192,7 @@ export default function App() {
     setSelectedId(null);
     setActivePreset(null);
     setDeleteLocked(false);
-    localStorage.removeItem(LAYOUT_NAME_KEY);
+    safeRemoveItem(LAYOUT_NAME_KEY);
     setLayoutNameState('');
   }
 
@@ -335,7 +322,7 @@ export default function App() {
   }, [switchTo]);
 
   function closeMobileWarning() {
-    localStorage.setItem(MOBILE_WARNED_KEY, '1');
+    safeSetItem(MOBILE_WARNED_KEY, '1');
     setShowMobileWarning(false);
   }
 
