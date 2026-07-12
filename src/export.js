@@ -748,8 +748,15 @@ function download(blob, filename) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = filename;
+  // Some browsers only honor a synthetic click on an anchor that's actually
+  // in the document.
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(a.href);
+  a.remove();
+  // Revoking immediately after click() has been known to cancel the download
+  // in some older browsers before they've finished reading the blob URL —
+  // defer it instead.
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
 function sanitizeFilename(name) {
