@@ -1,12 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { getKeys, getLayout } from '../keyboardLayouts';
+import { getLayout } from '../keyboardLayouts';
 import { resolveLabel } from '../keylabels';
 import { bindingId } from '../useBindings';
 import { KEY_DEFAULT, KEY_BOUND, KEY_COLOR_NONE, MOD_COLORS, MOD_LABELS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill, resolveAccent } from '../modifierConstants';
 import { useT, resolveAction } from '../useTranslation';
 import { getHotasLabel, hotasBindingId } from '../hotasConstants';
 
-const KEY_SELECTED    = '#5a4a1a';
 const BORDER_DEFAULT  = '#444';
 const BORDER_BOUND    = '#e0a84b';
 const BORDER_SELECTED = '#f0c060';
@@ -49,7 +48,6 @@ function triCorner(k, corner) {
 function splitCornerPoints(corner, k) {
   const { x, y, w, h } = keyRect(k);
   // Use actual corner points if available
-  const tl = k.corners ? [k.x, k.y] : [x, y];
   const tr = k.corners ? k.corners.tr : [x + w, y];
   const br = k.corners ? k.corners.br : [x + w, y + h];
   const bl = k.corners ? k.corners.bl : [x, y + h];
@@ -313,7 +311,7 @@ function Keyboard({ bindings, selectedId, onKeyClick, keyColors = {}, settings =
             <span className="tooltip-action">{resolveAction(b.action, t)}</span>
           </div>
         ))}
-        {tooltipMouseBindings.map((mb, i) => (
+        {tooltipMouseBindings.map((mb) => (
           <div key={bindingId(mb.button, mb.modifiers)} className={`tooltip-row tooltip-row-sep tooltip-mouse-row`}>
             <span className="tooltip-mouse-icon">🖱</span>
             {mb.modifiers.length > 0 && (

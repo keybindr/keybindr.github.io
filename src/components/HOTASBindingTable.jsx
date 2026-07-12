@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useT, resolveAction } from '../useTranslation';
 import { getHotasLabel, hotasBindingId, getHotasModInfo } from '../hotasConstants';
 import { resolveDisplayLabel } from '../keylabels';

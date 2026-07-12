@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveDisplayLabel } from '../keylabels';
 import { MOD_LABELS } from '../modifierConstants';

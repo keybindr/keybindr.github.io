@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useT, resolveAction } from '../useTranslation';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import { buildHotasGroups, getHotasLabel, hotasBindingId, getHotasModInfo, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from '../hotasConstants';
 import { resolveDisplayLabel } from '../keylabels';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
-import { MOD_COLORS, MOD_FAMILY, buildModDefs } from '../modifierConstants';
+import { MOD_FAMILY, buildModDefs } from '../modifierConstants';
 
 const SPLIT_TO_UNIFIED = {
   ShiftLeft: 'Shift', ShiftRight: 'Shift',
@@ -82,34 +82,40 @@ export default function HOTASBindModal({
   const isFirstRender = useRef(true);
   useFocusTrap(modalRef, { onEscape: onCancel, initialFocusRef: inputRef });
 
-  // Pre-fill when opening for an existing binding
+  const comboId = hotasBindingId(input, modifiers, hotasMod);
+
+  // Pre-fill when opening for an existing binding.
   useEffect(() => {
-    const id       = hotasBindingId(input, modifiers, hotasMod);
-    const existing = existingBindings.find(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === id);
+    const existing = existingBindings.find(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === comboId);
     if (existing) {
       setAction(resolveAction(existing.action, t));
       setKeyboardKey(existing.hotasKey ?? '');
       setIsHotasMod(existing.isHotasMod ?? false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // When user switches input/modifiers/hotasMod, reload any existing action
+  // When user switches input/modifiers/hotasMod, reload any existing action.
+  // Deliberately excludes `action`/`existingBindings`/`t` — must NOT re-run on
+  // every keystroke, or an in-progress edit would get clobbered by `setAction` above.
   useEffect(() => {
-    const id       = hotasBindingId(input, modifiers, hotasMod);
-    const existing = existingBindings.find(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === id);
+    const existing = existingBindings.find(b => hotasBindingId(b.input, b.modifiers ?? [], b.hotasMod ?? '') === comboId);
     if (existing && action === '') {
       setAction(resolveAction(existing.action, t));
       setKeyboardKey(existing.hotasKey ?? '');
       setIsHotasMod(existing.isHotasMod ?? false);
     }
-  }, [input, modifiers.join(','), hotasMod]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comboId]);
 
-  // Auto-fill action from keyboard binding when remapped key is picked
+  // Auto-fill action from keyboard binding when remapped key is picked.
+  // Deliberately excludes `bindings`/`t` — should react only to `keyboardKey` changing.
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
     if (!keyboardKey) return;
     const kb = bindings.find(b => b.key === keyboardKey && b.modifiers.length === 0);
     if (kb) setAction(resolveAction(kb.action, t));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyboardKey]);
 
   function toggleModifier(value) {

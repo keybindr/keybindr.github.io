@@ -1,5 +1,3 @@
-import React from 'react';
-
 /** Small triangle SVG used in the modifier key legend. */
 export default function LegendTri({ color, dir }) {
   const s = 10;

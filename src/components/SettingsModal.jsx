@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { LAYOUTS } from '../keyboardLayouts';
 import { LOCALES } from '../keylabels';
 import { useT } from '../useTranslation';

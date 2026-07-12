@@ -1,4 +1,4 @@
-import { getKeys, getLayout, ALL_KEY_MAP } from './keyboardLayouts';
+import { getLayout, ALL_KEY_MAP } from './keyboardLayouts';
 import { resolveLabel, resolveDisplayLabel, DISPLAY_LABEL_OVERRIDES } from './keylabels';
 import { makeT, resolveAction } from './useTranslation';
 import { KEY_DEFAULT, KEY_BOUND, KEY_ACCENT, KEY_ACCENT_SPLIT, KEY_COLOR_NONE, MOD_COLORS, MOD_LABELS, MOD_KEY_IDS, MOD_CORNER, SPLIT_LABELS, modFill, resolveAccent } from './modifierConstants';
@@ -752,7 +752,7 @@ function download(blob, filename) {
 }
 
 function sanitizeFilename(name) {
-  return String(name).replace(/[^\w\s\-]/g, '').replace(/\s+/g, '_').slice(0, 60) || 'keybindr';
+  return String(name).replace(/[^\w\s-]/g, '').replace(/\s+/g, '_').slice(0, 60) || 'keybindr';
 }
 
 function escapeXml(str) {

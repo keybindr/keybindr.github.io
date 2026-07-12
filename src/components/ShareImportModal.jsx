@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useT } from '../useTranslation';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 

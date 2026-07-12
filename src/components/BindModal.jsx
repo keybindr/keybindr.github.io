@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveDisplayLabel } from '../keylabels';
 import { useT, resolveAction } from '../useTranslation';
@@ -78,16 +78,21 @@ export default function BindModal({
     return false;
   })();
 
+  // Pre-fill the action field once, when the modal first opens for this key.
   useEffect(() => {
     const existing = existingBindings.find(b => bindingId(b.key, b.modifiers) === newId);
     if (existing) setAction(resolveAction(existing.action, t));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // When modifier selection changes, auto-fill action if a binding exists for this combo
+  // When modifier selection changes, auto-fill action if a binding exists for this combo.
+  // Deliberately excludes `action`/`existingBindings`/`t` — this should react only to
+  // the modifier combo (via `newId`), not re-run on every keystroke in the action field.
   useEffect(() => {
     const existing = existingBindings.find(b => bindingId(b.key, b.modifiers) === newId);
     if (existing && action === '') setAction(resolveAction(existing.action, t));
-  }, [modifiers.join(',')]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newId]);
 
   function toggleModifier(value) {
     setModifiers(prev => {

@@ -3,9 +3,6 @@ import {
   getHotasLabel,
   buildHotasGroups,
   getHotasModInfo,
-  DEFAULT_JOYSTICK_BUTTONS,
-  DEFAULT_THROTTLE_BUTTONS,
-  DEFAULT_PEDALS_BUTTONS,
 } from '../hotasConstants';
 
 describe('getHotasLabel', () => {
