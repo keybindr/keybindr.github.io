@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { ALL_KEY_MAP } from '../keyboardLayouts';
 import { resolveDisplayLabel } from '../keylabels';
 import { bindingId } from '../useBindings';

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useT, resolveAction } from '../useTranslation';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 import { bindingId } from '../useBindings';
-import { MOD_COLORS, MOD_FAMILY, buildModDefs } from '../modifierConstants';
+import { MOD_FAMILY, buildModDefs } from '../modifierConstants';
 import { MOUSE_BUTTONS } from '../useFormats';
 import { getMouseProfile } from '../mouseProfiles';
 import { resolveDisplayLabel } from '../keylabels';
@@ -52,6 +52,7 @@ export default function MouseBindModal({
     return profileButtons?.find(b => b.id === btnId)?.defaultAction ?? '';
   }
 
+  // Pre-fill the action field once, when the modal first opens for this button.
   useEffect(() => {
     const existing = existingBindings.find(b => bindingId(b.button, b.modifiers) === newId);
     if (existing) {
@@ -61,8 +62,13 @@ export default function MouseBindModal({
       const def = defaultActionFor(button);
       if (def) setAction(def);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // When button/modifier selection changes, reload the prefill for that combo.
+  // Deliberately excludes `action`/`existingBindings`/`t`/`defaultActionFor` — must
+  // NOT re-run on every keystroke, or an in-progress edit would get clobbered by
+  // `setAction(existing.action, ...)` above.
   useEffect(() => {
     const existing = existingBindings.find(b => bindingId(b.button, b.modifiers) === newId);
     if (existing) {
@@ -72,16 +78,19 @@ export default function MouseBindModal({
       const def = defaultActionFor(button);
       if (def) setAction(def);
     }
-  }, [button, modifiers.join(',')]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newId]);
 
   // When the user picks a different remapped key, auto-fill action from the
   // matching keyboard binding (bare key, no modifiers).  Skip the initial
-  // render so the existing mouse-binding action wins on open.
+  // render so the existing mouse-binding action wins on open. Deliberately
+  // excludes `bindings`/`t` — should react only to `keyboardKey` changing.
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
     if (!keyboardKey) return;
     const kb = bindings.find(b => b.key === keyboardKey && b.modifiers.length === 0);
     if (kb) setAction(resolveAction(kb.action, t));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [keyboardKey]);
 
   function toggleModifier(value) {

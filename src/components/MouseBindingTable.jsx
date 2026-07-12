@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { bindingId } from '../useBindings';
 import { useT, resolveAction } from '../useTranslation';
 import { MOD_COLORS, MOD_LABELS } from '../modifierConstants';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useT, resolveAction } from '../useTranslation';
 import { MAX_FORMATS } from '../useFormats';
 

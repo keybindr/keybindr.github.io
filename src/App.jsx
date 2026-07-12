@@ -19,8 +19,8 @@ const ShareImportModal   = React.lazy(() => import('./components/ShareImportModa
 import { bindingId } from './useBindings';
 import { useFormats, MOUSE_BUTTONS } from './useFormats';
 import { getAllHotasInputs, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from './hotasConstants';
-import { getMouseProfile, getProfileButtonSet, MOUSE_PROFILES } from './mouseProfiles';
-import { getHotasProfile, getEffectiveHotasCounts, getHotasProfileInputSet, HOTAS_PROFILES } from './hotasProfiles';
+import { getMouseProfile, getProfileButtonSet } from './mouseProfiles';
+import { getHotasProfile, getEffectiveHotasCounts, getHotasProfileInputSet } from './hotasProfiles';
 import { useSettings } from './useSettings';
 import { exportJSON, exportPNG, importFile } from './export';
 import { GAME_PRESETS } from './gamePresets';
@@ -50,7 +50,6 @@ function hasCustomSession(formats, layoutName) {
 
 const LAYOUT_NAME_KEY    = 'keybindr_layout_name';
 const MOBILE_WARNED_KEY  = 'keybindr_mobile_warned';
-const DEFAULT_LAYOUT_NAME = null; // displayed via translation key 'layoutNameDefault'
 
 // ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -163,6 +162,10 @@ export default function App() {
     preloadLocales(settings.uiLanguage, settings.language).then(() => forceUpdate(n => n + 1));
   }, [settings.uiLanguage, settings.language]);
 
+  // Runs once on mount to process a shared-layout link in the URL hash.
+  // Intentionally reads the initial formats/layoutName/applySharedImport —
+  // this only matters at page load, and the hash is cleared via
+  // replaceState() before any of those values could change.
   useEffect(() => {
     const hash = window.location.hash;
     if (!hash || !hash.includes('layout=')) return;
@@ -175,6 +178,7 @@ export default function App() {
         applySharedImport(result);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function applySharedImport(result) {
