@@ -21,7 +21,7 @@ import { useFormats, MOUSE_BUTTONS } from './useFormats';
 import { getAllHotasInputs, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from './hotasConstants';
 import { getMouseProfile, getProfileButtonSet } from './mouseProfiles';
 import { getHotasProfile, getEffectiveHotasCounts, getHotasProfileInputSet } from './hotasProfiles';
-import { useSettings } from './useSettings';
+import { useSettings, isMobile } from './useSettings';
 import { useClickOutside } from './hooks/useClickOutside';
 import { exportJSON, exportPNG, importFile } from './export';
 import { GAME_PRESETS } from './gamePresets';
@@ -106,14 +106,22 @@ export default function App() {
   const [errorMsg, setErrorMsg]           = useState(null);
   const [isExporting, setIsExporting]     = useState(false);
   const [, forceUpdate]                   = useState(0);
+  const errorTimerRef = useRef(null);
+
+  function dismissError() {
+    clearTimeout(errorTimerRef.current);
+    errorTimerRef.current = null;
+    setErrorMsg(null);
+  }
 
   function showError(msg) {
+    clearTimeout(errorTimerRef.current);
     setErrorMsg(msg);
-    setTimeout(() => setErrorMsg(null), 5000);
+    errorTimerRef.current = setTimeout(dismissError, 5000);
   }
 
   const [showMobileWarning, setShowMobileWarning] = useState(() => {
-    return window.innerWidth <= 768 && !localStorage.getItem(MOBILE_WARNED_KEY);
+    return isMobile && !localStorage.getItem(MOBILE_WARNED_KEY);
   });
 
   useEffect(() => {
@@ -868,7 +876,7 @@ export default function App() {
       {showMobileWarning && <MobileWarningModal onClose={closeMobileWarning} />}
 
       {errorMsg && (
-        <div className="error-toast" role="alert" onClick={() => setErrorMsg(null)}>
+        <div className="error-toast" role="alert" onClick={dismissError}>
           {errorMsg}
         </div>
       )}
