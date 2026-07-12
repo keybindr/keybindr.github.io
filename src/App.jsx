@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, Suspense } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Keyboard from './components/Keyboard';
 import BindingTable from './components/BindingTable';
 import MouseBindingTable from './components/MouseBindingTable';
@@ -7,32 +7,22 @@ import FormatTabs from './components/FormatTabs';
 import LayoutName from './components/LayoutName';
 import LegendTri from './components/LegendTri';
 import MobileWarningModal from './components/MobileWarningModal';
-
-// Modals are lazy-loaded — they're only shown on user action, never on initial render.
-const BindModal          = React.lazy(() => import('./components/BindModal'));
-const MouseBindModal     = React.lazy(() => import('./components/MouseBindModal'));
-const HOTASBindModal     = React.lazy(() => import('./components/HOTASBindModal'));
-const HelpModal          = React.lazy(() => import('./components/HelpModal'));
-const SettingsModal      = React.lazy(() => import('./components/SettingsModal'));
-const ShareModal         = React.lazy(() => import('./components/ShareModal'));
-const ShareImportModal   = React.lazy(() => import('./components/ShareImportModal'));
+import AppModals from './components/AppModals';
+import HeaderNav from './components/HeaderNav';
 import { bindingId } from './useBindings';
 import { useFormats, MOUSE_BUTTONS } from './useFormats';
 import { getAllHotasInputs, DEFAULT_JOYSTICK_BUTTONS, DEFAULT_THROTTLE_BUTTONS, DEFAULT_PEDALS_BUTTONS } from './hotasConstants';
 import { getMouseProfile, getProfileButtonSet } from './mouseProfiles';
 import { getHotasProfile, getEffectiveHotasCounts, getHotasProfileInputSet } from './hotasProfiles';
 import { useSettings, isMobile } from './useSettings';
-import { useClickOutside } from './hooks/useClickOutside';
-import { exportJSON, exportPNG, importFile } from './export';
+import { exportJSON, importFile } from './export';
 import { GAME_PRESETS } from './gamePresets';
-const OrphanWarningModal = React.lazy(() => import('./components/OrphanWarningModal'));
 import { encodeShareUrl, decodeShareHash } from './share';
 import { DEFAULT_BINDINGS } from './defaultBindings';
 import { getKeys, getLayout as getKbLayout } from './keyboardLayouts';
 import { localeUsesISO } from './keylabels';
 import { TranslationContext, makeT } from './useTranslation';
 import { preloadLocales } from './locales/index.js';
-import { ErrorBoundary } from './components/ErrorBoundary';
 import { KEY_COLOR_NONE, KEY_ACCENT, KEY_ACCENT_SPLIT } from './modifierConstants';
 
 
@@ -93,18 +83,9 @@ export default function App() {
   const [pendingLayout, setPendingLayout]     = useState(null); // { id, name, orphans }
   const modalOriginalColor = useRef(undefined);
 
-  const fileInputRef        = useRef(null);
-  const gameImportRef       = useRef(null);
-  const menuRef         = useRef(null);
-  const presetsRef      = useRef(null);
-  const hamburgerRef    = useRef(null);
-  const [showMenu, setShowMenu]           = useState(false);
-  const [showPresets, setShowPresets]     = useState(false);
-  const [showHamburger, setShowHamburger] = useState(false);
   const [activePreset, setActivePreset]   = useState(null);
   const [deleteLocked, setDeleteLocked]   = useState(false);
   const [errorMsg, setErrorMsg]           = useState(null);
-  const [isExporting, setIsExporting]     = useState(false);
   const [, forceUpdate]                   = useState(0);
   const errorTimerRef = useRef(null);
 
@@ -140,10 +121,6 @@ export default function App() {
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [undo, redo]);
-
-  useClickOutside(menuRef, showMenu, () => setShowMenu(false));
-  useClickOutside(hamburgerRef, showHamburger, () => setShowHamburger(false));
-  useClickOutside(presetsRef, showPresets, () => setShowPresets(false));
 
   function handleLayoutNameChange(name) {
     setLayoutNameState(name);
@@ -248,16 +225,6 @@ export default function App() {
     };
     reader.readAsText(file);
     e.target.value = '';
-  }
-
-  function menuAction(fn) {
-    setShowMenu(false);
-    fn();
-  }
-
-  function hamburgerAction(fn) {
-    setShowHamburger(false);
-    fn();
   }
 
   // In unified mode, modifier key colors are mirrored to both sides of the pair
@@ -470,134 +437,16 @@ export default function App() {
           <div className="app-tagline">{t('tagline')}</div>
         </div>
 
-        {/* Desktop navigation */}
-        <div className="header-actions desktop-nav">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".json"
-            style={{ display: 'none' }}
-            onChange={handleImport}
-          />
-          <input
-            ref={gameImportRef}
-            type="file"
-            accept={GAME_PRESETS.find(p => p.id === activePreset)?.importAccept ?? ''}
-            style={{ display: 'none' }}
-            onChange={handleGameImport}
-          />
-          <div className="dropdown" ref={presetsRef}>
-            <button className="btn-export btn-presets" onClick={() => setShowPresets(v => !v)}>
-              {activePreset ? GAME_PRESETS.find(p => p.id === activePreset)?.label : t('gameDefaults')}
-            </button>
-            {showPresets && (
-              <div className="dropdown-menu">
-                {GAME_PRESETS.map(p => (
-                  <button
-                    key={p.id}
-                    className={`dropdown-item${activePreset === p.id ? ' dropdown-item-active' : ''}`}
-                    onClick={() => { setShowPresets(false); handleLoadPreset(p); }}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <div className="dropdown" ref={menuRef}>
-            <button className="btn-export" onClick={() => setShowMenu(v => !v)}>
-              {t('importExport')}
-            </button>
-            {showMenu && (
-              <div className="dropdown-menu">
-                <button className="dropdown-item" onClick={() => menuAction(() => fileInputRef.current?.click())}>
-                  {t('importJson')}
-                </button>
-                <div className="dropdown-sep" />
-                <button className="dropdown-item" onClick={() => menuAction(() => exportJSON(formats, layoutName, settings))}>
-                  {t('exportJson')}
-                </button>
-                <button className="dropdown-item" disabled={isExporting} onClick={() => menuAction(() => {
-                  setIsExporting(true);
-                  exportPNG(formats, layoutName, settings)
-                    .catch(err => showError(err.message))
-                    .finally(() => setIsExporting(false));
-                })}>
-                  {t('exportPng')}{isExporting ? ' …' : ''}
-                </button>
-                {(() => {
-                  const ap = GAME_PRESETS.find(p => p.id === activePreset);
-                  if (!ap?.importFn && !ap?.exportFn) return null;
-                  return (
-                    <>
-                      <div className="dropdown-sep" />
-                      {ap.importFn && (
-                        <button className="dropdown-item" onClick={() => menuAction(() => gameImportRef.current?.click())}>
-                          {t(ap.importLabel)}
-                        </button>
-                      )}
-                      {ap.exportFn && (
-                        <button className="dropdown-item" onClick={() => menuAction(() => ap.exportFn(formats))}>
-                          {t(ap.exportLabel)}
-                        </button>
-                      )}
-                    </>
-                  );
-                })()}
-              </div>
-            )}
-          </div>
-          <button className="btn-icon" title={t('shareLayout')} aria-label={t('shareLayout')} onClick={handleShare}>
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="13" cy="3" r="1.5"/>
-              <circle cx="3" cy="8" r="1.5"/>
-              <circle cx="13" cy="13" r="1.5"/>
-              <line x1="4.5" y1="7" x2="11.5" y2="4"/>
-              <line x1="4.5" y1="9" x2="11.5" y2="12"/>
-            </svg>
-          </button>
-          <button className="btn-icon" title={t('help')} aria-label={t('help')} onClick={() => setShowHelp(true)}>?</button>
-          <button className="btn-icon" title={t('settings')} aria-label={t('settings')} onClick={() => setShowSettings(true)}>⚙</button>
-        </div>
-
-        {/* Mobile hamburger */}
-        <div className="header-mobile" ref={hamburgerRef}>
-          <button className="btn-hamburger" onClick={() => setShowHamburger(v => !v)} title={t('menu')} aria-label={t('menu')}>
-            ☰
-          </button>
-          {showHamburger && (
-            <div className="hamburger-menu">
-              {(() => {
-                const ap = GAME_PRESETS.find(p => p.id === activePreset);
-                if (!ap?.importFn && !ap?.exportFn) return null;
-                return (
-                  <>
-                    {ap.importFn && (
-                      <button className="hamburger-item" onClick={() => hamburgerAction(() => gameImportRef.current?.click())}>
-                        {ap.importLabel}
-                      </button>
-                    )}
-                    {ap.exportFn && (
-                      <button className="hamburger-item" onClick={() => hamburgerAction(() => ap.exportFn(formats))}>
-                        {ap.exportLabel}
-                      </button>
-                    )}
-                    <div className="hamburger-sep" />
-                  </>
-                );
-              })()}
-              <button className="hamburger-item" onClick={() => hamburgerAction(handleShare)}>
-                {t('shareLayout')}
-              </button>
-              <button className="hamburger-item" onClick={() => hamburgerAction(() => setShowHelp(true))}>
-                {t('help')}
-              </button>
-              <button className="hamburger-item" onClick={() => hamburgerAction(() => setShowSettings(true))}>
-                {t('settings')}
-              </button>
-            </div>
-          )}
-        </div>
+        <HeaderNav
+          t={t} formats={formats} layoutName={layoutName} settings={settings} activePreset={activePreset}
+          onImportFile={handleImport}
+          onGameImportFile={handleGameImport}
+          onSelectPreset={handleLoadPreset}
+          onShare={handleShare}
+          onOpenHelp={() => setShowHelp(true)}
+          onOpenSettings={() => setShowSettings(true)}
+          onShowError={showError}
+        />
       </header>
 
       <LayoutName name={layoutName} onChange={handleLayoutNameChange} />
@@ -727,151 +576,68 @@ export default function App() {
         </div>
       )}
 
-      {/* Lazy-loaded modals — wrapped in an ErrorBoundary so a modal crash
-          shows a dismissable toast instead of blanking the whole page. */}
-      <ErrorBoundary fallback={(err, reset) => (
-        <div className="error-toast" role="alert" onClick={reset}>
-          {err.message || 'Something went wrong'}
-        </div>
-      )}>
-      <Suspense fallback={null}>
-      {hotasModal && (
-        <HOTASBindModal
-          initialInput={hotasModal.input}
-          initialModifiers={hotasModal.modifiers ?? []}
-          initialKeyboardKey={hotasModal.keyboardKey ?? ''}
-          initialHotasMod={hotasModal.hotasMod ?? ''}
-          initialIsHotasMod={hotasModal.isHotasMod ?? false}
-          existingBindings={hotasBindings}
-          bindings={bindings}
-          settings={effectiveHotasSettings}
-          layoutKeys={getKeys(settings.physicalLayout)}
-          onSave={(input, modifiers, action, keyboardKey, hotasMod, isHotasMod) => {
-            addOrUpdateHotasBinding(input, modifiers, action, keyboardKey, hotasMod, isHotasMod);
-            if (keyboardKey && !isHotasMod) addOrUpdate(keyboardKey, [], action);
-            setHotasModal(null);
-          }}
-          onRemove={(input) => {
-            removeHotasModifier(input);
-            setHotasModal(null);
-          }}
-          onCancel={() => setHotasModal(null)}
-        />
-      )}
+      <AppModals
+        hotasModal={hotasModal} hotasBindings={hotasBindings} bindings={bindings}
+        effectiveHotasSettings={effectiveHotasSettings}
+        onSaveHotas={(input, modifiers, action, keyboardKey, hotasMod, isHotasMod) => {
+          addOrUpdateHotasBinding(input, modifiers, action, keyboardKey, hotasMod, isHotasMod);
+          if (keyboardKey && !isHotasMod) addOrUpdate(keyboardKey, [], action);
+          setHotasModal(null);
+        }}
+        onRemoveHotasModifier={(input) => { removeHotasModifier(input); setHotasModal(null); }}
+        onCancelHotas={() => setHotasModal(null)}
 
-      {mouseModal && (
-        <MouseBindModal
-          initialButton={mouseModal.button}
-          initialModifiers={mouseModal.modifiers}
-          initialKeyboardKey={mouseModal.keyboardKey ?? ''}
-          existingBindings={mouseBindings}
-          bindings={bindings}
-          settings={settings}
-          layoutKeys={getKeys(settings.physicalLayout)}
-          onSave={(button, modifiers, action, keyboardKey) => {
-            addOrUpdateMouseBinding(button, modifiers, action, keyboardKey);
-            if (keyboardKey) addOrUpdate(keyboardKey, [], action);
-            setMouseModal(null);
-          }}
-          onCancel={() => setMouseModal(null)}
-        />
-      )}
+        mouseModal={mouseModal} mouseBindings={mouseBindings} settings={settings}
+        onSaveMouse={(button, modifiers, action, keyboardKey) => {
+          addOrUpdateMouseBinding(button, modifiers, action, keyboardKey);
+          if (keyboardKey) addOrUpdate(keyboardKey, [], action);
+          setMouseModal(null);
+        }}
+        onCancelMouse={() => setMouseModal(null)}
 
-      {modalKey && (
-        <BindModal
-          keyId={modalKey}
-          existingBindings={bindings}
-          keyColor={keyColors[modalKey]}
-          recentColors={recentColors}
-          onColorChange={color => handleColorChange(modalKey, color)}
-          onSave={handleSave}
-          onCancel={handleModalCancel}
-          settings={settings}
-          formats={formats}
-          activeIndex={activeIndex}
-        />
-      )}
+        modalKey={modalKey} keyColors={keyColors} recentColors={recentColors}
+        formats={formats} activeIndex={activeIndex}
+        onColorChange={handleColorChange}
+        onSaveKey={handleSave}
+        onCancelKey={handleModalCancel}
 
-      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+        showHelp={showHelp} onCloseHelp={() => setShowHelp(false)}
+        showShare={showShare} shareUrl={shareUrl} onCloseShare={() => setShowShare(false)}
 
-      {showShare && <ShareModal url={shareUrl} onClose={() => setShowShare(false)} />}
+        pendingImport={pendingImport}
+        onDownloadShared={() => exportJSON(formats, layoutName, settings)}
+        onConfirmSharedImport={() => applySharedImport(pendingImport)}
+        onCancelSharedImport={() => setPendingImport(null)}
 
-      {pendingImport && (
-        <ShareImportModal
-          onDownload={() => exportJSON(formats, layoutName, settings)}
-          onConfirm={() => applySharedImport(pendingImport)}
-          onCancel={() => setPendingImport(null)}
-        />
-      )}
+        showSettings={showSettings} onCloseSettings={() => setShowSettings(false)}
+        settingsModalProps={{
+          onToggleSplit: val => { retagModifiers(val); setSplitModifiers(val); },
+          onChangeLayout: handleLayoutChange,
+          onChangeLocale: handleLocaleChange,
+          onChangeUiLocale: handleUiLocaleChange,
+          onToggleCrossFormatWarnings: setWarnCrossFormatConflicts,
+          onToggleMouseBindings: setShowMouseBindings,
+          onChangeMouseModel: handleMouseModelChange,
+          onToggleHotasBindings: setShowHotasBindings,
+          onChangeHotasModel: handleHotasModelChange,
+          onChangeJoystickButtonCount: setJoystickButtonCount,
+          onChangeThrottleButtonCount: setThrottleButtonCount,
+          onChangePedalsButtonCount: setPedalsButtonCount,
+          onClearKeys: resetAll,
+        }}
 
-      {showSettings && (
-        <SettingsModal
-          settings={settings}
-          onToggleSplit={val => { retagModifiers(val); setSplitModifiers(val); }}
-          onChangeLayout={handleLayoutChange}
-          onChangeLocale={handleLocaleChange}
-          onChangeUiLocale={handleUiLocaleChange}
-          onToggleCrossFormatWarnings={setWarnCrossFormatConflicts}
-          onToggleMouseBindings={setShowMouseBindings}
-          onChangeMouseModel={handleMouseModelChange}
-          onToggleHotasBindings={setShowHotasBindings}
-          onChangeHotasModel={handleHotasModelChange}
-          onChangeJoystickButtonCount={setJoystickButtonCount}
-          onChangeThrottleButtonCount={setThrottleButtonCount}
-          onChangePedalsButtonCount={setPedalsButtonCount}
-          onClearKeys={resetAll}
-          onClose={() => setShowSettings(false)}
-        />
-      )}
+        pendingLayout={pendingLayout}
+        onConfirmLayoutChange={confirmLayoutChange}
+        onCancelLayoutChange={() => setPendingLayout(null)}
 
-      {pendingLayout && (
-        <OrphanWarningModal
-          orphans={pendingLayout.orphans}
-          newLayoutName={pendingLayout.name}
-          language={settings.language}
-          onConfirm={confirmLayoutChange}
-          onCancel={() => setPendingLayout(null)}
-        />
-      )}
+        pendingMouseModel={pendingMouseModel}
+        onConfirmMouseModelChange={confirmMouseModelChange}
+        onCancelMouseModelChange={() => setPendingMouseModel(null)}
 
-      {pendingMouseModel && (
-        <OrphanWarningModal
-          orphans={pendingMouseModel.orphans}
-          newLayoutName={pendingMouseModel.name}
-          bodyKeyOverride={pendingMouseModel.orphans.length === 1 ? 'mouseOrphanBodySingular' : 'mouseOrphanBodyPlural'}
-          renderItem={(b, i) => (
-            <div key={i} className="orphan-item">
-              <span className="orphan-combo">{b.button}</span>
-              <span className="orphan-arrow">→</span>
-              <span className="orphan-action">{b.action}</span>
-              {b._format && <span className="orphan-format">{b._format}</span>}
-            </div>
-          )}
-          onConfirm={confirmMouseModelChange}
-          onCancel={() => setPendingMouseModel(null)}
-        />
-      )}
-
-      {pendingHotasModel && (
-        <OrphanWarningModal
-          orphans={pendingHotasModel.orphans}
-          newLayoutName={pendingHotasModel.name}
-          bodyKeyOverride={pendingHotasModel.orphans.length === 1 ? 'hotasOrphanBodySingular' : 'hotasOrphanBodyPlural'}
-          renderItem={(b, i) => (
-            <div key={i} className="orphan-item">
-              <span className="orphan-combo">{b.input}</span>
-              <span className="orphan-arrow">→</span>
-              <span className="orphan-action">{b.isHotasMod ? '[MODIFIER]' : b.action}</span>
-              {b._format && <span className="orphan-format">{b._format}</span>}
-            </div>
-          )}
-          onConfirm={confirmHotasModelChange}
-          onCancel={() => setPendingHotasModel(null)}
-        />
-      )}
-
-      </Suspense>
-      </ErrorBoundary>
+        pendingHotasModel={pendingHotasModel}
+        onConfirmHotasModelChange={confirmHotasModelChange}
+        onCancelHotasModelChange={() => setPendingHotasModel(null)}
+      />
 
       {showMobileWarning && <MobileWarningModal onClose={closeMobileWarning} />}
 
